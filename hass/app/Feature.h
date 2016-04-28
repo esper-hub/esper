@@ -7,10 +7,6 @@
 class BaseFeature {
 protected:
 	virtual void publish(const String& partial_topic, const String& message) const  = 0;
-	//{
-	//	const String topic(REALM "/" + partial_topic);
-	//	
-	//}
 };
 
 template<const char* TYPE_NAME>

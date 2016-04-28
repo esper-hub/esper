@@ -69,7 +69,7 @@ private:
 
 	void onMessageReceived(const String topic, const String message) {
 		log("FIXME, topic received: ", topic);	
-		log("FIXME, message received: ", message);	
+		log("FIXME, message received: ", message);
 	}
 };
 

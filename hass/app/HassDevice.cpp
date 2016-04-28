@@ -47,7 +47,7 @@ void HassDevice::onWifiStateChanged(WifiConnectionManager::WifiState state) {
 			log(wifi_state_changed, "DISCONNECTED");
 			break;
 		case WifiConnectionManager::WifiState::CONNECTING:
-			log(wifi_state_changed, "CONECTING");
+			log(wifi_state_changed, "CONNECTING");
 			break;
 		default:
 			log("Are you shitting me??!");
