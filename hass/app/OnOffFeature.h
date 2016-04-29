@@ -17,10 +17,12 @@ public:
 	    Feature<TYPE_NAME>(device, name),
 	    gpio(gpio_pin),
 	    current_state(default_state) {
+	log("initialized.");
         setState(current_state);
+	device.registerFeature(this);
     }
 
-    virtual void onMessageReceived(const String& topic, const String& message) {
+    virtual void onMessageReceived(const String topic, const String message) {
         this->log("topic: ", topic);
 	this->log("message: ", message);
         if (topic == "set") {
@@ -29,6 +31,13 @@ public:
             this->log("unknown message topic received:");
             this->log(topic);
         }
+    }
+protected:
+    virtual void RegisterSubscriptions() const {
+
+	device.registerSubscription(String(name) + "/on", MqttStringSubscriptionCallback(&OnOffFeature::onMessageReceived, this));
+	device.registerSubscription(String(name) + "/off", MqttStringSubscriptionCallback(&OnOffFeature::onMessageReceived, this));
+
     }
 
     inline void handleSetMessage(const String& message) {
@@ -42,7 +51,6 @@ public:
         }
     }
 
-protected:
 
     inline void publishCurrentState() {
         this->publish("state", current_state ? ON : OFF);

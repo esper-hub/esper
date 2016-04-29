@@ -84,16 +84,17 @@ void HassDevice::restart() {
 
 void HassDevice::onMqttConnected() {
 	log("Mqtt connected. \\o/");
-	
+	for (int i = 0; i < features.count(); i++) {
+		feature[i]->onMqttConnected();
+	}
 }
 
-void HassDevice::registerSubscription(const String& topic, MqttStringSubscriptionCallback& cb) {
+void HassDevice::registerSubscription(const String topic, MqttStringSubscriptionCallback cb) {
 	if (!topic) return;
 	if (messageCallbacks.contains(topic)) {
 		messageCallbacks[topic] = cb;
 	} else {
 		messageCallbacks[topic] = cb;
-		//messageCallbacks.emplace(topic, cb);
 		mqttSubscribe(topic);
 	}
 }
@@ -126,4 +127,9 @@ void HassDevice::onMqttMessageReceived(String topic, String msg) {
 void HassDevice::publish(const String& partial_topic, const String& message) {
 	const String topic = make_path(basePath, partial_topic);
 	mqttConnectionManager.publish(topic, message);
+}
+
+void HassDevice::registerFeature(Feature* feature) {
+	if (!feature) return;
+	features.addElement(feature);
 }

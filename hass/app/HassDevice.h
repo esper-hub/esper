@@ -18,7 +18,7 @@ class HassDevice : Log<HASS_DEVICE_LOG_NAME>{
     MqttConnectionManager mqttConnectionManager;
    
     HashMap<String, MqttStringSubscriptionCallback> messageCallbacks;
-    Vector<MqttConnectionManager::MqttConnectionStateChangedDelegate> mqttStateChangeCallbacks;
+    Vector<Feature*> features;
 
 private:
     void connectWifi();
@@ -39,7 +39,6 @@ private:
     void onMqttMessageReceived(String topic, String message);
     void onMqttConnected();
   
-    void registerSubscription(const String& topic, MqttStringSubscriptionCallback& cb);
     void mqttSubscribe(const String& topic); 
 protected:
 public:
@@ -47,7 +46,10 @@ public:
 
     HassDevice(const String verbose_name);
     void start();
+    void registerSubscription(const String topic, MqttStringSubscriptionCallback cb);
 
+
+    void registerFeature(Feature* feature);
     const String& getVerboseName() const { return verbose_name; }
     const String& getMAC() const { return mac; }
     void publish(const String& partial_topic, const String& message);

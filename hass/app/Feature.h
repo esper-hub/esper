@@ -27,10 +27,13 @@ public:
 	    device.publish(partial_topic, message);
     }
 
-    virtual void onMessageReceived(const String& topic, const String& message) = 0;
+    virtual void onMessageReceived(const String topic, const String message) = 0;
     virtual void onMqttConnected() {
         publishCurrentState();
+	registerSubscriptions();
     }
+
+    virtual void registerSubscriptions() const = 0;
     virtual void publishCurrentState() = 0;
     inline const String& getBaseTopic() const {
         return base_topic;
