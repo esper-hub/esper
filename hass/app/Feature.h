@@ -3,40 +3,34 @@
 
 #include "HassDevice.h"
 #include "Log.h"
-
-class BaseFeature {
-protected:
-	virtual void publish(const String& partial_topic, const String& message) const  = 0;
-};
+#include "AbstractFeature.h"
 
 template<const char* TYPE_NAME>
-class Feature : public BaseFeature, public Log<TYPE_NAME> {
+class Feature : public AbstractFeature, public Log<TYPE_NAME> {
 protected:
+    String name;
     HassDevice& device;
-    String base_topic;
-
 public:
 
-    Feature(HassDevice& device, const char* name) : device(device) {
-        this->base_topic += TYPE_NAME;
-        this->base_topic += "/";
-        this->base_topic += name;
+    Feature(HassDevice& device, const char* name) : name(name), device(device) {
     }
 
     virtual void publish(const String& partial_topic, const String& message) const {
 	    device.publish(partial_topic, message);
     }
 
-    virtual void onMessageReceived(const String topic, const String message) = 0;
     virtual void onMqttConnected() {
         publishCurrentState();
-	registerSubscriptions();
+	    registerSubscriptions();
     }
 
-    virtual void registerSubscriptions() const = 0;
+    virtual void registerSubscriptions() = 0;
     virtual void publishCurrentState() = 0;
-    inline const String& getBaseTopic() const {
-        return base_topic;
+    String getName() const {
+        return name;
+    }
+    inline HassDevice& getDevice() const {
+        return device;
     }
 };
 

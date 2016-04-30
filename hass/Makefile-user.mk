@@ -2,7 +2,7 @@ WIFI_SSID="cda"
 WIFI_PWD="neHeeha23"
 MQTT_HOST="whisky.trollhoehle.net"
 MQTT_PORT=1883
-REALM="/trollhoehle/lounge/"
+REALM="/trollhoehle/lounge"
 
 ## Local build configuration
 ## Parameters configured here will override default and ENV values.

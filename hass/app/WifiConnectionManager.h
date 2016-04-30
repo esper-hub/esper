@@ -20,7 +20,10 @@ private:
 public:
 	WifiConnectionManager(const WifiConnectionStateChangedDelegate cb) : callback(cb),
 		state(WifiState::DISCONNECTED) 
-	{}
+	{
+		log("initalized.");
+	}
+
 	void connect() {
 		reconnectTimer.stop();
 		log("configuring Wifi");
