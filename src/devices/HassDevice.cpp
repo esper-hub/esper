@@ -90,11 +90,7 @@ void HassDevice::onMqttConnected() {
 
 void HassDevice::registerSubscription(const String topic, MqttStringSubscriptionCallback cb) {
     if (!topic) return;
-    if (messageCallbacks.contains(topic)) {
-        messageCallbacks[topic] = cb;
-    } else {
-        messageCallbacks[topic] = cb;
-    }
+    messageCallbacks[topic] = cb;
 }
 
 void HassDevice::mqttSubscribe(const String &topic) {
