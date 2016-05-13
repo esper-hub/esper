@@ -1,8 +1,8 @@
 #ifndef FEATURE_H
 #define FEATURE_H
 
-#include "HassDevice.h"
-#include "Log.h"
+#include "../devices/HassDevice.h"
+#include "../Log.h"
 #include "AbstractFeature.h"
 
 template<const char *TYPE_NAME>

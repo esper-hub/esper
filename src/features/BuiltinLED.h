@@ -1,7 +1,7 @@
 #ifndef CYBERHOEHLE_BUILTINLED_H
 #define CYBERHOEHLE_BUILTINLED_H
 
-#include "Log.h"
+#include "../Log.h"
 #include "LED.h"
 
 extern const char _BUILTIN_LED[];

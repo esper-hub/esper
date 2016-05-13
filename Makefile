@@ -9,6 +9,8 @@ endif
 
 DISABLE_SPIFFS = 1
 
+MODULES=src/devices src/features src
+
 ifdef MQTT_HOST
 	USER_CFLAGS += -DMQTT_HOST=\"$(MQTT_HOST)\"
 endif

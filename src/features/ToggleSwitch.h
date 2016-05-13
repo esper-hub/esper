@@ -3,7 +3,7 @@
 
 #include <SmingCore/SmingCore.h>
 #include "Switch.h"
-#include "Log.h"
+#include "../Log.h"
 
 extern const char _TOGGLE_SWITCH[];
 

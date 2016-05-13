@@ -3,10 +3,9 @@
 
 #include <SmingCore/SmingCore.h>
 #include <user_config.h>
-#include "MqttNode.h"
-#include "WifiConnectionManager.h"
-#include "MqttConnectionManager.h"
-#include "AbstractFeature.h"
+#include "../WifiConnectionManager.h"
+#include "../MqttConnectionManager.h"
+#include "../features/AbstractFeature.h"
 
 
 extern const char HASS_DEVICE_LOG_NAME[];

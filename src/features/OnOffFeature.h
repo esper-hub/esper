@@ -42,7 +42,7 @@ public:
 protected:
     virtual void registerSubscriptions() {
         this->device.registerSubscription(String(this->name) + "/set",
-                                          MqttStringSubscriptionCallback(&OnOffFeature::onMessageReceived, this);
+                                          MqttStringSubscriptionCallback(&OnOffFeature::onMessageReceived, this));
     }
 
     inline void handleSetMessage(const String &message) {

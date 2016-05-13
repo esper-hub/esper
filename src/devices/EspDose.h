@@ -1,7 +1,7 @@
 #ifndef ESPDOSE_H_
 #define ESPFOSE_H_
 
-#include "Socket.h"
+#include "../features/Socket.h"
 #include "Device.h"
 
 class EspDose : public Device {
