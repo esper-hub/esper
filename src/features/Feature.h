@@ -19,6 +19,10 @@ public:
         device.publish(this->getName() + '/' + partial_topic, message);
     }
 
+    virtual void registerSubscription(const String partial_topic, MqttStringSubscriptionCallback cb) {
+        device.registerSubscription(this->getName() + "/" + partial_topic, cb);
+    }
+
     virtual void onMqttConnected() {
         publishCurrentState();
         registerSubscriptions();

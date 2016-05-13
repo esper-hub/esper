@@ -90,11 +90,11 @@ void HassDevice::onMqttConnected() {
 
 void HassDevice::registerSubscription(const String topic, MqttStringSubscriptionCallback cb) {
     if (!topic) return;
-    messageCallbacks[topic] = cb;
+    messageCallbacks[basePath + topic] = cb;
 }
 
 void HassDevice::mqttSubscribe(const String &topic) {
-    mqttConnectionManager.subscribe(basePath + topic);
+    mqttConnectionManager.subscribe(topic);
 }
 
 template<typename StringType>

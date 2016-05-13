@@ -18,7 +18,7 @@ class HassDevice : Log<HASS_DEVICE_LOG_NAME> {
     WifiConnectionManager wifiConnectionManager;
     MqttConnectionManager mqttConnectionManager;
 
-    HashMap<String, MqttStringSubscriptionCallback> messageCallbacks;
+    HashMap <String, MqttStringSubscriptionCallback> messageCallbacks;
     Vector<AbstractFeature *> features;
 
 private:
@@ -35,7 +35,6 @@ private:
     void mqttSubscribe(const String &topic);
 
 public:
-
     HassDevice(const String verbose_name);
 
     void start();
