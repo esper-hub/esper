@@ -59,7 +59,7 @@ protected:
 
     inline void publishCurrentState() {
         this->log("publish.");
-        this->publish(this->name + "/state", current_state ? ON : OFF);
+        this->publish("state", current_state ? ON : OFF);
     }
 
     inline void setState(bool desired_state) {

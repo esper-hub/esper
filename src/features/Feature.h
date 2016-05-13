@@ -16,7 +16,7 @@ public:
     }
 
     virtual void publish(const String &partial_topic, const String &message) const {
-        device.publish(partial_topic, message);
+        device.publish(this->getName() + '/' + partial_topic, message);
     }
 
     virtual void onMqttConnected() {

@@ -17,5 +17,5 @@ void Switch::onStateChanged() {
 
 void Switch::publishCurrentState() {
     this->logf("Current state: %b", current_value);
-    this->publish(this->name + "/state/", current_value ? "ON" : "OFF");
+    this->publish("state", current_value ? "ON" : "OFF");
 }
