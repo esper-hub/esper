@@ -20,7 +20,7 @@ HassDevice::HassDevice(const String verbose_name) :
         mqttConnectionManager(
                 MqttConnectionManager::MqttConnectionStateChangedDelegate(&HassDevice::onMqttStateChanged, this),
                 MqttStringSubscriptionCallback(&HassDevice::onMqttMessageReceived, this)),
-        basePath(make_path<const char*, String, true>(REALM, WifiStation.getMAC())) {
+        basePath(make_path<const char *, String, true>(REALM, WifiStation.getMAC())) {
     Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
     log("initializing");
     Serial.systemDebugOutput(true); // Debug output to serial

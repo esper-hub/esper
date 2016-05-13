@@ -4,6 +4,7 @@
 #define ON "1"
 #define OFF "0"
 
+#include "Feature.h"
 
 template<const char *TYPE_NAME, bool invert = false>
 class OnOffFeature : public Feature<TYPE_NAME> {
@@ -13,7 +14,7 @@ class OnOffFeature : public Feature<TYPE_NAME> {
 
 public:
 
-    OnOffFeature(HassDevice& device, const char *name, const uint16_t gpio_pin, bool default_state = false) :
+    OnOffFeature(HassDevice &device, const char *name, const uint16_t gpio_pin, bool default_state = false) :
             Feature<TYPE_NAME>(device, name),
             gpio(gpio_pin),
             current_state(default_state) {
@@ -41,7 +42,7 @@ public:
 protected:
     virtual void registerSubscriptions() {
         this->device.registerSubscription(String(this->name) + "/set",
-                                    MqttStringSubscriptionCallback(&OnOffFeature::onMessageReceived, this));
+                                          MqttStringSubscriptionCallback(&OnOffFeature::onMessageReceived, this));
         //this->device.registerSubscription(String(this->name) + "/off",
         //                            MqttStringSubscriptionCallback(&OnOffFeature::onMessageReceived, this));
     }

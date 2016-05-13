@@ -20,7 +20,7 @@ class HassDevice : Log<HASS_DEVICE_LOG_NAME> {
     MqttConnectionManager mqttConnectionManager;
 
     HashMap<String, MqttStringSubscriptionCallback> messageCallbacks;
-    Vector<AbstractFeature*> features;
+    Vector<AbstractFeature *> features;
 
 private:
     void mqttConnect();
@@ -46,12 +46,12 @@ public:
     void registerSubscription(const String topic, MqttStringSubscriptionCallback cb);
 
 
-    void add(AbstractFeature* feature);
+    void add(AbstractFeature *feature);
 
     template<typename FeatureType, typename ...Args>
     void add(Args... args) {
         logf("no hope left.");
-        FeatureType* feature = new FeatureType(*this, args...);
+        FeatureType *feature = new FeatureType(*this, args...);
         logf("constructed new feature: %p", feature);
         add(feature);
         logf("feature added.");

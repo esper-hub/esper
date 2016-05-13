@@ -1,43 +1,28 @@
 #include <user_config.h>
-#include <SmingCore/SmingCore.h>
-#include "Feature.h"
-#include "OnOffFeature.h"
-
-constexpr static const char _SWITCH[] = "[SWITCH] ";
-
-class Switch : public OnOffFeature<_SWITCH> {
-    using OnOffFeature::OnOffFeature;
-};
+#include "device.h"
+#include "EspDose.h"
 
 
-constexpr static const char _LED[] = "[LED] ";
-
-
-class LED : public OnOffFeature<_LED, true> {
+class EspSchalter : public Device {
 public:
-    LED(HassDevice &device, const char *name, const uint16_t gpio_pin) :
-            OnOffFeature(device, name, gpio_pin) {
-    }
-};
-
-
-constexpr static const char _BUILTIN_LED[] = "[BUILTINLED] ";
-class BuiltinLED : public LED, public Log<_BUILTIN_LED> {
-
-    enum {
-        LED_GPIO = 2
-    };
-public:
-
-    BuiltinLED(HassDevice &device, const char *name) :
-            LED(device, name, LED_GPIO) { }
+    EspSchalter() : Device("FIXME") { }
 };
 
 
 void init() {
-    HassDevice *device = new HassDevice("Steckdosenleiste!!!");
 
-    device->add<BuiltinLED>("led");
+    Device *device;
+
+    constexpr static const DeviceType device_type = DEVICE_TYPE;
+
+    switch (device_type) {
+        case DeviceType::ESP_DOSE:
+            device = new EspDose();
+            break;
+        case DeviceType::ESP_SCHALTER:
+            device = new EspSchalter();
+            break;
+    }
 
     device->start();
 }

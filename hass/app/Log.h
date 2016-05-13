@@ -1,6 +1,8 @@
 #ifndef LOG_H
 #define LOG_H
 
+#include <SmingCore/SmingCore.h>
+
 template<const char *prefix>
 class Log {
 

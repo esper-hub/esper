@@ -3,69 +3,70 @@
 
 #include <SmingCore/SmingCore.h>
 #include "Log.h"
+
 extern const char WIFI_CONNECTION_MANAGER_LOG_NAME[];
+
 class WifiConnectionManager : public Log<WIFI_CONNECTION_MANAGER_LOG_NAME> {
 public:
-	enum class WifiState {
-		CONNECTED,
-		CONNECTING,
-		DISCONNECTED
-	};
-	typedef Delegate<void(WifiState)> WifiConnectionStateChangedDelegate;
+    enum class WifiState {
+        CONNECTED,
+        CONNECTING,
+        DISCONNECTED
+    };
+    typedef Delegate<void(WifiState)> WifiConnectionStateChangedDelegate;
 
 private:
-	Timer reconnectTimer;
- 	WifiConnectionStateChangedDelegate callback;
-	WifiState state;
+    Timer reconnectTimer;
+    WifiConnectionStateChangedDelegate callback;
+    WifiState state;
 public:
-	WifiConnectionManager(const WifiConnectionStateChangedDelegate cb) : callback(cb),
-		state(WifiState::DISCONNECTED) 
-	{
-		log("initalized.");
-	}
+    WifiConnectionManager(const WifiConnectionStateChangedDelegate cb) : callback(cb),
+                                                                         state(WifiState::DISCONNECTED) {
+        log("initalized.");
+    }
 
-	void connect() {
-		reconnectTimer.stop();
-		log("configuring Wifi");
-		log("Wifi SSID: ", WIFI_SSID);
-		log("Wifi PW: ", WIFI_PWD);
-		WifiStation.config(WIFI_SSID, WIFI_PWD);
-		log("Wifi Station enable: true");
-		WifiStation.enable(true);
-		log("Wifi Access Point enable: false");
-		WifiAccessPoint.enable(false);
+    void connect() {
+        reconnectTimer.stop();
+        log("configuring Wifi");
+        log("Wifi SSID: ", WIFI_SSID);
+        log("Wifi PW: ", WIFI_PWD);
+        WifiStation.config(WIFI_SSID, WIFI_PWD);
+        log("Wifi Station enable: true");
+        WifiStation.enable(true);
+        log("Wifi Access Point enable: false");
+        WifiAccessPoint.enable(false);
 
-		log("Registered waitConnection handlers");
-		WifiStation.waitConnection(
-				ConnectionDelegate(&WifiConnectionManager::onConnectOk, this), 10,
-				ConnectionDelegate(&WifiConnectionManager::onConnectFail, this));
-		setState(WifiState::CONNECTING);
-	}
+        log("Registered waitConnection handlers");
+        WifiStation.waitConnection(
+                ConnectionDelegate(&WifiConnectionManager::onConnectOk, this), 10,
+                ConnectionDelegate(&WifiConnectionManager::onConnectFail, this));
+        setState(WifiState::CONNECTING);
+    }
 
-	inline WifiState getState() const {
-		return state;
-	}
+    inline WifiState getState() const {
+        return state;
+    }
 
 
 private:
-	void setState(WifiState state) {
-		this->state = state;
-		callback(state);
-	}
+    void setState(WifiState state) {
+        this->state = state;
+        callback(state);
+    }
 
-	void onConnectOk() {
-		if (getState() != WifiState::CONNECTED) {
-			setState(WifiState::CONNECTED);
-			reconnectTimer.stop();
-		}
-	}
+    void onConnectOk() {
+        if (getState() != WifiState::CONNECTED) {
+            setState(WifiState::CONNECTED);
+            reconnectTimer.stop();
+        }
+    }
 
-	void onConnectFail() {
-		if (getState() != WifiState::DISCONNECTED) {
-			setState(WifiState::DISCONNECTED);
-			reconnectTimer.initializeMs(2000, TimerDelegate(&WifiConnectionManager::connect, this)).start();
-		}
-	}
+    void onConnectFail() {
+        if (getState() != WifiState::DISCONNECTED) {
+            setState(WifiState::DISCONNECTED);
+            reconnectTimer.initializeMs(2000, TimerDelegate(&WifiConnectionManager::connect, this)).start();
+        }
+    }
 
 };
 
