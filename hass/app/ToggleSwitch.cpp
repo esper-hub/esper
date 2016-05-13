@@ -1,7 +1,3 @@
-//
-// Created by andi on 5/6/16.
-//
-
 #include "ToggleSwitch.h"
 
 

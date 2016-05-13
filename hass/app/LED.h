@@ -1,7 +1,3 @@
-//
-// Created by andi on 5/13/16.
-//
-
 #ifndef CYBERHOEHLE_LED_H
 #define CYBERHOEHLE_LED_H
 

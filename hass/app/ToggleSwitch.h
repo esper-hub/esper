@@ -1,7 +1,3 @@
-//
-// Created by andi on 5/6/16.
-//
-
 #ifndef CYBERHOEHLE_TOGGLESWITCH_H
 #define CYBERHOEHLE_TOGGLESWITCH_H
 

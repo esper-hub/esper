@@ -1,7 +1,3 @@
-//
-// Created by andi on 5/13/16.
-//
-
 #ifndef CYBERHOEHLE_SOCKET_H
 #define CYBERHOEHLE_SOCKET_H
 
