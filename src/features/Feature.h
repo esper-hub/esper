@@ -2,7 +2,7 @@
 #define FEATURE_H
 
 #include "../devices/HassDevice.h"
-#include "../Log.h"
+#include "../util/Log.h"
 #include "AbstractFeature.h"
 
 template<const char *TYPE_NAME>

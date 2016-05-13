@@ -2,7 +2,7 @@
 #define WIFICONNECTION_MANAGER_H
 
 #include <SmingCore/SmingCore.h>
-#include "Log.h"
+#include "../util/Log.h"
 
 extern const char WIFI_CONNECTION_MANAGER_LOG_NAME[];
 

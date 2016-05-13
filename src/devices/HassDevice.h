@@ -3,8 +3,8 @@
 
 #include <SmingCore/SmingCore.h>
 #include <user_config.h>
-#include "../WifiConnectionManager.h"
-#include "../MqttConnectionManager.h"
+#include "../managers/WifiConnectionManager.h"
+#include "../managers/MqttConnectionManager.h"
 #include "../features/AbstractFeature.h"
 
 
