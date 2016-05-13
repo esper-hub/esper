@@ -98,8 +98,7 @@ void HassDevice::registerSubscription(const String topic, MqttStringSubscription
 }
 
 void HassDevice::mqttSubscribe(const String &topic) {
-    const String path = basePath + topic;
-    mqttConnectionManager.subscribe(path);
+    mqttConnectionManager.subscribe(basePath + topic);
 }
 
 template<typename StringType>
