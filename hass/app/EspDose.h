@@ -12,7 +12,7 @@ class EspDose : public Device {
 public:
     EspDose() : Device("EspDose") {
         getDevice()->add<Socket>("sw1", PLUG1_GPIO);
-        getDevice()->add<Socket>("sw1", PLUG2_GPIO);
+        getDevice()->add<Socket>("sw2", PLUG2_GPIO);
     }
 };
 
