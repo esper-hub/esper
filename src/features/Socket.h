@@ -5,7 +5,7 @@
 
 extern const char _SOCKET[];
 
-class Socket : public OnOffFeature<_SOCKET> {
+class Socket : public OnOffFeature<_SOCKET, false, 1> {
     using OnOffFeature::OnOffFeature;
 };
 

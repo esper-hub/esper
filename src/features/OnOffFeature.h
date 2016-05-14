@@ -6,20 +6,28 @@
 
 #include "Feature.h"
 
-template<const char *TYPE_NAME, bool invert = false>
+template<const char *TYPE_NAME, bool invert = false, int damper = 0>
 class OnOffFeature : public Feature<TYPE_NAME> {
 
     const int gpio;
     bool current_state;
+
+    uint32_t lastChange;
 
 public:
 
     OnOffFeature(HassDevice &device, const char *name, const uint16_t gpio_pin, bool default_state = false) :
             Feature<TYPE_NAME>(device, name),
             gpio(gpio_pin),
-            current_state(default_state) {
+            current_state(default_state),
+            lastChange(0)
+    {
         this->log("initialized.");
         setState(current_state);
+    }
+
+    inline boolean shouldDampen() const {
+        return damper > 0;
     }
 
     virtual void onMessageReceived(const String topic, const String message) {
@@ -32,6 +40,14 @@ public:
         const auto t = topic.substring(f + token.length());
 
         if (t == "set") {
+            if (shouldDampen()) {
+                uint32_t now = RTC.getRtcSeconds();
+                if (lastChange + damper > now)
+                    return;
+                else {
+                    lastChange = now;
+                }
+            }
             handleSetMessage(message);
         } else {
             this->log("unknown message topic received:");
