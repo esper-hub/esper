@@ -1,6 +1,6 @@
 WIFI_SSID="cda"
 WIFI_PWD="neHeeha23"
-MQTT_HOST="whisky.trollhoehle.net"
+MQTT_HOST="mqtt.trollhoehle.net"
 MQTT_PORT=1883
 REALM="/trollhoehle/lounge"
 
