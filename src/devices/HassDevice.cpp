@@ -106,11 +106,10 @@ static inline const StringType ltrim(const StringType &s, const StringType &toke
 
 
 void HassDevice::onMqttMessageReceived(String topic, String msg) {
-    const String suffix = ltrim(topic, basePath);
     for (int i = 0; i < messageCallbacks.count(); i++) {
         auto key = messageCallbacks.keyAt(i);
-        if (key == suffix) {
-            messageCallbacks[key](suffix, msg);
+        if(key == topic) {
+            messageCallbacks[key](topic, msg);
             return;
         }
     }
