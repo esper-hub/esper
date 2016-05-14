@@ -2,16 +2,6 @@
 
 extern const char HASS_DEVICE_LOG_NAME[] = "[HassDevice] ";
 
-template<typename A, typename B, bool trailing = false>
-String make_path(const A base, const B local) {
-    String tmp = base;
-    tmp += "/";
-    tmp += local;
-    if (trailing)
-        tmp += "/";
-    return tmp;
-}
-
 
 HassDevice::HassDevice(const String verbose_name) :
         verbose_name(verbose_name),
@@ -20,7 +10,7 @@ HassDevice::HassDevice(const String verbose_name) :
         mqttConnectionManager(
                 MqttConnectionManager::MqttConnectionStateChangedDelegate(&HassDevice::onMqttStateChanged, this),
                 MqttStringSubscriptionCallback(&HassDevice::onMqttMessageReceived, this)),
-        basePath(make_path<const char *, String, true>(REALM, WifiStation.getMAC())) {
+        basePath(REALM "/" + WifiStation.getMAC() + "/") {
     Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
     log("initializing");
     Serial.systemDebugOutput(true); // Debug output to serial
@@ -118,9 +108,7 @@ void HassDevice::onMqttMessageReceived(String topic, String msg) {
 void HassDevice::publish(const String &partial_topic, const String &message) {
     if (mqttConnectionManager.getState() != MqttConnectionManager::MqttState::CONNECTED)
         return;
-
-    const String topic = make_path(basePath, partial_topic);
-    mqttConnectionManager.publish(topic, message);
+    mqttConnectionManager.publish(basePath + partial_topic, message);
 }
 
 void HassDevice::add(AbstractFeature *feature) {
