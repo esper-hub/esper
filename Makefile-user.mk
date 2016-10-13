@@ -1,5 +1,5 @@
-WIFI_SSID="cda"
-WIFI_PWD="neHeeha23"
+WIFI_SSID="Homeautomation"
+WIFI_PWD="AutomationIsMagic"
 MQTT_HOST="mqtt.trollhoehle.net"
 MQTT_PORT=1883
 REALM="/trollhoehle/lounge"
