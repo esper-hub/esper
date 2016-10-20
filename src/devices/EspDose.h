@@ -1,5 +1,5 @@
 #ifndef ESPDOSE_H_
-#define ESPFOSE_H_
+#define ESPDOSE_H_
 
 #include "../features/Socket.h"
 #include "Device.h"
