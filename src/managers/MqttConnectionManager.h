@@ -1,7 +1,8 @@
-#ifndef MQTTCONNECTION_MANAGER_H
-#define MQTTCONNECTION_MANAGER_H
+#ifndef MQTT_CONNECTION_MANAGER_H
+#define MQTT_CONNECTION_MANAGER_H
 
 #include <SmingCore/SmingCore.h>
+#include "../util/Log.h"
 
 extern const char MQTT_CONNECTION_MANAGER_LOG_NAME[];
 
@@ -19,16 +20,15 @@ private:
     MqttClient client;
     MqttConnectionStateChangedDelegate stateCallback;
     MqttStringSubscriptionCallback messageCallback;
-    bool started;
     Timer reconnectTimer;
+
 public:
     MqttConnectionManager(MqttConnectionStateChangedDelegate cb, MqttStringSubscriptionCallback messageCallback) :
             state(MqttState::DISCONNECTED),
             client(MQTT_HOST, MQTT_PORT,
                    MqttStringSubscriptionCallback(&MqttConnectionManager::onMessageReceived, this)),
             stateCallback(cb),
-            messageCallback(messageCallback),
-            started(false) {
+            messageCallback(messageCallback) {
         log("intialized.");
     }
 

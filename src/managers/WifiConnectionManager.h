@@ -1,5 +1,5 @@
-#ifndef WIFICONNECTION_MANAGER_H
-#define WIFICONNECTION_MANAGER_H
+#ifndef WIFI_CONNECTION_MANAGER_H
+#define WIFI_CONNECTION_MANAGER_H
 
 #include <SmingCore/SmingCore.h>
 #include "../util/Log.h"
@@ -13,15 +13,18 @@ public:
         CONNECTING,
         DISCONNECTED
     };
+
     typedef Delegate<void(WifiState)> WifiConnectionStateChangedDelegate;
 
 private:
     Timer reconnectTimer;
     WifiConnectionStateChangedDelegate callback;
     WifiState state;
+
 public:
-    WifiConnectionManager(const WifiConnectionStateChangedDelegate cb) : callback(cb),
-                                                                         state(WifiState::DISCONNECTED) {
+    WifiConnectionManager(const WifiConnectionStateChangedDelegate cb) : 
+            callback(cb),
+            state(WifiState::DISCONNECTED) {
         log("initalized.");
     }
 
