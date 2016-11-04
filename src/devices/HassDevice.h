@@ -10,7 +10,7 @@
 
 extern const char HASS_DEVICE_LOG_NAME[];
 
-class HassDevice : Log<HASS_DEVICE_LOG_NAME> {
+class HassDevice : private Log<HASS_DEVICE_LOG_NAME> {
     const String verbose_name;
     const String mac;
     const String basePath;
@@ -24,9 +24,9 @@ class HassDevice : Log<HASS_DEVICE_LOG_NAME> {
 private:
     void mqttConnect();
 
-    void onWifiStateChanged(WifiConnectionManager::WifiState state);
+    void onWifiStateChanged(const WifiConnectionManager::State& state);
 
-    void onMqttStateChanged(MqttConnectionManager::MqttState state);
+    void onMqttStateChanged(const MqttConnectionManager::State& state);
 
     void onMqttMessageReceived(String topic, String message);
 

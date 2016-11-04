@@ -2,34 +2,36 @@
 #define WIFI_CONNECTION_MANAGER_H
 
 #include <SmingCore/SmingCore.h>
+
 #include "../util/Log.h"
+#include "../util/Observed.h"
+
 
 extern const char WIFI_CONNECTION_MANAGER_LOG_NAME[];
 
-class WifiConnectionManager : public Log<WIFI_CONNECTION_MANAGER_LOG_NAME> {
+class WifiConnectionManager : private Log<WIFI_CONNECTION_MANAGER_LOG_NAME> {
 public:
-    enum class WifiState {
+    enum class State {
         CONNECTED,
         CONNECTING,
         DISCONNECTED
     };
 
-    typedef Delegate<void(WifiState)> WifiConnectionStateChangedDelegate;
+    using StateChangedCallback = Observed<State>::Callback;
 
 private:
+    Observed<State> state;
     Timer reconnectTimer;
-    WifiConnectionStateChangedDelegate callback;
-    WifiState state;
 
 public:
-    WifiConnectionManager(const WifiConnectionStateChangedDelegate cb) : 
-            callback(cb),
-            state(WifiState::DISCONNECTED) {
+    WifiConnectionManager(const StateChangedCallback cb) : 
+            state(State::DISCONNECTED, cb) {
         log("initalized.");
     }
 
     void connect() {
         reconnectTimer.stop();
+
         log("configuring Wifi");
         log("Wifi SSID: ", WIFI_SSID);
         log("Wifi PW: ", WIFI_PWD);
@@ -43,30 +45,24 @@ public:
         WifiStation.waitConnection(
                 ConnectionDelegate(&WifiConnectionManager::onConnectOk, this), 10,
                 ConnectionDelegate(&WifiConnectionManager::onConnectFail, this));
-        setState(WifiState::CONNECTING);
+
+        this->state.set(State::CONNECTING);
     }
 
-    inline WifiState getState() const {
-        return state;
+    inline State getState() const {
+        return this->state;
     }
 
 
 private:
-    void setState(WifiState state) {
-        this->state = state;
-        callback(state);
-    }
-
     void onConnectOk() {
-        if (getState() != WifiState::CONNECTED) {
-            setState(WifiState::CONNECTED);
+        if (this->state.set(State::CONNECTED)) {
             reconnectTimer.stop();
         }
     }
 
     void onConnectFail() {
-        if (getState() != WifiState::DISCONNECTED) {
-            setState(WifiState::DISCONNECTED);
+        if (this->state.set(State::DISCONNECTED)) {
             reconnectTimer.initializeMs(2000, TimerDelegate(&WifiConnectionManager::connect, this)).start();
         }
     }

@@ -2,48 +2,41 @@
 #define MQTT_CONNECTION_MANAGER_H
 
 #include <SmingCore/SmingCore.h>
+
 #include "../util/Log.h"
+#include "../util/Observed.h"
+
 
 extern const char MQTT_CONNECTION_MANAGER_LOG_NAME[];
 
 class MqttConnectionManager : public Log<MQTT_CONNECTION_MANAGER_LOG_NAME> {
 public:
-    enum class MqttState {
+    enum class State {
         CONNECTED,
         CONNECTING,
         DISCONNECTED
     };
-    typedef Delegate<void(MqttState)> MqttConnectionStateChangedDelegate;
 
-private:
-    MqttState state;
-    MqttClient client;
-    MqttConnectionStateChangedDelegate stateCallback;
-    MqttStringSubscriptionCallback messageCallback;
-    Timer reconnectTimer;
+    using StateChangedCallback = Observed<State>::Callback;
 
-public:
-    MqttConnectionManager(MqttConnectionStateChangedDelegate cb, MqttStringSubscriptionCallback messageCallback) :
-            state(MqttState::DISCONNECTED),
+    MqttConnectionManager(StateChangedCallback cb,
+                          MqttStringSubscriptionCallback messageCallback) :
+            state(State::DISCONNECTED, cb),
             client(MQTT_HOST, MQTT_PORT,
                    MqttStringSubscriptionCallback(&MqttConnectionManager::onMessageReceived, this)),
-            stateCallback(cb),
             messageCallback(messageCallback) {
         log("intialized.");
-    }
-
-    inline MqttState getState() const {
-        return state;
     }
 
     void connect() {
         log("Connecting");
         reconnectTimer.stop();
-        setState(MqttState::CONNECTING);
+        this->state.set(State::CONNECTING);
         client.setCompleteDelegate(TcpClientCompleteDelegate(&MqttConnectionManager::onDisconnected, this));
         if (client.connect(WifiStation.getMAC())) {
-            setState(MqttState::CONNECTED);
+            this->state.set(State::CONNECTED);
         } else {
+            this->state.set(State::DISCONNECTED);
             log("failed to connect.");
             startReconnectTimer();
         }
@@ -58,21 +51,18 @@ public:
         client.publish(topic, message);
     }
 
-private:
-
-
-    void setState(MqttState state) {
-        this->state = state;
-        stateCallback(state);
+    inline State getState() const {
+        return this->state;
     }
 
+private:
     void onDisconnected(TcpClient &client, bool flag) {
         if (flag) {
             log("Disconnected.");
         } else {
             log("Unreachable.");
         }
-        setState(MqttState::DISCONNECTED);
+        this->state.set(State::DISCONNECTED);
         startReconnectTimer();
     }
 
@@ -86,6 +76,13 @@ private:
         log("Received message: ", message);
         messageCallback(topic, message);
     }
+
+    Observed<State> state;
+
+    MqttClient client;
+    MqttStringSubscriptionCallback messageCallback;
+
+    Timer reconnectTimer;
 };
 
 #endif

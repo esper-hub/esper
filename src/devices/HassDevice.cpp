@@ -5,11 +5,9 @@ extern const char HASS_DEVICE_LOG_NAME[] = "[HassDevice] ";
 
 HassDevice::HassDevice(const String verbose_name) :
         verbose_name(verbose_name),
-        wifiConnectionManager(
-                WifiConnectionManager::WifiConnectionStateChangedDelegate(&HassDevice::onWifiStateChanged, this)),
-        mqttConnectionManager(
-                MqttConnectionManager::MqttConnectionStateChangedDelegate(&HassDevice::onMqttStateChanged, this),
-                MqttStringSubscriptionCallback(&HassDevice::onMqttMessageReceived, this)),
+        wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&HassDevice::onWifiStateChanged, this)),
+        mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&HassDevice::onMqttStateChanged, this),
+                              MqttStringSubscriptionCallback(&HassDevice::onMqttMessageReceived, this)),
         basePath(REALM "/" + WifiStation.getMAC() + "/") {
     Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
     log("initializing");
@@ -24,33 +22,33 @@ void HassDevice::start() {
     log("started");
 }
 
-void HassDevice::onWifiStateChanged(WifiConnectionManager::WifiState state) {
+void HassDevice::onWifiStateChanged(const WifiConnectionManager::State& state) {
     const char wifi_state_changed[] = "Wifi state changed to: ";
     switch (state) {
-        case WifiConnectionManager::WifiState::CONNECTED:
+        case WifiConnectionManager::State::CONNECTED:
             log(wifi_state_changed, "CONNECTED");
             mqttConnect();
             break;
-        case WifiConnectionManager::WifiState::DISCONNECTED:
+        case WifiConnectionManager::State::DISCONNECTED:
             log(wifi_state_changed, "DISCONNECTED");
             break;
-        case WifiConnectionManager::WifiState::CONNECTING:
+        case WifiConnectionManager::State::CONNECTING:
             log(wifi_state_changed, "CONNECTING");
             break;
     }
 }
 
-void HassDevice::onMqttStateChanged(MqttConnectionManager::MqttState state) {
+void HassDevice::onMqttStateChanged(const MqttConnectionManager::State& state) {
     const char mqtt_state_changed[] = "Mqtt state changed to: ";
     switch (state) {
-        case MqttConnectionManager::MqttState::CONNECTED:
+        case MqttConnectionManager::State::CONNECTED:
             log(mqtt_state_changed, "connected");
             onMqttConnected();
             break;
-        case MqttConnectionManager::MqttState::DISCONNECTED:
+        case MqttConnectionManager::State::DISCONNECTED:
             log(mqtt_state_changed, "disconnected");
             break;
-        case MqttConnectionManager::MqttState::CONNECTING:
+        case MqttConnectionManager::State::CONNECTING:
             log(mqtt_state_changed, "connecting");
             break;
     }
@@ -106,7 +104,7 @@ void HassDevice::onMqttMessageReceived(String topic, String msg) {
 }
 
 void HassDevice::publish(const String &partial_topic, const String &message) {
-    if (mqttConnectionManager.getState() != MqttConnectionManager::MqttState::CONNECTED)
+    if (mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
         return;
     mqttConnectionManager.publish(basePath + partial_topic, message);
 }
