@@ -1,4 +1,4 @@
-#include "HassDevice.h"
+#include "Device.h"
 
 
 FeatureBase::FeatureBase() {
@@ -8,51 +8,51 @@ FeatureBase::~FeatureBase() {
 }
 
 
-const Logger HassDevice::LOG = Logger("Hass Device");
+const Logger Device::LOG = Logger("Hass Device");
 
-HassDevice::HassDevice() :
-        wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&HassDevice::onWifiStateChanged, this)),
-        mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&HassDevice::onMqttStateChanged, this),
-                              MqttConnectionManager::MessageCallback(&HassDevice::onMqttMessageReceived, this)) {
+Device::Device() :
+        wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&Device::onWifiStateChanged, this)),
+        mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
+                              MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)) {
     Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
     Serial.systemDebugOutput(true); // Debug output to serial
 
     LOG.log("Initialized");
 }
 
-HassDevice::~HassDevice() {
+Device::~Device() {
 }
 
-void HassDevice::start() {
+void Device::start() {
     this->wifiConnectionManager.connect();
 
     LOG.log("Started");
 }
 
-void HassDevice::reboot() {
+void Device::reboot() {
     LOG.log("Restarting System.");
     System.restart();
 }
 
-void HassDevice::registerSubscription(const String& topic, const MessageCallback& callback) {
+void Device::registerSubscription(const String& topic, const MessageCallback& callback) {
     this->messageCallbacks[basePath + topic] = callback;
 }
 
-void HassDevice::add(FeatureBase* feature) {
+void Device::add(FeatureBase* feature) {
     if (!features.contains(feature)) {
         features.addElement(feature);
         LOG.log("Added feature:", feature->getName());
     }
 }
 
-void HassDevice::publish(const String &partial_topic, const String &message) {
+void Device::publish(const String &partial_topic, const String &message) {
     if (mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
         return;
 
     mqttConnectionManager.publish(basePath + partial_topic, message);
 }
 
-void HassDevice::onWifiStateChanged(const WifiConnectionManager::State& state) {
+void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
     switch (state) {
         case WifiConnectionManager::State::CONNECTED: {
             LOG.log("WiFi state changed: ", "CONNECTED");
@@ -72,7 +72,7 @@ void HassDevice::onWifiStateChanged(const WifiConnectionManager::State& state) {
     }
 }
 
-void HassDevice::onMqttStateChanged(const MqttConnectionManager::State& state) {
+void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
     switch (state) {
         case MqttConnectionManager::State::CONNECTED: {
             LOG.log("MQTT state changed: ", "connected \\o/");
@@ -101,10 +101,16 @@ void HassDevice::onMqttStateChanged(const MqttConnectionManager::State& state) {
     }
 }
 
-void HassDevice::onMqttMessageReceived(const String& topic, const String& message) {
+void Device::onMqttMessageReceived(const String& topic, const String& message) {
     auto i = this->messageCallbacks.indexOf(topic);
     if (i != -1) {
         auto callback = this->messageCallbacks.valueAt(i);
         callback(topic, message);
     }
+}
+
+
+void init() {
+    extern Device* device;
+    device->start();
 }

@@ -12,7 +12,7 @@ class OnOffFeature : public Feature<name> {
     constexpr static const char* const OFF = "0";
 
 public:
-    OnOffFeature(HassDevice* device, bool initial_state = false) :
+    OnOffFeature(Device* device, bool initial_state = false) :
             Feature<name>(device),
             state(initial_state),
             lastChange(RTC.getRtcSeconds()) {
@@ -33,7 +33,7 @@ public:
 
 protected:
     virtual void registerSubscriptions() {
-        this->registerSubscription("set", HassDevice::MessageCallback(&OnOffFeature::onMessageReceived, this));
+        this->registerSubscription("set", Device::MessageCallback(&OnOffFeature::onMessageReceived, this));
     }
 
     inline void publishCurrentState() {

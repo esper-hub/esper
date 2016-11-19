@@ -2,9 +2,9 @@
 #define ESPDOSE_H_
 
 #include "../features/Socket.h"
-#include "HassDevice.h"
+#include "Device.h"
 
-class Dose : public HassDevice {
+class Dose : public Device {
     constexpr static const char PLUG1_NAME[] = "sw1";
     constexpr static const uint16_t PLUG1_GPIO = 12;
 

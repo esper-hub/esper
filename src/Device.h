@@ -22,14 +22,14 @@ public:
 };
 
 
-class HassDevice {
+class Device {
     static const Logger LOG;
 
 public:
     using MessageCallback = MqttConnectionManager::MessageCallback;
 
-    HassDevice();
-    virtual ~HassDevice();
+    Device();
+    virtual ~Device();
 
     void start();
 

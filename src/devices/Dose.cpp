@@ -20,4 +20,4 @@ Dose::Dose() :
 
 static Dose dose;
 
-HassDevice* device = &dose;
+Device* device = &dose;
