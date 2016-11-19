@@ -16,7 +16,8 @@ public:
     }
 
     void publishCurrentState() {
-        this->logf("Current state: %b", this->state);
+        LOG.log("Current state:", this->state);
+
         this->publish("state", this->state ? ON : OFF);
     }
 

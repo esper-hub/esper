@@ -33,7 +33,7 @@ void MqttConnectionManager::connect() {
 
 void MqttConnectionManager::subscribe(const String &topic) {
     this->client.subscribe(topic);
-    LOG.log("Subscribed to: ", topic);
+    LOG.log("Subscribed to:", topic);
 }
 
 void MqttConnectionManager::publish(const String &topic, const String &message) {
@@ -46,9 +46,9 @@ MqttConnectionManager::State MqttConnectionManager::getState() const {
 
 void MqttConnectionManager::onDisconnected(TcpClient &client, bool flag) {
     if (flag) {
-        LOG.log("Disconnected.");
+        LOG.log("Disconnected");
     } else {
-        LOG.log("Unreachable.");
+        LOG.log("Unreachable");
     }
 
     this->state.set(State::DISCONNECTED);
@@ -56,8 +56,8 @@ void MqttConnectionManager::onDisconnected(TcpClient &client, bool flag) {
 }
 
 void MqttConnectionManager::onMessageReceived(const String topic, const String message) {
-    LOG.log("Received topic: ", topic);
-    LOG.log("Received message: ", message);
+    LOG.log("Received topic:", topic);
+    LOG.log("Received message:", message);
 
     this->messageCallback(topic, message);
 }

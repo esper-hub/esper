@@ -7,7 +7,7 @@ WifiConnectionManager::WifiConnectionManager(const StateChangedCallback& callbac
         state(State::DISCONNECTED, callback) {
     this->reconnectTimer.initializeMs(2000, TimerDelegate(&WifiConnectionManager::connect, this));
 
-    LOG.log("Initalized.");
+    LOG.log("Initalized");
 }
 
 void WifiConnectionManager::connect() {
@@ -15,8 +15,8 @@ void WifiConnectionManager::connect() {
 
     this->reconnectTimer.stop();
 
-    LOG.log("SSID: ", WIFI_SSID);
-    LOG.log("PW: ", WIFI_PWD);
+    LOG.log("SSID:", WIFI_SSID);
+    LOG.log("PW:", WIFI_PWD);
     WifiStation.config(WIFI_SSID, WIFI_PWD);
     LOG.log("Configured");
 
@@ -40,12 +40,16 @@ WifiConnectionManager::State WifiConnectionManager::getState() const {
 
 
 void WifiConnectionManager::onConnectOk() {
+    LOG.log("Connected");
+
     if (this->state.set(State::CONNECTED)) {
         this->reconnectTimer.stop();
     }
 }
 
 void WifiConnectionManager::onConnectFail() {
+    LOG.log("Disconnected");
+
     if (this->state.set(State::DISCONNECTED)) {
         this->reconnectTimer.start();
     }

@@ -8,7 +8,7 @@ FeatureBase::~FeatureBase() {
 }
 
 
-const Logger Device::LOG = Logger("Hass Device");
+const Logger Device::LOG = Logger("Device");
 
 Device::Device() :
         wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&Device::onWifiStateChanged, this)),
@@ -24,13 +24,15 @@ Device::~Device() {
 }
 
 void Device::start() {
+    LOG.log("Starting");
+
     this->wifiConnectionManager.connect();
 
     LOG.log("Started");
 }
 
 void Device::reboot() {
-    LOG.log("Restarting System.");
+    LOG.log("Restarting System");
     System.restart();
 }
 
@@ -55,18 +57,18 @@ void Device::publish(const String &partial_topic, const String &message) {
 void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
     switch (state) {
         case WifiConnectionManager::State::CONNECTED: {
-            LOG.log("WiFi state changed: ", "CONNECTED");
+            LOG.log("WiFi state changed: Connected");
             this->mqttConnectionManager.connect();
             break;
         }
 
         case WifiConnectionManager::State::DISCONNECTED: {
-            LOG.log("WiFi state changed: ", "DISCONNECTED");
+            LOG.log("WiFi state changed: Disconnected");
             break;
         }
 
         case WifiConnectionManager::State::CONNECTING: {
-            LOG.log("WiFi state changed: ", "CONNECTING");
+            LOG.log("WiFi state changed: Connecting");
             break;
         }
     }
@@ -75,7 +77,7 @@ void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
 void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
     switch (state) {
         case MqttConnectionManager::State::CONNECTED: {
-            LOG.log("MQTT state changed: ", "connected \\o/");
+            LOG.log("MQTT state changed: Connected \\o/");
 
             for (int i = 0; i < this->features.count(); i++) {
                 this->features[i]->publishCurrentState();
@@ -90,12 +92,12 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
         }
 
         case MqttConnectionManager::State::DISCONNECTED: {
-            LOG.log("MQTT state changed: ", "disconnected");
+            LOG.log("MQTT state changed: Disconnected");
             break;
         }
 
         case MqttConnectionManager::State::CONNECTING: {
-            LOG.log("MQTT state changed: ", "connecting");
+            LOG.log("MQTT state changed: Connecting");
             break;
         }
     }

@@ -56,8 +56,7 @@ private:
             this->set(false);
 
         } else {
-            LOG.log("unknown message received:");
-            LOG.log(message);
+            LOG.log("Unknown message received:", message);
         }
 
         lastChange = now;
