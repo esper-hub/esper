@@ -35,7 +35,7 @@ public:
 
     void reboot();
 
-    void registerSubscription(const String& topic, MessageCallback callback);
+    void registerSubscription(const String& topic, const MessageCallback& callback);
 
     void add(FeatureBase* feature);
 

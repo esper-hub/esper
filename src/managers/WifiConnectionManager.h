@@ -20,7 +20,7 @@ public:
     using StateChangedCallback = Observed<State>::Callback;
 
 public:
-    WifiConnectionManager(const StateChangedCallback cb);
+    WifiConnectionManager(const StateChangedCallback& callback);
 
     void connect();
 

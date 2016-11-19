@@ -20,8 +20,8 @@ public:
     using StateChangedCallback = Observed<State>::Callback;
     using MessageCallback = Delegate<void(const String& topic, const String& message)> ;
 
-    MqttConnectionManager(StateChangedCallback cb,
-                          MessageCallback messageCallback);
+    MqttConnectionManager(const StateChangedCallback& stateChangedCallback,
+                          const MessageCallback& messageCallback);
 
     void connect();
 

@@ -3,9 +3,9 @@
 
     const Logger MqttConnectionManager::LOG = Logger("MQTT");
 
-MqttConnectionManager::MqttConnectionManager(StateChangedCallback cb,
-                      MessageCallback messageCallback) :
-        state(State::DISCONNECTED, cb),
+MqttConnectionManager::MqttConnectionManager(const StateChangedCallback& stateChangedCallback,
+                                             const MessageCallback& messageCallback) :
+        state(State::DISCONNECTED, stateChangedCallback),
         client(MQTT_HOST, MQTT_PORT,
                MqttStringSubscriptionCallback(&MqttConnectionManager::onMessageReceived, this)),
         messageCallback(messageCallback) {

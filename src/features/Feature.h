@@ -28,7 +28,7 @@ protected:
         this->device->publish(name + '/' + topic, message);
     }
 
-    virtual void registerSubscription(const String& topic, MessageCallback callback) {
+    virtual void registerSubscription(const String& topic, const MessageCallback& callback) {
         this->device->registerSubscription(this->getName() + '/' + topic, callback);
     }
 

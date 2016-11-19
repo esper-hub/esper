@@ -3,8 +3,8 @@
 
 const Logger WifiConnectionManager::LOG = Logger("WiFi");
 
-WifiConnectionManager::WifiConnectionManager(const StateChangedCallback cb) :
-        state(State::DISCONNECTED, cb) {
+WifiConnectionManager::WifiConnectionManager(const StateChangedCallback& callback) :
+        state(State::DISCONNECTED, callback) {
     LOG.log("Initalized.");
 }
 

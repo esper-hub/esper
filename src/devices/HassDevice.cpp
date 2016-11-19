@@ -34,7 +34,7 @@ void HassDevice::reboot() {
     System.restart();
 }
 
-void HassDevice::registerSubscription(const String& topic, MessageCallback callback) {
+void HassDevice::registerSubscription(const String& topic, const MessageCallback& callback) {
     this->messageCallbacks[basePath + topic] = callback;
 }
 
