@@ -1,20 +1,17 @@
-#ifndef CYBERHOEHLE_BUILTINLED_H
-#define CYBERHOEHLE_BUILTINLED_H
+#ifndef BUILTINLED_H
+#define BUILTINLED_H
 
-#include "../util/Log.h"
+#include "Logger.h"
 #include "LED.h"
 
-extern const char _BUILTIN_LED[];
 
-class BuiltinLED : public LED, public Log<_BUILTIN_LED> {
-
-    enum {
-        LED_GPIO = 2
-    };
-
+template <const char* name>
+class BuiltinLED : public LED<name, 2> {
 public:
-    BuiltinLED(HassDevice &device, const char *name);
+    BuiltinLED(HassDevice &device) :
+            LED<name>(device) {
+    }
 };
 
 
-#endif //CYBERHOEHLE_BUILTINLED_H
+#endif

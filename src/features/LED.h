@@ -1,13 +1,15 @@
-#ifndef CYBERHOEHLE_LED_H
-#define CYBERHOEHLE_LED_H
+#ifndef LED_H
+#define LED_H
 
 #include "OnOffFeature.h"
 
-extern const char _LED[];
 
-class LED : public OnOffFeature<_LED, true> {
+template <const char* name, uint16_t gpio>
+class LED : public OnOffFeature<name, gpio, true> {
 public:
-    LED(HassDevice &device, const char *name, const uint16_t gpio_pin);
+    LED(HassDevice &device) :
+            OnOffFeature<name>(device) {
+    }
 };
 
 

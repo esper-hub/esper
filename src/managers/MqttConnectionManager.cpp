@@ -1,4 +1,63 @@
 #include "MqttConnectionManager.h"
 
-extern const char MQTT_CONNECTION_MANAGER_LOG_NAME[] = "[MqttConnectionManager] ";
 
+    const Logger MqttConnectionManager::LOG = Logger("MQTT");
+
+MqttConnectionManager::MqttConnectionManager(StateChangedCallback cb,
+                      MessageCallback messageCallback) :
+        state(State::DISCONNECTED, cb),
+        client(MQTT_HOST, MQTT_PORT,
+               MqttStringSubscriptionCallback(&MqttConnectionManager::onMessageReceived, this)),
+        messageCallback(messageCallback) {
+    LOG.log("Initialized");
+}
+
+void MqttConnectionManager::connect() {
+    LOG.log("Connecting");
+
+    reconnectTimer.stop();
+    this->state.set(State::CONNECTING);
+    client.setCompleteDelegate(TcpClientCompleteDelegate(&MqttConnectionManager::onDisconnected, this));
+    if (client.connect(WifiStation.getMAC())) {
+        this->state.set(State::CONNECTED);
+    } else {
+        this->state.set(State::DISCONNECTED);
+
+        LOG.log("Failed to connect - reconnecting");
+        startReconnectTimer();
+    }
+}
+
+void MqttConnectionManager::subscribe(const String &topic) {
+    this->client.subscribe(topic);
+    LOG.log("Subscribed to: ", topic);
+}
+
+void MqttConnectionManager::publish(const String &topic, const String &message) {
+    this->client.publish(topic, message);
+}
+
+MqttConnectionManager::State MqttConnectionManager::getState() const {
+    return this->state;
+}
+
+void MqttConnectionManager::onDisconnected(TcpClient &client, bool flag) {
+    if (flag) {
+        LOG.log("Disconnected.");
+    } else {
+        LOG.log("Unreachable.");
+    }
+    this->state.set(State::DISCONNECTED);
+    this->startReconnectTimer();
+}
+
+void MqttConnectionManager::startReconnectTimer() {
+    LOG.log("starting reconnect timer.");
+    this->reconnectTimer.initializeMs(2000, TimerDelegate(&MqttConnectionManager::connect, this)).start();
+}
+
+void MqttConnectionManager::onMessageReceived(const String topic, const String message) {
+    LOG.log("Received topic: ", topic);
+    LOG.log("Received message: ", message);
+    this->messageCallback(topic, message);
+}

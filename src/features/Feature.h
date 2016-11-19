@@ -1,44 +1,45 @@
 #ifndef FEATURE_H
 #define FEATURE_H
 
+#include "Logger.h"
 #include "../devices/HassDevice.h"
-#include "../util/Log.h"
-#include "AbstractFeature.h"
 
-template<const char *TYPE_NAME>
-class Feature : public AbstractFeature, public Log<TYPE_NAME> {
+
+template<const char* name>
+class Feature : public FeatureBase {
 protected:
-    String name;
-    HassDevice &device;
+    static const Logger LOG;
+
 public:
+    using MessageCallback = HassDevice::MessageCallback;
 
-    Feature(HassDevice &device, const char *name) : name(name), device(device) {
+protected:
+    Feature(HassDevice* device) :
+            device(device) {
     }
 
-    virtual void publish(const String &partial_topic, const String &message) const {
-        device.publish(this->getName() + '/' + partial_topic, message);
-    }
-
-    virtual void registerSubscription(const String partial_topic, MqttStringSubscriptionCallback cb) {
-        device.registerSubscription(this->getName() + "/" + partial_topic, cb);
-    }
-
-    virtual void onMqttConnected() {
-        publishCurrentState();
-        registerSubscriptions();
-    }
-
-    virtual void registerSubscriptions() = 0;
-
-    virtual void publishCurrentState() = 0;
-
-    String getName() const {
+public:
+    virtual const char* getName() const {
         return name;
     }
 
-    inline HassDevice &getDevice() const {
-        return device;
+protected:
+    void publish(const String &topic, const String &message) const {
+        this->device->publish(name + '/' + topic, message);
     }
+
+    virtual void registerSubscription(const String& topic, MessageCallback callback) {
+        this->device->registerSubscription(this->getName() + '/' + topic, callback);
+    }
+
+    virtual void onMessageReceived(const String& topic, const String& message) = 0;
+
+private:
+    HassDevice* const device;
 };
+
+
+template<const char* name>
+const Logger Feature<name>::LOG = Logger(name);
 
 #endif

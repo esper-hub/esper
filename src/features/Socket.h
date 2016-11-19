@@ -1,12 +1,12 @@
-#ifndef CYBERHOEHLE_SOCKET_H
-#define CYBERHOEHLE_SOCKET_H
+#ifndef SOCKET_H
+#define SOCKET_H
 
 #include "OnOffFeature.h"
 
-extern const char _SOCKET[];
 
-class Socket : public OnOffFeature<_SOCKET, false, 1> {
-    using OnOffFeature::OnOffFeature;
+template <const char* name, uint16_t gpio>
+class Socket : public OnOffFeature<name, gpio, false, 1> {
+    using OnOffFeature<name, gpio, false, 1>::OnOffFeature;
 };
 
-#endif //CYBERHOEHLE_SOCKET_H
+#endif

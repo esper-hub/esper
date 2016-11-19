@@ -2,3 +2,5 @@
 /out
 CMakeLists.txt
 CMakeCache.txt
+
+.idea

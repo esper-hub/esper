@@ -1,92 +1,71 @@
-#ifndef ONOFFTEST_H
-#define ONOFFTEST_H
-
-#define ON "1"
-#define OFF "0"
+#ifndef ONOFF_H
+#define ONOFF_H
 
 #include "Feature.h"
 
-template<const char *TYPE_NAME, bool invert = false, int damper = 0>
-class OnOffFeature : public Feature<TYPE_NAME> {
 
-    const int gpio;
-    bool current_state;
+template<const char* name, uint16_t gpio, bool invert = false, int damper = 0>
+class OnOffFeature : public Feature<name> {
+    using Feature<name>::LOG;
 
-    uint32_t lastChange;
+    constexpr static const char* const ON = "1";
+    constexpr static const char* const OFF = "0";
 
 public:
+    OnOffFeature(HassDevice* device, bool initial_state = false) :
+            Feature<name>(device),
+            state(initial_state),
+            lastChange(RTC.getRtcSeconds()) {
+        pinMode(gpio, OUTPUT);
 
-    OnOffFeature(HassDevice &device, const char *name, const uint16_t gpio_pin, bool default_state = false) :
-            Feature<TYPE_NAME>(device, name),
-            gpio(gpio_pin),
-            current_state(default_state),
-            lastChange(0)
-    {
-        this->log("initialized.");
-        setState(current_state);
+        LOG.log("Initialized.");
     }
 
-    inline boolean shouldDampen() const {
-        return damper > 0;
-    }
+    inline void set(bool state) {
+        const bool new_state = invert ? !state : state;
 
-    virtual void onMessageReceived(const String topic, const String message) {
-        this->log("topic: ", topic);
-        this->log("message: ", message);
+        digitalWrite(gpio, new_state);
 
+        this->state = state;
 
-        const String token = this->name + "/";
-        const auto f = topic.indexOf(token);
-        const auto t = topic.substring(f + token.length());
-
-        if (t == "set") {
-            if (shouldDampen()) {
-                uint32_t now = RTC.getRtcSeconds();
-                if (lastChange + damper > now)
-                    return;
-                else {
-                    lastChange = now;
-                }
-            }
-            handleSetMessage(message);
-        } else {
-            this->log("unknown message topic received:");
-            this->log(t);
-        }
+        this->publishCurrentState();
     }
 
 protected:
     virtual void registerSubscriptions() {
-        this->registerSubscription("set",
-                                   MqttStringSubscriptionCallback(&OnOffFeature::onMessageReceived, this));
+        this->registerSubscription("set", HassDevice::MessageCallback(&OnOffFeature::onMessageReceived, this));
     }
-
-    inline void handleSetMessage(const String &message) {
-        if (message == ON) {
-            setState(true);
-        } else if (message == OFF) {
-            setState(false);
-        } else {
-            this->log("unknown message received:");
-            this->log(message);
-        }
-    }
-
 
     inline void publishCurrentState() {
-        this->log("publish.");
-        this->publish("state", current_state ? ON : OFF);
+        this->publish("state", state ? ON : OFF);
     }
 
-    inline void setState(bool desired_state) {
-        const bool new_state = invert ? !desired_state : desired_state;
-        this->logf("Setting new state: %i %x", gpio, new_state);
-        pinMode(gpio, OUTPUT);
-        digitalWrite(gpio, new_state);
-        current_state = desired_state;
+private:
+    virtual void onMessageReceived(const String& topic, const String& message) {
+        const uint32_t now = RTC.getRtcSeconds();
 
-        this->publishCurrentState();
+        if (damper > 0) {
+            if (this->lastChange + damper > now)
+                return;
+        }
+
+        if (message == ON) {
+            this->set(true);
+
+        } else if (message == OFF) {
+            this->set(false);
+
+        } else {
+            LOG.log("unknown message received:");
+            LOG.log(message);
+        }
+
+        lastChange = now;
     }
+
+    bool state;
+
+    uint32_t lastChange;
 };
 
 #endif

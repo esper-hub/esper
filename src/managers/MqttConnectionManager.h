@@ -3,13 +3,13 @@
 
 #include <SmingCore/SmingCore.h>
 
-#include "../util/Log.h"
+#include "../util/Logger.h"
 #include "../util/Observed.h"
 
 
-extern const char MQTT_CONNECTION_MANAGER_LOG_NAME[];
+class MqttConnectionManager {
+    static const Logger LOG;
 
-class MqttConnectionManager : public Log<MQTT_CONNECTION_MANAGER_LOG_NAME> {
 public:
     enum class State {
         CONNECTED,
@@ -18,69 +18,30 @@ public:
     };
 
     using StateChangedCallback = Observed<State>::Callback;
+    using MessageCallback = Delegate<void(const String& topic, const String& message)> ;
 
     MqttConnectionManager(StateChangedCallback cb,
-                          MqttStringSubscriptionCallback messageCallback) :
-            state(State::DISCONNECTED, cb),
-            client(MQTT_HOST, MQTT_PORT,
-                   MqttStringSubscriptionCallback(&MqttConnectionManager::onMessageReceived, this)),
-            messageCallback(messageCallback) {
-        log("intialized.");
-    }
+                          MessageCallback messageCallback);
 
-    void connect() {
-        log("Connecting");
-        reconnectTimer.stop();
-        this->state.set(State::CONNECTING);
-        client.setCompleteDelegate(TcpClientCompleteDelegate(&MqttConnectionManager::onDisconnected, this));
-        if (client.connect(WifiStation.getMAC())) {
-            this->state.set(State::CONNECTED);
-        } else {
-            this->state.set(State::DISCONNECTED);
-            log("failed to connect.");
-            startReconnectTimer();
-        }
-    }
+    void connect();
 
-    void subscribe(const String &topic) {
-        log("Subscribed to: ", topic);
-        client.subscribe(topic);
-    }
+    void subscribe(const String &topic);
 
-    inline void publish(const String &topic, const String &message) {
-        client.publish(topic, message);
-    }
+    void publish(const String &topic, const String &message);
 
-    inline State getState() const {
-        return this->state;
-    }
+    State getState() const;
 
 private:
-    void onDisconnected(TcpClient &client, bool flag) {
-        if (flag) {
-            log("Disconnected.");
-        } else {
-            log("Unreachable.");
-        }
-        this->state.set(State::DISCONNECTED);
-        startReconnectTimer();
-    }
+    void onDisconnected(TcpClient &client, bool flag);
 
-    void startReconnectTimer() {
-        log("starting reconnect timer.");
-        reconnectTimer.initializeMs(2000, TimerDelegate(&MqttConnectionManager::connect, this)).start();
-    }
+    void startReconnectTimer();
 
-    void onMessageReceived(const String topic, const String message) {
-        log("Recieved topic: ", topic);
-        log("Received message: ", message);
-        messageCallback(topic, message);
-    }
+    void onMessageReceived(const String topic, const String message);
 
     Observed<State> state;
 
     MqttClient client;
-    MqttStringSubscriptionCallback messageCallback;
+    MessageCallback messageCallback;
 
     Timer reconnectTimer;
 };

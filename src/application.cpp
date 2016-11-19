@@ -1,28 +1,11 @@
 #include <user_config.h>
-#include "device.h"
-#include "devices/EspDose.h"
+
+#include "devices/HassDevice.h"
 
 
-class EspSchalter : public Device {
-public:
-    EspSchalter() : Device("FIXME") { }
-};
+extern HassDevice* device;
 
 
 void init() {
-
-    Device *device;
-
-    constexpr static const DeviceType device_type = DEVICE_TYPE;
-
-    switch (device_type) {
-        case DeviceType::ESP_DOSE:
-            device = new EspDose();
-            break;
-        case DeviceType::ESP_SCHALTER:
-            device = new EspSchalter();
-            break;
-    }
-
     device->start();
 }
