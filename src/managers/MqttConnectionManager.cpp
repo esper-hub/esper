@@ -9,14 +9,17 @@ MqttConnectionManager::MqttConnectionManager(const StateChangedCallback& stateCh
         client(MQTT_HOST, MQTT_PORT,
                MqttStringSubscriptionCallback(&MqttConnectionManager::onMessageReceived, this)),
         messageCallback(messageCallback) {
+    this->reconnectTimer.initializeMs(2000, TimerDelegate(&MqttConnectionManager::connect, this));
+
     LOG.log("Initialized");
 }
 
 void MqttConnectionManager::connect() {
     LOG.log("Connecting");
 
-    reconnectTimer.stop();
+    this->reconnectTimer.stop();
     this->state.set(State::CONNECTING);
+
     client.setCompleteDelegate(TcpClientCompleteDelegate(&MqttConnectionManager::onDisconnected, this));
     if (client.connect(WifiStation.getMAC())) {
         this->state.set(State::CONNECTED);
@@ -24,7 +27,7 @@ void MqttConnectionManager::connect() {
         this->state.set(State::DISCONNECTED);
 
         LOG.log("Failed to connect - reconnecting");
-        startReconnectTimer();
+        this->reconnectTimer.start();
     }
 }
 
@@ -47,17 +50,14 @@ void MqttConnectionManager::onDisconnected(TcpClient &client, bool flag) {
     } else {
         LOG.log("Unreachable.");
     }
-    this->state.set(State::DISCONNECTED);
-    this->startReconnectTimer();
-}
 
-void MqttConnectionManager::startReconnectTimer() {
-    LOG.log("starting reconnect timer.");
-    this->reconnectTimer.initializeMs(2000, TimerDelegate(&MqttConnectionManager::connect, this)).start();
+    this->state.set(State::DISCONNECTED);
+    this->reconnectTimer.start();
 }
 
 void MqttConnectionManager::onMessageReceived(const String topic, const String message) {
     LOG.log("Received topic: ", topic);
     LOG.log("Received message: ", message);
+
     this->messageCallback(topic, message);
 }

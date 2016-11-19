@@ -5,11 +5,15 @@ const Logger WifiConnectionManager::LOG = Logger("WiFi");
 
 WifiConnectionManager::WifiConnectionManager(const StateChangedCallback& callback) :
         state(State::DISCONNECTED, callback) {
+    this->reconnectTimer.initializeMs(2000, TimerDelegate(&WifiConnectionManager::connect, this));
+
     LOG.log("Initalized.");
 }
 
 void WifiConnectionManager::connect() {
-    reconnectTimer.stop();
+    LOG.log("Connecting");
+
+    this->reconnectTimer.stop();
 
     LOG.log("SSID: ", WIFI_SSID);
     LOG.log("PW: ", WIFI_PWD);
@@ -37,12 +41,12 @@ WifiConnectionManager::State WifiConnectionManager::getState() const {
 
 void WifiConnectionManager::onConnectOk() {
     if (this->state.set(State::CONNECTED)) {
-        reconnectTimer.stop();
+        this->reconnectTimer.stop();
     }
 }
 
 void WifiConnectionManager::onConnectFail() {
     if (this->state.set(State::DISCONNECTED)) {
-        reconnectTimer.initializeMs(2000, TimerDelegate(&WifiConnectionManager::connect, this)).start();
+        this->reconnectTimer.start();
     }
 }

@@ -34,8 +34,6 @@ public:
 private:
     void onDisconnected(TcpClient &client, bool flag);
 
-    void startReconnectTimer();
-
     void onMessageReceived(const String topic, const String message);
 
     Observed<State> state;
