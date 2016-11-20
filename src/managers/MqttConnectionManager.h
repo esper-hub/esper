@@ -40,6 +40,8 @@ private:
 
     void onMessageReceived(const String topic, const String message);
 
+    const String topicBase;
+
     Observed<State> state;
 
     MqttClient client;

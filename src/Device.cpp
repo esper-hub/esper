@@ -14,9 +14,9 @@ Device::Device() :
         wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&Device::onWifiStateChanged, this)),
         mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
                               MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)),
-        basePath(MQTT_REALM + ("/" + WifiStation.getMAC())) {
+        topicBase(MQTT_REALM + ("/" + String(system_get_chip_id(), 16))) {
     LOG.log("Initialized");
-    LOG.log("Base Path:", this->basePath);
+    LOG.log("Base Path:", this->topicBase);
 }
 
 Device::~Device() {
@@ -36,7 +36,7 @@ void Device::reboot() {
 }
 
 void Device::registerSubscription(const String& topic, const MessageCallback& callback) {
-    this->messageCallbacks[basePath + ("/" + topic)] = callback;
+    this->messageCallbacks[topicBase + ("/" + topic)] = callback;
 }
 
 void Device::add(FeatureBase* feature) {
@@ -47,11 +47,11 @@ void Device::add(FeatureBase* feature) {
     }
 }
 
-void Device::publish(const String &topic, const String &message) {
+void Device::publish(const String& topic, const String& message) {
     if (this->mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
         return;
 
-    this->mqttConnectionManager.publish(basePath + topic, message);
+    this->mqttConnectionManager.publish(topicBase + topic, message);
 }
 
 void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
@@ -78,6 +78,15 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
     switch (state) {
         case MqttConnectionManager::State::CONNECTED: {
             LOG.log("MQTT state changed: Connected \\o/");
+
+            this->mqttConnectionManager.publish(this->topicBase,
+                                                StringSumHelper("") +
+                                                "ESPER=v" + VERSION + "\n" +
+                                                        "DEVICE=" +
+                                                "SDK=v" + system_get_sdk_version() + "\n" +
+                                                "BOOT=v" + String(system_get_boot_version()) + "\n" +
+                                                "CHIP=" + String(system_get_chip_id(), 16) + "\n" +
+                                                "FLASH=" + String(spi_flash_get_id(), 16) + "\n");
 
             for (int i = 0; i < this->features.count(); i++) {
                 this->features[i]->publishCurrentState();
@@ -113,6 +122,8 @@ void Device::onMqttMessageReceived(const String& topic, const String& message) {
 
 
 void init() {
+    System.setCpuFrequency(eCF_160MHz);
+
     Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
     Serial.systemDebugOutput(true); // Debug output to serial
 

@@ -54,7 +54,7 @@ private:
     WifiConnectionManager wifiConnectionManager;
     MqttConnectionManager mqttConnectionManager;
 
-    const String basePath;
+    const String topicBase;
 
     Vector<FeatureBase*> features;
 
