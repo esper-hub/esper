@@ -116,10 +116,16 @@ void init() {
     Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
     Serial.systemDebugOutput(true); // Debug output to serial
 
-    Serial.println();
-    Serial.println();
-    Serial.println();
-    Serial.println("Yup!");
+    Serial.printf("\r\n");
+    Serial.printf("\r\n");
+    Serial.printf("SDK: v%s\r\n", system_get_sdk_version());
+    Serial.printf("Boot: v%u (%u)\r\n", system_get_boot_version(), system_get_boot_mode());
+    Serial.printf("Free Heap: %d\r\n", system_get_free_heap_size());
+    Serial.printf("CPU Frequency: %d MHz\r\n", system_get_cpu_freq());
+    Serial.printf("System Chip ID: %x\r\n", system_get_chip_id());
+    Serial.printf("SPI Flash ID: %x\r\n", spi_flash_get_id());
+    Serial.printf("\r\n");
+    Serial.printf("\r\n");
 
     Device* device = createDevice();
     device->start();
