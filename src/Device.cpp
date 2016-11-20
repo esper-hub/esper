@@ -15,6 +15,11 @@ Device::Device() :
         mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
                               MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)),
         topicBase(MQTT_REALM + ("/" + String(system_get_chip_id(), 16))) {
+#ifdef MQTT_HEARTBEAT
+    // Reboot the system if heartbeat was missing
+    this->heartbeatTimer.initializeMs(120000, TimerDelegate(&Device::reboot, this));
+#endif
+
     LOG.log("Initialized");
     LOG.log("Base Path:", this->topicBase);
 }
@@ -88,6 +93,12 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
                                                 "CHIP=" + String(system_get_chip_id(), 16) + "\n" +
                                                 "FLASH=" + String(spi_flash_get_id(), 16) + "\n");
 
+#ifdef MQTT_HEARTBEAT
+            // Start awaiting heartbeats
+            this->mqttConnectionManager.subscribe(MQTT_REALM "/heartbeat");
+            this->heartbeatTimer.start();
+#endif
+
             for (int i = 0; i < this->features.count(); i++) {
                 this->features[i]->publishCurrentState();
             }
@@ -102,6 +113,12 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
 
         case MqttConnectionManager::State::DISCONNECTED: {
             LOG.log("MQTT state changed: Disconnected");
+
+#ifdef MQTT_HEARTBEAT
+            // Heartbeats are likely to miss if disconnected
+            this->heartbeatTimer.stop();
+#endif
+
             break;
         }
 
@@ -113,10 +130,23 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
 }
 
 void Device::onMqttMessageReceived(const String& topic, const String& message) {
-    auto i = this->messageCallbacks.indexOf(topic);
-    if (i != -1) {
-        const auto& callback = this->messageCallbacks.valueAt(i);
-        callback(topic, message);
+
+#ifdef MQTT_HEARTBEAT
+    if (topic == MQTT_REALM "/heartbeat") {
+        // Handle incoming heartbeat
+        LOG.log("Heartbeat");
+        this->heartbeatTimer.restart();
+#else
+    if (false) {
+#endif
+
+    } else {
+        // Dispatch message to registered feature handler
+        auto i = this->messageCallbacks.indexOf(topic);
+        if (i != -1) {
+            const auto& callback = this->messageCallbacks.valueAt(i);
+            callback(topic, message);
+        }
     }
 }
 

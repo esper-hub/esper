@@ -59,6 +59,10 @@ private:
     Vector<FeatureBase*> features;
 
     HashMap<String, MessageCallback> messageCallbacks;
+
+#ifdef MQTT_HEARTBEAT
+    Timer heartbeatTimer;
+#endif
 };
 
 
