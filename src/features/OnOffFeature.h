@@ -28,7 +28,7 @@ public:
             LOG.log("Turning off");
         }
 
-        digitalWrite(gpio, invert ? !state : state);
+        digitalWrite(gpio, state == !invert);
 
         this->publishCurrentState();
     }
