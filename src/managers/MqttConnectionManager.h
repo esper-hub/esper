@@ -10,6 +10,9 @@
 class MqttConnectionManager {
     static const Logger LOG;
 
+    MqttConnectionManager(MqttConnectionManager const&) = delete;
+    MqttConnectionManager& operator=(MqttConnectionManager const&) = delete;
+
 public:
     enum class State {
         CONNECTED,
@@ -22,6 +25,7 @@ public:
 
     MqttConnectionManager(const StateChangedCallback& stateChangedCallback,
                           const MessageCallback& messageCallback);
+    ~MqttConnectionManager();
 
     void connect();
 
@@ -39,7 +43,7 @@ private:
     Observed<State> state;
 
     MqttClient client;
-    MessageCallback messageCallback;
+    const MessageCallback messageCallback;
 
     Timer reconnectTimer;
 };

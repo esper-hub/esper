@@ -10,6 +10,9 @@
 class WifiConnectionManager {
     static const Logger LOG;
 
+    WifiConnectionManager(WifiConnectionManager const&) = delete;
+    WifiConnectionManager& operator=(WifiConnectionManager const&) = delete;
+
 public:
     enum class State {
         CONNECTED,
@@ -21,6 +24,7 @@ public:
 
 public:
     WifiConnectionManager(const StateChangedCallback& callback);
+    ~WifiConnectionManager();
 
     void connect();
 

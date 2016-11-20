@@ -3,4 +3,6 @@
 CMakeLists.txt
 CMakeCache.txt
 
+Configuration.mk
+
 .idea

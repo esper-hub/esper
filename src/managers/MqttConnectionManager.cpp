@@ -1,7 +1,7 @@
 #include "MqttConnectionManager.h"
 
 
-    const Logger MqttConnectionManager::LOG = Logger("MQTT");
+const Logger MqttConnectionManager::LOG = Logger("MQTT");
 
 MqttConnectionManager::MqttConnectionManager(const StateChangedCallback& stateChangedCallback,
                                              const MessageCallback& messageCallback) :
@@ -14,14 +14,17 @@ MqttConnectionManager::MqttConnectionManager(const StateChangedCallback& stateCh
     LOG.log("Initialized");
 }
 
+MqttConnectionManager::~MqttConnectionManager() {
+}
+
 void MqttConnectionManager::connect() {
     LOG.log("Connecting");
 
     this->reconnectTimer.stop();
     this->state.set(State::CONNECTING);
 
-    client.setCompleteDelegate(TcpClientCompleteDelegate(&MqttConnectionManager::onDisconnected, this));
-    if (client.connect(WifiStation.getMAC())) {
+    this->client.setCompleteDelegate(TcpClientCompleteDelegate(&MqttConnectionManager::onDisconnected, this));
+    if (this->client.connect(WifiStation.getMAC())) {
         this->state.set(State::CONNECTED);
     } else {
         this->state.set(State::DISCONNECTED);

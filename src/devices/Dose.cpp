@@ -1,7 +1,5 @@
 #include "Dose.h"
 
-#include <array>
-
 
 constexpr const char Dose::PLUG1_NAME[];
 constexpr const uint16_t Dose::PLUG1_GPIO;
@@ -18,6 +16,6 @@ Dose::Dose() :
 }
 
 
-static Dose dose;
-
-Device* device = &dose;
+Device* createDevice() {
+    return new Dose();
+}

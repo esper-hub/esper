@@ -10,6 +10,9 @@ WifiConnectionManager::WifiConnectionManager(const StateChangedCallback& callbac
     LOG.log("Initalized");
 }
 
+WifiConnectionManager::~WifiConnectionManager() {
+}
+
 void WifiConnectionManager::connect() {
     LOG.log("Connecting");
 
@@ -27,9 +30,8 @@ void WifiConnectionManager::connect() {
     LOG.log("Wifi Station enabled");
 
     LOG.log("Waiting for connection");
-    WifiStation.waitConnection(
-            ConnectionDelegate(&WifiConnectionManager::onConnectOk, this), 10,
-            ConnectionDelegate(&WifiConnectionManager::onConnectFail, this));
+    WifiStation.waitConnection(ConnectionDelegate(&WifiConnectionManager::onConnectOk, this), 10,
+                               ConnectionDelegate(&WifiConnectionManager::onConnectFail, this));
 
     this->state.set(State::CONNECTING);
 }

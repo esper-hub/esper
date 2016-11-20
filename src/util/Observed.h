@@ -19,7 +19,6 @@ public:
         return this->value;
     }
 
-
     inline bool set(const T& value) {
         if (this->value == value) {
             return false;

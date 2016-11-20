@@ -1,5 +1,5 @@
-#ifndef HASS_DEVICE_H
-#define HASS_DEVICE_H
+#ifndef DEVICE_H
+#define DEVICE_H
 
 #include <SmingCore/SmingCore.h>
 #include <user_config.h>
@@ -25,6 +25,9 @@ public:
 class Device {
     static const Logger LOG;
 
+    Device(Device const&) = delete;
+    Device& operator=(Device const&) = delete;
+
 public:
     using MessageCallback = MqttConnectionManager::MessageCallback;
 
@@ -48,14 +51,17 @@ private:
 
     void onMqttMessageReceived(const String& topic, const String& message);
 
-    const String basePath;
-
     WifiConnectionManager wifiConnectionManager;
     MqttConnectionManager mqttConnectionManager;
+
+    const String basePath;
 
     Vector<FeatureBase*> features;
 
     HashMap<String, MessageCallback> messageCallbacks;
 };
+
+
+Device* createDevice();
 
 #endif

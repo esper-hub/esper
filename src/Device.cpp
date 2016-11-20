@@ -13,11 +13,10 @@ const Logger Device::LOG = Logger("Device");
 Device::Device() :
         wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&Device::onWifiStateChanged, this)),
         mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
-                              MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)) {
-    Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
-    Serial.systemDebugOutput(true); // Debug output to serial
-
+                              MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)),
+        basePath(REALM + WifiStation.getMAC() + "/") {
     LOG.log("Initialized");
+    LOG.log("Base Path:", this->basePath);
 }
 
 Device::~Device() {
@@ -47,11 +46,11 @@ void Device::add(FeatureBase* feature) {
     }
 }
 
-void Device::publish(const String &partial_topic, const String &message) {
-    if (mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
+void Device::publish(const String &topic, const String &message) {
+    if (this->mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
         return;
 
-    mqttConnectionManager.publish(basePath + partial_topic, message);
+    this->mqttConnectionManager.publish(basePath + topic, message);
 }
 
 void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
@@ -113,6 +112,14 @@ void Device::onMqttMessageReceived(const String& topic, const String& message) {
 
 
 void init() {
-    extern Device* device;
+    Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+    Serial.systemDebugOutput(true); // Debug output to serial
+
+    Serial.println();
+    Serial.println();
+    Serial.println();
+    Serial.println("Yup!");
+
+    Device* device = createDevice();
     device->start();
 }

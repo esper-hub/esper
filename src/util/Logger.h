@@ -5,7 +5,7 @@
 
 class Logger {
 public:
-    constexpr Logger(const char* const prefix) :
+    Logger(const char* const prefix) :
             prefix(prefix) {
     }
 
@@ -20,6 +20,7 @@ private:
         Serial.print('[');
         Serial.print(prefix);
         Serial.print(']');
+        Serial.print(' ');
     };
 
     template<typename Head>
