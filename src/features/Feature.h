@@ -5,7 +5,7 @@
 #include "Device.h"
 
 
-template<const char* name>
+template<const char* const name>
 class Feature : public FeatureBase {
 protected:
     static const Logger LOG;
@@ -24,11 +24,11 @@ public:
 
 protected:
     void publish(const String &topic, const String &message) const {
-        this->device->publish(name + '/' + topic, message);
+        this->device->publish(name + ("/" + topic), message);
     }
 
     virtual void registerSubscription(const String& topic, const Device::MessageCallback& callback) {
-        this->device->registerSubscription(this->getName() + '/' + topic, callback);
+        this->device->registerSubscription(name + ("/" + topic), callback);
     }
 
     virtual void onMessageReceived(const String& topic, const String& message) = 0;

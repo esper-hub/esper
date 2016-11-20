@@ -6,7 +6,7 @@ WIFI_PWD=""
 MQTT_HOST="mqtt"
 MQTT_PORT=1883
 
-REALM="my/real/"
+MQTT_REALM="my/realm"
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 # ESP_HOME = /opt/esp-open-sdk

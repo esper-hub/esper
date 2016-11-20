@@ -14,7 +14,7 @@ Device::Device() :
         wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&Device::onWifiStateChanged, this)),
         mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
                               MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)),
-        basePath(REALM + WifiStation.getMAC() + "/") {
+        basePath(MQTT_REALM + ("/" + WifiStation.getMAC())) {
     LOG.log("Initialized");
     LOG.log("Base Path:", this->basePath);
 }
@@ -36,12 +36,13 @@ void Device::reboot() {
 }
 
 void Device::registerSubscription(const String& topic, const MessageCallback& callback) {
-    this->messageCallbacks[basePath + topic] = callback;
+    this->messageCallbacks[basePath + ("/" + topic)] = callback;
 }
 
 void Device::add(FeatureBase* feature) {
     if (!features.contains(feature)) {
         features.addElement(feature);
+        feature->registerSubscriptions();
         LOG.log("Added feature:", feature->getName());
     }
 }
@@ -105,7 +106,7 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
 void Device::onMqttMessageReceived(const String& topic, const String& message) {
     auto i = this->messageCallbacks.indexOf(topic);
     if (i != -1) {
-        auto callback = this->messageCallbacks.valueAt(i);
+        const auto& callback = this->messageCallbacks.valueAt(i);
         callback(topic, message);
     }
 }

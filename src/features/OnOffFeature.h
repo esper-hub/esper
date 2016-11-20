@@ -22,11 +22,13 @@ public:
     }
 
     inline void set(bool state) {
-        const bool new_state = invert ? !state : state;
+        if (this->state = state) {
+            LOG.log("Turning on");
+        } else {
+            LOG.log("Turning off");
+        }
 
-        digitalWrite(gpio, new_state);
-
-        this->state = state;
+        digitalWrite(gpio, invert ? !state : state);
 
         this->publishCurrentState();
     }
@@ -37,7 +39,7 @@ protected:
     }
 
     inline void publishCurrentState() {
-        this->publish("state", state ? ON : OFF);
+        this->publish("state", this->state ? ON : OFF);
     }
 
 private:
@@ -59,7 +61,7 @@ private:
             LOG.log("Unknown message received:", message);
         }
 
-        lastChange = now;
+        this->lastChange = now;
     }
 
     bool state;
