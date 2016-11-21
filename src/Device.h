@@ -60,7 +60,7 @@ private:
 
     HashMap<String, MessageCallback> messageCallbacks;
 
-#ifdef MQTT_HEARTBEAT
+#ifdef HEARTBEAT_TOPIC
     Timer heartbeatTimer;
 #endif
 };

@@ -15,7 +15,7 @@ Device::Device() :
         mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
                               MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)),
         topicBase(MQTT_REALM + ("/" + String(system_get_chip_id(), 16))) {
-#ifdef MQTT_HEARTBEAT
+#ifdef HEARTBEAT_TOPIC
     // Reboot the system if heartbeat was missing
     this->heartbeatTimer.initializeMs(120000, TimerDelegate(&Device::reboot, this));
 #endif
@@ -93,7 +93,7 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
                                                 "CHIP=" + String(system_get_chip_id(), 16) + "\n" +
                                                 "FLASH=" + String(spi_flash_get_id(), 16) + "\n");
 
-#ifdef MQTT_HEARTBEAT
+#ifdef HEARTBEAT_TOPIC
             // Start awaiting heartbeats
             this->mqttConnectionManager.subscribe(MQTT_REALM "/heartbeat");
             this->heartbeatTimer.start();
@@ -114,7 +114,7 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
         case MqttConnectionManager::State::DISCONNECTED: {
             LOG.log("MQTT state changed: Disconnected");
 
-#ifdef MQTT_HEARTBEAT
+#ifdef HEARTBEAT_TOPIC
             // Heartbeats are likely to miss if disconnected
             this->heartbeatTimer.stop();
 #endif
@@ -131,7 +131,7 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
 
 void Device::onMqttMessageReceived(const String& topic, const String& message) {
 
-#ifdef MQTT_HEARTBEAT
+#ifdef HEARTBEAT_TOPIC
     if (topic == MQTT_REALM "/heartbeat") {
         // Handle incoming heartbeat
         LOG.log("Heartbeat");

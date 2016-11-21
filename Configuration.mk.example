@@ -9,7 +9,7 @@ MQTT_PORT=1883
 MQTT_REALM="my/realm"
 
 # If set, a message each 60 seconds is expected or a reboot is triggered
-# MQTT_HEARTBEAT="$(MQTT_REALM)/heartbeat"
+# HEARTBEAT_TOPIC="$(MQTT_REALM)/heartbeat"
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 # ESP_HOME = /opt/esp-open-sdk
