@@ -4,7 +4,7 @@
 #include "Feature.h"
 
 
-template<const char* name, uint16_t gpio, bool invert = false, int damper = 0>
+template<const char* name, uint16_t gpio, bool invert = false, uint16_t damper = 0>
 class OnOffFeature : public Feature<name> {
     using Feature<name>::LOG;
 
@@ -18,10 +18,10 @@ public:
             lastChange(RTC.getRtcSeconds()) {
         pinMode(gpio, OUTPUT);
 
-        LOG.log("Initialized.");
+        LOG.log("Initialized");
     }
 
-    inline void set(bool state) {
+    void set(bool state) {
         if (this->state = state) {
             LOG.log("Turning on");
         } else {
@@ -38,12 +38,12 @@ protected:
         this->registerSubscription("set", Device::MessageCallback(&OnOffFeature::onMessageReceived, this));
     }
 
-    inline void publishCurrentState() {
+    virtual void publishCurrentState() {
         this->publish("state", this->state ? ON : OFF);
     }
 
 private:
-    virtual void onMessageReceived(const String& topic, const String& message) {
+    void onMessageReceived(const String& topic, const String& message) {
         const uint32_t now = RTC.getRtcSeconds();
 
         if (damper > 0) {

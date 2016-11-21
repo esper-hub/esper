@@ -27,11 +27,9 @@ protected:
         this->device->publish(name + ("/" + topic), message);
     }
 
-    virtual void registerSubscription(const String& topic, const Device::MessageCallback& callback) {
+    void registerSubscription(const String& topic, const Device::MessageCallback& callback) {
         this->device->registerSubscription(name + ("/" + topic), callback);
     }
-
-    virtual void onMessageReceived(const String& topic, const String& message) = 0;
 
 private:
     Device* const device;
