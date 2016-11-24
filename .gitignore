@@ -1,10 +1,9 @@
-/Makefile-local.mk
-/out
-CMakeLists.txt
-CMakeCache.txt
+/build
 
-Configuration.mk
+/Configuration.mk
 
-.drone.sec.yml
+/.drone.sec.yml
 
-.idea
+/.idea
+/CMakeLists.txt
+/CMakeCache.txt
