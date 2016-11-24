@@ -52,6 +52,8 @@ DISABLE_SPIFFS = 1
 # Use alternative bootloader
 RBOOT_ENABLED = 1
 RBOOT_BIG_FLASH = 0
+RBOOT_TWO_ROMS = 1
+RBOOT_RTC_ENABLED = 1
 
 RBOOT_LD_0 = $(BASEDIR)/rom0.ld
 RBOOT_LD_1 = $(BASEDIR)/rom1.ld
