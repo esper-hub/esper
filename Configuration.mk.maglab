@@ -1,0 +1,12 @@
+## WiFi configuration to use
+WIFI_SSID="maglab"
+
+## MQTT Server to use
+MQTT_HOST="mqtt"
+MQTT_PORT=1883
+
+MQTT_REALM="maglab/space"
+
+# Heartbeat configuation
+HEARTBEAT_TOPIC="$(MQTT_REALM)/heartbeat"
+

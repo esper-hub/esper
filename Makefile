@@ -1,18 +1,26 @@
+ifndef CONFIG
+$(info CONFIG is not defined - using default)
 include ./Configuration.mk
+else
+$(info Using Configuration.mk.$(CONFIG))
+include ./Configuration.mk.$(CONFIG)
+endif
 
 ifndef SMING_HOME
-$(error SMING_HOME is not set. Please configure it in Makefile-user.mk or set in environment)
+$(error SMING_HOME is not set. Please configure it in Configuration.mk or set in environment)
 endif
 
 ifndef ESP_HOME
-$(error ESP_HOME is not set. Please configure it in Makefile-user.mk or set in environment)
+$(error ESP_HOME is not set. Please configure it in Configuration.mk or set in environment)
 endif
 
-MODULES += src/devices
-MODULES += src/features
-MODULES += src/managers
-MODULES += src/util
-MODULES += src
+MODULES += framework/devices
+MODULES += framework/features
+MODULES += framework/managers
+MODULES += framework/util
+MODULES += framework
+
+MODULES += devices/screen
 
 VERSION ?= "SNAPSHOT"
 

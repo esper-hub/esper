@@ -1,5 +1,7 @@
 build:
   image: maglab/sming
+  environment:
+    - CONFIG=maglab
   commands:
     - make clean
     - make
