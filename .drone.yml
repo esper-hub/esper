@@ -2,6 +2,7 @@ build:
   image: maglab/sming
   environment:
     - CONFIG=maglab
+    - WIFI_PWD=$$WIFI_PWD
   commands:
     - make clean
     - make
