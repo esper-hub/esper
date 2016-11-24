@@ -1,0 +1,6 @@
+build:
+  image: maglab/sming
+  commands:
+    - make clean
+    - make
+
