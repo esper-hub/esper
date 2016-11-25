@@ -1,7 +1,6 @@
 
 # Use load configuration
 ifndef CONFIG
-$(info $(BASEDIR)/Configuration.mk)
 include $(BASEDIR)/Configuration.mk
 else
 include $(BASEDIR)/Configuration.mk.$(CONFIG)

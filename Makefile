@@ -7,13 +7,15 @@ DISTDIR = $(BASEDIR)/dist
 DEVICES := $(sort $(notdir $(wildcard $(CURDIR)/devices/*)))
 
 
+all: $(DEVICES)
+
+
 $(addprefix $(BUILDDIR)/,$(DEVICES)):
 	mkdir -pv $@
 	$(MAKE) -C $@ -f $(BASEDIR)/Device.mk DEVICE=$(notdir $@)
 
 
-$(DISTDIR):
-	mkdir -pv $@
+$(DEVICES): %: $(BUILDDIR)/% $(DISTDIR)/%.rboot $(DISTDIR)/%.rom0 $(DISTDIR)/%.rom1
 
 
 $(DISTDIR)/%.rboot: $(BUILDDIR)/% $(DISTDIR)
@@ -28,15 +30,12 @@ $(DISTDIR)/%.rom1: $(BUILDDIR)/% $(DISTDIR)
 	cp -v $</out/firmware/rom1.bin $@
 
 
-$(DEVICES): %: $(BUILDDIR)/% $(DISTDIR)/%.rboot $(DISTDIR)/%.rom0 $(DISTDIR)/%.rom1
-
-
-all: $(DEVICES)
+$(DISTDIR):
+	mkdir -pv $@
 
 
 clean:
 	rm -f -r $(BUILDDIR) $(DISTDIR)
 
 .PHONY: all $(addprefix $(BUILDDIR)/,$(DEVICES)) clean
-.DEFAULT: all
 
