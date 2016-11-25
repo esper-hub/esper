@@ -5,7 +5,8 @@ MEMORY
   dport0_0_seg :                        org = 0x3FF00000, len = 0x10
   dram0_0_seg :                         org = 0x3FFE8000, len = 0x14000
   iram1_0_seg :                         org = 0x40100000, len = 0x8000
-  irom0_0_seg :                         org = 0x40202010, len = (1M - 0x2010)
+
+  irom0_0_seg :                         org = (0x40200000 + 0x2000 + 0x10 + 512K / 2 * 0), len = (512K / 2)
 }
 
 PHDRS
