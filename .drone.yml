@@ -7,3 +7,11 @@ build:
     - make clean
     - make
 
+publish:
+  sftp:
+    host: eddie.maglab.space
+    username: esper
+    files:
+      - dist/*
+    destination_path: './'
+
