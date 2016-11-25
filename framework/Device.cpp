@@ -87,11 +87,12 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
             this->mqttConnectionManager.publish(this->topicBase,
                                                 StringSumHelper("") +
                                                 "ESPER=v" + VERSION + "\n" +
-                                                        "DEVICE=" +
                                                 "SDK=v" + system_get_sdk_version() + "\n" +
                                                 "BOOT=v" + String(system_get_boot_version()) + "\n" +
                                                 "CHIP=" + String(system_get_chip_id(), 16) + "\n" +
-                                                "FLASH=" + String(spi_flash_get_id(), 16) + "\n");
+                                                "FLASH=" + String(spi_flash_get_id(), 16) + "\n" +
+                                                "DEVICE=" + DEVICE + "\n" +
+                                                "ROM=" + String(rboot_get_current_rom()) + "\n");
 
 #ifdef HEARTBEAT_TOPIC
             // Start awaiting heartbeats
@@ -161,10 +162,13 @@ void init() {
     Serial.printf("\r\n");
     Serial.printf("SDK: v%s\r\n", system_get_sdk_version());
     Serial.printf("Boot: v%u (%u)\r\n", system_get_boot_version(), system_get_boot_mode());
+    Serial.printf("ESPER: v%u\r\n", VERSION);
     Serial.printf("Free Heap: %d\r\n", system_get_free_heap_size());
     Serial.printf("CPU Frequency: %d MHz\r\n", system_get_cpu_freq());
     Serial.printf("System Chip ID: %x\r\n", system_get_chip_id());
     Serial.printf("SPI Flash ID: %x\r\n", spi_flash_get_id());
+    Serial.printf("Selected ROM: %d\r\n", rboot_get_current_rom());
+    Serial.printf("Device: %x\r\n", DEVICE);
     Serial.printf("\r\n");
     Serial.printf("\r\n");
 
