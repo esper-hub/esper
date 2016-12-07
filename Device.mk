@@ -1,4 +1,3 @@
-
 # Use load configuration
 ifndef CONFIG
 include $(BASEDIR)/Configuration.mk
@@ -27,7 +26,7 @@ MODULES += $(BASEDIR)/devices/$(DEVICE)
 
 
 # Ensure we have a version string
-VERSION ?= "SNAPSHOT"
+VERSION ?= SNAPSHOT
 
 
 # Pass options to source code
@@ -41,9 +40,13 @@ ifdef HEARTBEAT_TOPIC
 USER_CFLAGS += -DHEARTBEAT_TOPIC=\"$(HEARTBEAT_TOPIC)\"
 endif
 
+USER_CFLAGS += -DUPDATER_URL=\"$(UPDATER_URL)\"
+
 USER_CFLAGS += -DVERSION=\"$(VERSION)\"
 
-USER_CFLAGS += -O3
+
+# Use Release
+SMING_RELEASE = 1
 
 
 # Disable SPIFFS
@@ -54,7 +57,7 @@ DISABLE_SPIFFS = 1
 RBOOT_ENABLED = 1
 RBOOT_BIG_FLASH = 0
 RBOOT_TWO_ROMS = 1
-RBOOT_RTC_ENABLED = 1
+RBOOT_RTC_ENABLED = 0
 
 RBOOT_LD_0 = $(BASEDIR)/rom0.ld
 RBOOT_LD_1 = $(BASEDIR)/rom1.ld
@@ -63,3 +66,8 @@ RBOOT_LD_1 = $(BASEDIR)/rom1.ld
 # Include main makefile
 include $(SMING_HOME)/Makefile-rboot.mk
 
+
+# Write the manifest
+all: $(FW_BASE)/version
+$(FW_BASE)/version:
+	echo -n "$(VERSION)" > $(FW_BASE)/version

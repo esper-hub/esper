@@ -1,41 +1,42 @@
 export BASEDIR := $(CURDIR)
 
+
 BUILDDIR = $(BASEDIR)/build
 DISTDIR = $(BASEDIR)/dist
+
 
 # Find devices
 DEVICES := $(sort $(notdir $(wildcard $(CURDIR)/devices/*)))
 
 
+.PHONY: all
 all: $(DEVICES)
 
 
-$(addprefix $(BUILDDIR)/,$(DEVICES)):
-	mkdir -pv $@
-	$(MAKE) -C $@ -f $(BASEDIR)/Device.mk DEVICE=$(notdir $@)
+.PHONY: $(addsuffix /build,$(DEVICES))
+$(addsuffix /build,$(DEVICES)): %/build:
+	mkdir -p $(BUILDDIR)/$*
+	$(MAKE) -C $(BUILDDIR)/$* -f $(BASEDIR)/Device.mk DEVICE=$*
 
 
-$(DEVICES): %: $(BUILDDIR)/% $(DISTDIR)/%.rboot $(DISTDIR)/%.rom0 $(DISTDIR)/%.rom1
+.PHONY: $(addsuffix /flash,$(DEVICES))
+$(addsuffix /flash,$(DEVICES)): %/flash: %/build
+	$(MAKE) -C $(BUILDDIR)/$* -f $(BASEDIR)/Device.mk DEVICE=$* flash
 
 
-$(DISTDIR)/%.rboot: $(BUILDDIR)/% $(DISTDIR)
-	cp -v $</out/firmware/rboot.bin $@
+.PHONY: $(addsuffix /dist,$(DEVICES))
+$(addsuffix /dist,$(DEVICES)): %/dist: %/build
+	mkdir -p $(DISTDIR)
+	cp $(BUILDDIR)/$*/out/firmware/rboot.bin $(DISTDIR)/$*.rboot
+	cp $(BUILDDIR)/$*/out/firmware/rom0.bin $(DISTDIR)/$*.rom0
+	cp $(BUILDDIR)/$*/out/firmware/rom1.bin $(DISTDIR)/$*.rom1
+	cp $(BUILDDIR)/$*/out/firmware/version $(DISTDIR)/$*.version
 
 
-$(DISTDIR)/%.rom0: $(BUILDDIR)/% $(DISTDIR)
-	cp -v $</out/firmware/rom0.bin $@
+.PHONY: $(DEVICES)
+$(DEVICES): %: %/build %/dist
 
 
-$(DISTDIR)/%.rom1: $(BUILDDIR)/% $(DISTDIR)
-	cp -v $</out/firmware/rom1.bin $@
-
-
-$(DISTDIR):
-	mkdir -pv $@
-
-
+.PHONY: clean
 clean:
 	rm -f -r $(BUILDDIR) $(DISTDIR)
-
-.PHONY: all $(addprefix $(BUILDDIR)/,$(DEVICES)) clean
-
