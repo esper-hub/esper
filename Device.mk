@@ -22,6 +22,10 @@ MODULES += $(BASEDIR)/framework/managers
 MODULES += $(BASEDIR)/framework/util
 MODULES += $(BASEDIR)/framework
 
+ifdef UPDATER_URL
+MODULES += $(BASEDIR)/framework/updater
+endif
+
 MODULES += $(BASEDIR)/devices/$(DEVICE)
 
 
@@ -40,7 +44,15 @@ ifdef HEARTBEAT_TOPIC
 USER_CFLAGS += -DHEARTBEAT_TOPIC=\"$(HEARTBEAT_TOPIC)\"
 endif
 
+ifdef UPDATER_URL
 USER_CFLAGS += -DUPDATER_URL=\"$(UPDATER_URL)\"
+ifdef UPDATER_INTERVAL
+USER_CFLAGS += -DUPDATER_INTERVAL=$(UPDATER_INTERVAL)
+endif
+ifdef UPDATER_TOPIC
+USER_CFLAGS += -DUPDATER_TOPIC=\"$(UPDATER_TOPIC)\"
+endif
+endif
 
 USER_CFLAGS += -DVERSION=\"$(VERSION)\"
 
@@ -61,6 +73,10 @@ RBOOT_RTC_ENABLED = 0
 
 RBOOT_LD_0 = $(BASEDIR)/rom0.ld
 RBOOT_LD_1 = $(BASEDIR)/rom1.ld
+
+
+# For ESP01 - enhanced version
+SPI_SIZE = 1M
 
 
 # Include main makefile

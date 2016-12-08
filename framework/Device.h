@@ -63,6 +63,10 @@ private:
 #ifdef HEARTBEAT_TOPIC
     Timer heartbeatTimer;
 #endif
+
+#ifdef UPDATER_INTERVAL
+    Timer updaterTimer;
+#endif
 };
 
 

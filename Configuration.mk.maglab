@@ -1,12 +1,16 @@
 ## WiFi configuration to use
-WIFI_SSID="maglab"
+WIFI_SSID = maglab-homeautomation
 
 ## MQTT Server to use
-MQTT_HOST="mqtt"
-MQTT_PORT=1883
+MQTT_HOST = mqtt
+MQTT_PORT = 1883
 
-MQTT_REALM="maglab/space"
+MQTT_REALM = maglab/space
 
 # Heartbeat configuation
-HEARTBEAT_TOPIC="$(MQTT_REALM)/heartbeat"
+HEARTBEAT_TOPIC =  $(MQTT_REALM)/heartbeat
 
+# Updater configuration
+UPDATER_URL = http://$(MQTT_HOST):80/firmware/
+UPDATER_TOPIC = $(MQTT_REALM)/update
+UPDATER_INTERVAL = $(( 24 * 60 * 60 ))

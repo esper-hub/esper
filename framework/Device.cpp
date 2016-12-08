@@ -1,5 +1,9 @@
 #include "Device.h"
 
+#ifdef UPDATER_URL
+#include "updater/Updater.h"
+#endif
+
 
 FeatureBase::FeatureBase() {
 }
@@ -18,6 +22,11 @@ Device::Device() :
 #ifdef HEARTBEAT_TOPIC
     // Reboot the system if heartbeat was missing
     this->heartbeatTimer.initializeMs(120000, TimerDelegate(&Device::reboot, this));
+#endif
+
+#ifdef UPDATER_INTERVAL
+    // Trigger update attempt on interval
+    this->updaterTimer.initializeMs(UPDATER_INTERVAL, TimerDelegate(&update));
 #endif
 
     LOG.log("Initialized");
@@ -41,7 +50,7 @@ void Device::reboot() {
 }
 
 void Device::registerSubscription(const String& topic, const MessageCallback& callback) {
-    this->messageCallbacks[topicBase + ("/" + topic)] = callback;
+    this->messageCallbacks[this->topicBase + ("/" + topic)] = callback;
 }
 
 void Device::add(FeatureBase* feature) {
@@ -56,7 +65,7 @@ void Device::publish(const String& topic, const String& message) {
     if (this->mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
         return;
 
-    this->mqttConnectionManager.publish(topicBase + topic, message);
+    this->mqttConnectionManager.publish(this->topicBase + topic, message);
 }
 
 void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
@@ -100,6 +109,11 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
             this->heartbeatTimer.start();
 #endif
 
+#ifdef UPDATER_TOPIC
+            // Listening for update requests
+            this->mqttConnectionManager.subscribe(UPDATER_TOPIC);
+#endif
+
             for (int i = 0; i < this->features.count(); i++) {
                 this->features[i]->publishCurrentState();
             }
@@ -141,6 +155,16 @@ void Device::onMqttMessageReceived(const String& topic, const String& message) {
     if (false) {
 #endif
 
+#ifdef UPDATER_TOPIC
+    } else if (topic == UPDATER_TOPIC) {
+        // Handle update request
+        LOG.log("Updating...");
+        update();
+
+#else
+    } else if (false) {
+#endif
+
     } else {
         // Dispatch message to registered feature handler
         auto i = this->messageCallbacks.indexOf(topic);
@@ -158,6 +182,8 @@ void init() {
     Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
     Serial.systemDebugOutput(true); // Debug output to serial
 
+    const rboot_config rbootconf = rboot_get_config();
+
     Serial.printf("\r\n");
     Serial.printf("\r\n");
     Serial.printf("SDK: v%s\r\n", system_get_sdk_version());
@@ -167,7 +193,9 @@ void init() {
     Serial.printf("CPU Frequency: %d MHz\r\n", system_get_cpu_freq());
     Serial.printf("System Chip ID: %x\r\n", system_get_chip_id());
     Serial.printf("SPI Flash ID: %x\r\n", spi_flash_get_id());
-    Serial.printf("Selected ROM: %d\r\n", rboot_get_current_rom());
+    Serial.printf("Selected ROM: %d\r\n", rbootconf.current_rom);
+    Serial.printf("ROM Slot 0: %08X\r\n", rbootconf.roms[0]);
+    Serial.printf("ROM Slot 1: %08X\r\n", rbootconf.roms[1]);
     Serial.printf("Device: %x\r\n", DEVICE);
     Serial.printf("\r\n");
     Serial.printf("\r\n");

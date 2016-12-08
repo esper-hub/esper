@@ -1,15 +1,24 @@
 ## WiFi configuration to use
-WIFI_SSID=""
-WIFI_PWD=""
+WIFI_SSID =
+WIFI_PWD =
 
 ## MQTT Server to use
-MQTT_HOST="mqtt"
-MQTT_PORT=1883
+MQTT_HOST = mqtt
+MQTT_PORT = 1883
 
-MQTT_REALM="my/realm"
+MQTT_REALM = my/realm
 
-# If set, a message each 60 seconds is expected or a reboot is triggered
-# HEARTBEAT_TOPIC="$(MQTT_REALM)/heartbeat"
+## If set, a message each 60 seconds is expected or a reboot is triggered
+# HEARTBEAT_TOPIC = $(MQTT_REALM)/heartbeat
+
+## The URL prefix to fetch updates from
+UPDATER_URL = http://$(MQTT_HOST):80/firmware/
+
+## If set, a message on this topic will trigger a update request
+UPDATER_TOPIC = $(MQTT_REALM)/update
+
+## If set, an update request is triggered at the given interval (in seconds)
+UPDATER_INTERVAL = 86400
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 # ESP_HOME = /opt/esp-open-sdk
