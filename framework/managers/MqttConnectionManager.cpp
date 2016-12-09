@@ -41,6 +41,7 @@ void MqttConnectionManager::subscribe(const String &topic) {
 }
 
 void MqttConnectionManager::publish(const String &topic, const String &message) {
+    LOG.log("Publishing message to", topic, ":", message);
     this->client.publish(topic, message);
 }
 
