@@ -65,7 +65,7 @@ void Device::publish(const String& topic, const String& message) {
     if (this->mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
         return;
 
-    this->mqttConnectionManager.publish(this->topicBase + topic, message);
+    this->mqttConnectionManager.publish(this->topicBase + ("/" + topic), message);
 }
 
 void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
