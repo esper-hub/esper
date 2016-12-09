@@ -2,32 +2,81 @@
 #include "Device.h"
 
 
-class DoseDevice : public Device {
-    constexpr static const char PLUG1_NAME[] = "sw1";
-    constexpr static const uint16_t PLUG1_GPIO = 12;
+constexpr const char PLUG_NAME[] = "socket";
+constexpr const uint16_t PLUG_GPIO = 2;
 
-    constexpr static const char PLUG2_NAME[] = "sw2";
-    constexpr static const uint16_t PLUG2_GPIO = 14;
+
+class SocketFeature : public Feature<PLUG_NAME> {
+    using Feature<PLUG_NAME>::LOG;
+
+    static const String ON;
+    static const String OFF;
 
 public:
-    DoseDevice() :
-            socket1(this),
-            socket2(this) {
-        this->add(&(this->socket1));
-        this->add(&(this->socket2));
+    SocketFeature(Device* device) :
+            Feature<PLUG_NAME>(device),
+            state(false) {
+        pinMode(PLUG_GPIO, INPUT);
+
+        LOG.log("Initialized");
+    }
+
+    void set(bool state) {
+        if (this->state = state) {
+            LOG.log("Turning on");
+            pinMode(PLUG_GPIO, OUTPUT);
+
+        } else {
+            LOG.log("Turning off");
+            pinMode(PLUG_GPIO, INPUT);
+        }
+
+        this->publishCurrentState();
+    }
+
+protected:
+    virtual void registerSubscriptions() {
+        this->registerSubscription("set", Device::MessageCallback(&SocketFeature::onMessageReceived, this));
+    }
+
+    virtual void publishCurrentState() {
+        this->publish("state", this->state ? ON : OFF);
     }
 
 private:
-    Socket<PLUG1_NAME, PLUG1_GPIO> socket1;
-    Socket<PLUG2_NAME, PLUG1_GPIO> socket2;
+    void onMessageReceived(const String& topic, const String& message) {
+        const uint32_t now = RTC.getRtcSeconds();
+
+        if (message == ON) {
+            this->set(true);
+
+        } else if (message == OFF) {
+            this->set(false);
+
+        } else {
+            LOG.log("Unknown message received:", message);
+        }
+    }
+
+    bool state;
 };
 
 
-constexpr const char DoseDevice::PLUG1_NAME[];
-constexpr const uint16_t DoseDevice::PLUG1_GPIO;
+const String SocketFeature::ON = "1";
+const String SocketFeature::OFF = "0";
 
-constexpr const char DoseDevice::PLUG2_NAME[];
-constexpr const uint16_t DoseDevice::PLUG2_GPIO;
+
+
+class DoseDevice : public Device {
+public:
+    DoseDevice() :
+            socket(this) {
+        this->add(&(this->socket));
+    }
+
+private:
+    SocketFeature socket;
+};
 
 
 
