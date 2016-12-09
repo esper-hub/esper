@@ -1,5 +1,5 @@
 ## WiFi configuration to use
-WIFI_SSID = maglab-homeautomation
+WIFI_SSID = maglab
 
 ## MQTT Server to use
 MQTT_HOST = mqtt
