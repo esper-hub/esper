@@ -9,8 +9,8 @@ constexpr const uint16_t PLUG_GPIO = 2;
 class SocketFeature : public Feature<PLUG_NAME> {
     using Feature<PLUG_NAME>::LOG;
 
-    static const String ON;
-    static const String OFF;
+    constexpr static const char* const ON = "1";
+    constexpr static const char* const OFF = "0";
 
 public:
     SocketFeature(Device* device) :
@@ -60,10 +60,6 @@ private:
 
     bool state;
 };
-
-
-const String SocketFeature::ON = "1";
-const String SocketFeature::OFF = "0";
 
 
 
