@@ -12,13 +12,20 @@ FeatureBase::~FeatureBase() {
 }
 
 
+String calculateTopicBase() {
+    char topicBase[sizeof(MQTT_REALM) + 6 + 1];
+    sprintf(topicBase, "%s/%06x", MQTT_REALM, system_get_chip_id());
+    return String(topicBase);
+}
+
+
 const Logger Device::LOG = Logger("Device");
 
 Device::Device() :
         wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&Device::onWifiStateChanged, this)),
         mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
                               MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)),
-        topicBase(MQTT_REALM + ("/" + String(system_get_chip_id(), 16))) {
+        topicBase(calculateTopicBase()) {
 #ifdef HEARTBEAT_TOPIC
     // Reboot the system if heartbeat was missing
     this->heartbeatTimer.initializeMs(120000, TimerDelegate(&Device::reboot, this));
