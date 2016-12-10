@@ -14,8 +14,8 @@ class ScreenFeature : public Feature<SCREEN_NAME> {
     constexpr static const char* const RAISE = "RAISE";
     constexpr static const char* const LOWER = "LOWER";
 
-    constexpr static const uint16_t CYCLE_HI = 100;
-    constexpr static const uint16_t CYCLE_LO = 100;
+    constexpr static const uint16_t CYCLE_HI = 300;
+    constexpr static const uint16_t CYCLE_LO = 500;
 
 public:
     ScreenFeature(Device* device) :
