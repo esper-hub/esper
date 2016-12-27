@@ -19,7 +19,7 @@ String calculateTopicBase() {
 }
 
 
-const Logger Device::LOG = Logger("Device");
+const Logger Device::LOG = Logger("device");
 
 Device::Device() :
         wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&Device::onWifiStateChanged, this)),

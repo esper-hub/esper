@@ -1,7 +1,7 @@
 #include "MqttConnectionManager.h"
 
 
-const Logger MqttConnectionManager::LOG = Logger("MQTT");
+const Logger MqttConnectionManager::LOG = Logger("mqtt");
 
 MqttConnectionManager::MqttConnectionManager(const StateChangedCallback& stateChangedCallback,
                                              const MessageCallback& messageCallback) :

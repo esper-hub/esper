@@ -1,7 +1,7 @@
 #include "WifiConnectionManager.h"
 
 
-const Logger WifiConnectionManager::LOG = Logger("WiFi");
+const Logger WifiConnectionManager::LOG = Logger("wifi");
 
 WifiConnectionManager::WifiConnectionManager(const StateChangedCallback& callback) :
         state(State::DISCONNECTED, callback) {
