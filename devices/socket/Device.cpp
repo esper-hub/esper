@@ -62,7 +62,6 @@ private:
 };
 
 
-
 class SocketDevice : public Device {
 public:
     SocketDevice() :
@@ -73,7 +72,6 @@ public:
 private:
     SocketFeature socket;
 };
-
 
 
 Device* createDevice() {
