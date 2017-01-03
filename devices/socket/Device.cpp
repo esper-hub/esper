@@ -2,21 +2,21 @@
 #include "Device.h"
 
 
-constexpr const char PLUG_NAME[] = "socket";
-constexpr const uint16_t PLUG_GPIO = 2;
+constexpr const char SOCKET_NAME[] = "socket";
+constexpr const uint16_t SOCKET_GPIO = 2;
 
 
-class SocketFeature : public Feature<PLUG_NAME> {
-    using Feature<PLUG_NAME>::LOG;
+class SocketFeature : public Feature<SOCKET_NAME> {
+    using Feature<SOCKET_NAME>::LOG;
 
     constexpr static const char* const ON = "1";
     constexpr static const char* const OFF = "0";
 
 public:
     SocketFeature(Device* device) :
-            Feature<PLUG_NAME>(device),
+            Feature<SOCKET_NAME>(device),
             state(false) {
-        pinMode(PLUG_GPIO, INPUT);
+        pinMode(SOCKET_GPIO, INPUT);
 
         LOG.log("Initialized");
     }
@@ -24,11 +24,11 @@ public:
     void set(bool state) {
         if (this->state = state) {
             LOG.log("Turning on");
-            pinMode(PLUG_GPIO, OUTPUT);
+            pinMode(SOCKET_GPIO, OUTPUT);
 
         } else {
             LOG.log("Turning off");
-            pinMode(PLUG_GPIO, INPUT);
+            pinMode(SOCKET_GPIO, INPUT);
         }
 
         this->publishCurrentState();
@@ -63,9 +63,9 @@ private:
 
 
 
-class DoseDevice : public Device {
+class SocketDevice : public Device {
 public:
-    DoseDevice() :
+    SocketDevice() :
             socket(this) {
         this->add(&(this->socket));
     }
@@ -77,5 +77,5 @@ private:
 
 
 Device* createDevice() {
-    return new DoseDevice();
+    return new SocketDevice();
 }
