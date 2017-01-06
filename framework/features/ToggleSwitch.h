@@ -1,16 +1,16 @@
-#ifndef CYBERHOEHLE_TOGGLESWITCH_H
-#define CYBERHOEHLE_TOGGLESWITCH_H
+#ifndef TOGGLESWITCH_H
+#define TOGGLESWITCH_H
 
 #include <SmingCore/SmingCore.h>
-#include "Switch.h"
+#include "Button.h"
 #include "Logger.h"
 
 
 template<const char* name, uint16_t gpio>
-class ToggleSwitch : public Switch<name, gpio> {
+class ToggleSwitch : public Button<name, gpio> {
 public:
-    ToggleSwitch(HassDevice &device, bool initial) :
-            Switch<name>(device),
+    ToggleSwitch(Device* device, bool initial) :
+            Button<name>(device),
             state(initial) {
     }
 
@@ -43,4 +43,4 @@ private:
 };
 
 
-#endif //CYBERHOEHLE_TOGGLESWITCH_H
+#endif

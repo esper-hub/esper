@@ -17,6 +17,7 @@ public:
             state(initial_state),
             lastChange(RTC.getRtcSeconds()) {
         pinMode(gpio, OUTPUT);
+        digitalWrite(gpio, this->state == !invert);
 
         LOG.log("Initialized");
     }

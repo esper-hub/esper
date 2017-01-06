@@ -2,14 +2,14 @@
 #define BUILTINLED_H
 
 #include "Logger.h"
-#include "LED.h"
+#include "Light.h"
 
 
 template <const char* name>
-class BuiltinLED : public LED<name, 2> {
+class BuiltinLED : public Light<name, 2> {
 public:
     BuiltinLED(HassDevice &device) :
-            LED<name>(device) {
+            Light<name>(device) {
     }
 };
 
