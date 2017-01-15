@@ -2,6 +2,7 @@
 #define BUTTON_H
 
 #include "Feature.h"
+#include "../util/Observed.h"
 
 
 template<const char* name, uint16_t gpio, bool inverted>
@@ -12,31 +13,37 @@ class Button : public Feature<name> {
     constexpr static const char* const OFF = "0";
 
 public:
-    Button(Device* device) :
+    using Callback = Observed<bool>::Callback;
+
+    Button(Device* device,
+           const Callback& callback) :
             Feature<name>(device),
-            state(false) {
+            state(false, callback) {
         attachInterrupt(gpio, Delegate<void()>(&Button::onInterrupt, this), CHANGE);
     }
 
-    void publishCurrentState() {
+protected:
+    virtual void publishCurrentState() {
         LOG.log("Current state:", this->state);
 
         this->publish("state", this->state ? ON : OFF);
     }
 
-    void registerSubscriptions() {
+    virtual void registerSubscriptions() {
     }
+
+    virtual bool onEdge(const bool& edge) = 0;
 
 private:
     virtual void onInterrupt()  {
-        const bool state = (digitalRead(gpio) == !inverted);
-        if (this->state != state) {
-            this->state = state;
-            publishCurrentState();
+        const bool state = this->onEdge(digitalRead(gpio) == !inverted);
+        if (state != this->state) {
+            this->state.set(state);
+            this->publishCurrentState();
         }
     }
 
-    bool state;
+    Observed<bool> state;
 };
 
 
