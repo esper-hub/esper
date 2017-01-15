@@ -1,5 +1,5 @@
 #include "../features/Socket.h"
-#include "../features/Button.h"
+#include "../features/ToggleButton.h"
 #include "../features/Light.h"
 #include "Device.h"
 
@@ -18,17 +18,22 @@ class SonoffDevice : public Device {
 public:
     SonoffDevice() :
             socket(this),
-            button(this),
-            light(this) {
+            light(this),
+            button(this, decltype(button)::Callback(&SonoffDevice::onStateChanged, this)) {
         this->add(&(this->socket));
-        this->add(&(this->button));
         this->add(&(this->light));
+        this->add(&(this->button));
     }
 
 private:
-    OnOffFeature<SOCKET_NAME, SOCKET_GPIO, false, 1> socket;
-    Button<BUTTON_NAME, BUTTON_GPIO, true> button;
+    void onStateChanged(const bool& state) {
+        this->socket.set(state);
+        this->light.set(state);
+    }
+
+    Socket<SOCKET_NAME, SOCKET_GPIO> socket;
     Light<LIGHT_NAME, LIGHT_GPIO> light;
+    ToggleButton<BUTTON_NAME, BUTTON_GPIO, true> button;
 };
 
 
