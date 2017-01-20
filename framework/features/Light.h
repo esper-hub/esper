@@ -4,7 +4,7 @@
 #include "OnOffFeature.h"
 
 
-template<const char* name, uint16_t gpio>
+template<const char* const name, uint16_t gpio>
 class Light : public OnOffFeature<name, gpio, true> {
 public:
     Light(Device* device) :

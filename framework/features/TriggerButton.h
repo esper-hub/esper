@@ -4,7 +4,7 @@
 #include "Button.h"
 
 
-template<const char* name, uint16_t gpio, bool inverted=true>
+template<const char* const name, uint16_t gpio, bool inverted=true>
 class TriggerButton : public Button<name, gpio, inverted> {
 
 public:

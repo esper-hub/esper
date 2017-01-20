@@ -5,7 +5,7 @@
 #include "Light.h"
 
 
-template <const char* name>
+template <const char* const name>
 class BuiltinLED : public Light<name, 2> {
 public:
     BuiltinLED(HassDevice &device) :

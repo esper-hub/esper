@@ -36,7 +36,7 @@ private:
 };
 
 
-template<const char* name>
+template<const char* const name>
 const Logger Feature<name>::LOG = Logger(name);
 
 #endif

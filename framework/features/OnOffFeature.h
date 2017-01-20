@@ -4,12 +4,13 @@
 #include "Feature.h"
 
 
-template<const char* name, uint16_t gpio, bool invert = false, uint16_t damper = 0>
+template<const char* const name, uint16_t gpio, bool invert = false, uint16_t damper = 0>
 class OnOffFeature : public Feature<name> {
-    using Feature<name>::LOG;
-
     constexpr static const char* const ON = "1";
     constexpr static const char* const OFF = "0";
+
+protected:
+    using Feature<name>::LOG;
 
 public:
     OnOffFeature(Device* device, bool initial_state = false) :

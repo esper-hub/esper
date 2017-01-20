@@ -5,12 +5,13 @@
 #include "../util/Observed.h"
 
 
-template<const char* name, uint16_t gpio, bool inverted>
+template<const char* const name, uint16_t gpio, bool inverted>
 class Button : public Feature<name> {
-    using Feature<name>::LOG;
-
     constexpr static const char* const ON = "1";
     constexpr static const char* const OFF = "0";
+
+protected:
+    using Feature<name>::LOG;
 
 public:
     using Callback = Observed<bool>::Callback;
@@ -37,6 +38,10 @@ protected:
 private:
     virtual void onInterrupt()  {
         const bool state = this->onEdge(digitalRead(gpio) == !inverted);
+
+        LOG.log("Old state: ", this->state);
+        LOG.log("New state: ", state);
+
         if (state != this->state) {
             this->state.set(state);
             this->publishCurrentState();
