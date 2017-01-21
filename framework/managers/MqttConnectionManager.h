@@ -31,7 +31,7 @@ public:
 
     void subscribe(const String &topic);
 
-    void publish(const String &topic, const String &message);
+    void publish(const String &topic, const String &message, const bool& retain = false);
 
     State getState() const;
 

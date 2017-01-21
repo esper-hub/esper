@@ -108,7 +108,8 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
                                                 "CHIP=" + String(system_get_chip_id(), 16) + "\n" +
                                                 "FLASH=" + String(spi_flash_get_id(), 16) + "\n" +
                                                 "DEVICE=" + DEVICE + "\n" +
-                                                "ROM=" + String(rboot_get_current_rom()) + "\n");
+                                                "ROM=" + String(rboot_get_current_rom()) + "\n",
+                                                true);
 
 #ifdef HEARTBEAT_TOPIC
             // Start awaiting heartbeats

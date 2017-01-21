@@ -40,9 +40,9 @@ void MqttConnectionManager::subscribe(const String &topic) {
     LOG.log("Subscribed to:", topic);
 }
 
-void MqttConnectionManager::publish(const String &topic, const String &message) {
+void MqttConnectionManager::publish(const String &topic, const String &message, const bool& retain) {
     LOG.log("Publishing message to", topic, ":", message);
-    this->client.publish(topic, message);
+    this->client.publish(topic, message, retain);
 }
 
 MqttConnectionManager::State MqttConnectionManager::getState() const {
