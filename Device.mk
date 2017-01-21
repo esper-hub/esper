@@ -8,11 +8,11 @@ endif
 
 # Sanity checking some required variables
 ifndef SMING_HOME
-$(error SMING_HOME is not set. Please configure it in Configuration.mk or set in environment)
+$(error SMING_HOME is not set. Please configure it in Configuration.mk or set in environment.)
 endif
 
 ifndef ESP_HOME
-$(error ESP_HOME is not set. Please configure it in Configuration.mk or set in environment)
+$(error ESP_HOME is not set. Please configure it in Configuration.mk or set in environment.)
 endif
 
 
@@ -30,7 +30,10 @@ MODULES += $(BASEDIR)/devices/$(DEVICE)
 
 
 # Ensure we have a version string
-VERSION ?= SNAPSHOT
+ifndef VERSION
+$(warning VERSION is not set. Please ensure to set a version for productive builds.)
+VERSION = SNAPSHOT
+endif
 
 
 # Pass options to source code

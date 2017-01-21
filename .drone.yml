@@ -3,6 +3,7 @@ build:
   environment:
     - CONFIG=maglab
     - WIFI_PWD=$$WIFI_PWD
+    - VERSION=$${COMMIT:0:8}
   commands:
     - make clean
     - make
