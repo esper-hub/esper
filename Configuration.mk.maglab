@@ -5,7 +5,7 @@ WIFI_SSID = maglab
 MQTT_HOST = mqtt
 MQTT_PORT = 1883
 
-MQTT_REALM = maglab/space
+MQTT_REALM = maglab/space/esper
 
 # Heartbeat configuation
 HEARTBEAT_TOPIC =  $(MQTT_REALM)/heartbeat
