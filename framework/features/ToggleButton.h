@@ -24,10 +24,10 @@ protected:
 
         if (edge == activeEdge) {
             this->state = !this->state;
-
-            LOG.log("State: ", this->state);
-            return this->state;
         }
+
+        LOG.log("State: ", this->state);
+        return this->state;
     }
 
 private:
