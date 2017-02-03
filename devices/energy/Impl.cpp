@@ -25,7 +25,7 @@ public:
 
 protected:
     virtual void publishCurrentState() {
-        this->publish("counter", String(this->counter));
+        this->publish("count", String(this->counter));
     }
 
     virtual void registerSubscriptions() {
