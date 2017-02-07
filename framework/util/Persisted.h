@@ -16,7 +16,7 @@ constexpr uint32_t hash(const char* const s) {
 }
 
 
-template<typename V, uint32_t addr=0x80000, uint32_t size=0x2000>
+template<typename V, uint32_t flash_addr = 0x80000, uint32_t flash_size = 0x2000>
 class Persisted {
     static const Logger LOG;
 
@@ -31,8 +31,8 @@ class Persisted {
 
     using sequence_t = uint8_t;
 
-    static_assert(addr % SPI_FLASH_SEC_SIZE == 0, "Flash address must be aligned by sectors");
-    static_assert(size % SPI_FLASH_SEC_SIZE == 0, "Flash size must be aligned by sectors");
+    static_assert(flash_addr % SPI_FLASH_SEC_SIZE == 0, "Flash address must be aligned by sectors");
+    static_assert(flash_size % SPI_FLASH_SEC_SIZE == 0, "Flash size must be aligned by sectors");
 
     struct record_t {
         sequence_t sequence;
@@ -44,6 +44,9 @@ class Persisted {
      */
     static constexpr uint16_t RECORD_ALIGN = (((sizeof(record_t) - 1) / INTERNAL_FLASH_WRITE_UNIT_SIZE) + 1) * INTERNAL_FLASH_WRITE_UNIT_SIZE;
 
+    /**
+     * The magic identifier used to verify persistence storage.
+     */
     static constexpr uint32_t MAGIC[] = {
             hash("ESP"),
             hash(DEVICE),
@@ -52,7 +55,7 @@ class Persisted {
     static_assert(sizeof(MAGIC) % INTERNAL_FLASH_WRITE_UNIT_SIZE == 0,
                   "Magic identifier size must be multiple of flash write unit size");
 
-    static_assert(((size - sizeof(MAGIC)) / RECORD_ALIGN) % 0xFE != 0,
+    static_assert(((flash_size - sizeof(MAGIC)) / RECORD_ALIGN) % 0xFE != 0,
                   "Usable space must not fit maximum sequence count of elements");
 
 public:
@@ -60,16 +63,16 @@ public:
             sequence(0) {
         // Read the magic identifier
         uint32_t magic[sizeof(MAGIC)];
-        flash_read(addr, magic, sizeof(MAGIC));
+        flash_read(flash_addr, magic, sizeof(MAGIC));
 
         if (memcmp(magic, MAGIC, sizeof(MAGIC)) != 0) {
             LOG.log("Invalid magic identifier - Formatting");
 
             // Erase the first sector
-            flash_erase_sector(addr / SPI_FLASH_SEC_SIZE);
+            flash_erase_sector(flash_addr / SPI_FLASH_SEC_SIZE);
 
             // Write the magic identifier
-            flash_write(addr,
+            flash_write(flash_addr,
                         (uint32_t*) MAGIC,
                         sizeof(MAGIC));
 
@@ -86,7 +89,7 @@ public:
                     .value = this->value,
             };
 
-            flash_write(addr + this->address,
+            flash_write(flash_addr + this->address,
                         (uint32_t*) &record,
                         sizeof(record));
 
@@ -101,7 +104,7 @@ public:
 
             // Read the first record - assuming it is always valid
             record_t record;
-            flash_read(addr + next_address,
+            flash_read(flash_addr + next_address,
                        (uint32_t*) &record,
                        sizeof(record));
 
@@ -114,14 +117,11 @@ public:
 
             // Scan through records until sequence breaks continuity
             while (true) {
-                LOG.log("Loading record from", next_address);
-
+                // Load record from next address
                 record_t record;
-                flash_read(addr + next_address,
+                flash_read(flash_addr + next_address,
                            (uint32_t*) &record,
                            sizeof(record));
-
-                LOG.log("Got Record with sequence", record.sequence, "expecting", next_sequence);
 
                 // Found an invalid / not consecutive record - assuming the previous one as last valid one
                 if (record.sequence != next_sequence) {
@@ -159,11 +159,11 @@ public:
 
         // If we write to an sector for the first time, we have to erase it
         if (next_address.sector != this->address.sector) {
-            flash_erase_sector(addr / SPI_FLASH_SEC_SIZE + next_address.sector);
+            flash_erase_sector(flash_addr / SPI_FLASH_SEC_SIZE + next_address.sector);
 
             // Ensure magic identifier still exists
             if (next_address.sector == 0) {
-                flash_write(addr,
+                flash_write(flash_addr,
                             (uint32_t*) MAGIC,
                             sizeof(MAGIC));
             }
@@ -175,7 +175,7 @@ public:
         };
 
         LOG.log("Persisting record", next_sequence, "to", next_address);
-        flash_write(addr + next_address,
+        flash_write(flash_addr + next_address,
                     (uint32_t*) &record,
                     sizeof(record));
 
@@ -195,7 +195,7 @@ private:
 
         // If the next record would protrude into the next sector, align it to the sector start
         if (next.offset + RECORD_ALIGN > SPI_FLASH_SEC_SIZE) {
-            next.sector = (next.sector + 1) % (size / SPI_FLASH_SEC_SIZE);
+            next.sector = (next.sector + 1) % (flash_size / SPI_FLASH_SEC_SIZE);
             next.offset = next.sector == 0
                           ? sizeof(MAGIC)
                           : 0;
@@ -212,34 +212,31 @@ private:
     }
 
     static void flash_erase_sector(const uint16_t& sect) {
-        LOG.log("Flash: Erasing Sector", sect);
         const auto& ret = spi_flash_erase_sector(sect);
         if (ret != SPI_FLASH_RESULT_OK) {
-            LOG.log("Flash: Failed!");
+            LOG.log("Flash: Erase failed:", sect);
         }
     }
 
     static void flash_write(const uint32_t& addr,
                             uint32_t* data,
                             const uint32_t& size) {
-        LOG.log("Flash: Write", addr, size);
         const auto& ret = spi_flash_write(addr,
                                           data,
                                           size);
         if (ret != SPI_FLASH_RESULT_OK) {
-            LOG.log("Flash: Failed!");
+            LOG.log("Flash: Write failed:", addr);
         }
     }
 
     static void flash_read(const uint32_t& addr,
                             uint32_t* data,
                             const uint32_t& size) {
-        LOG.log("Flash: Read", addr, size);
         const auto& ret = spi_flash_read(addr,
                                          data,
                                          size);
         if (ret != SPI_FLASH_RESULT_OK) {
-            LOG.log("Flash: Failed!");
+            LOG.log("Flash: Read failed:", addr);
         }
     }
 
@@ -254,10 +251,10 @@ private:
 };
 
 
-template<typename V>
-const Logger Persisted<V>::LOG = Logger("persisted");
+template<typename V, uint32_t flash_addr, uint32_t flash_size>
+const Logger Persisted<V, flash_addr, flash_size>::LOG = Logger("persisted");
 
-template<typename V>
-constexpr uint32_t Persisted<V>::MAGIC[];
+template<typename V, uint32_t flash_addr, uint32_t flash_size>
+constexpr uint32_t Persisted<V, flash_addr, flash_size>::MAGIC[];
 
 #endif
