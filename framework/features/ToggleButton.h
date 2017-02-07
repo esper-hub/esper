@@ -20,13 +20,13 @@ public:
 
 protected:
     virtual bool onEdge(const bool& edge) {
-        LOG.log("Edge: ", edge);
+        LOG.log("Edge:", edge);
 
         if (edge == activeEdge) {
             this->state = !this->state;
         }
 
-        LOG.log("State: ", this->state);
+        LOG.log("State:", this->state);
         return this->state;
     }
 

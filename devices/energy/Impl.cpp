@@ -1,5 +1,6 @@
 #include "Device.h"
-#include "../features/Feature.h"
+#include "features/Feature.h"
+#include "util/Persisted.h"
 
 
 template<const char* const name, uint16_t gpio, uint16_t damper = 0>
@@ -25,7 +26,7 @@ public:
 
 protected:
     virtual void publishCurrentState() {
-        this->publish("count", String(this->counter));
+        this->publish("count", String(*this->counter));
     }
 
     virtual void registerSubscriptions() {
@@ -39,20 +40,19 @@ protected:
                 return;
         }
 
-        this->counter++;
+        this->counter.write(*this->counter + 1);
         this->publishCurrentState();
 
-        LOG.log("Counter: ", this->counter);
+        LOG.log("Counter:", *this->counter);
 
         this->lastChange = now;
     }
 
 private:
-    uint32_t counter;
+    Persisted<uint32_t> counter;
 
     uint32_t lastChange;
 };
-
 
 
 constexpr const char PULSE_NAME[] = "pulse";
