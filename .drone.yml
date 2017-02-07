@@ -4,6 +4,7 @@ build:
     - CONFIG=maglab
     - WIFI_PWD=$$WIFI_PWD
     - VERSION=$${COMMIT:0:8}
+    - SMING_RELEASE=1
   commands:
     - make clean
     - make
