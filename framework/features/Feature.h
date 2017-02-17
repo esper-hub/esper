@@ -23,8 +23,8 @@ public:
     }
 
 protected:
-    void publish(const String &topic, const String &message) const {
-        this->device->publish(name + ("/" + topic), message);
+    void publish(const String &topic, const String &message, const bool& retain = false) const {
+        this->device->publish(name + ("/" + topic), message, retain);
     }
 
     void registerSubscription(const String& topic, const Device::MessageCallback& callback) {

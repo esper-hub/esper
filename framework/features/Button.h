@@ -27,7 +27,7 @@ protected:
     virtual void publishCurrentState() {
         LOG.log("Current state:", this->state);
 
-        this->publish("state", this->state ? ON : OFF);
+        this->publish("state", this->state ? ON : OFF, true);
     }
 
     virtual void registerSubscriptions() {

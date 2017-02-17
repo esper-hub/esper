@@ -68,11 +68,13 @@ void Device::add(FeatureBase* feature) {
     }
 }
 
-void Device::publish(const String& topic, const String& message) {
+void Device::publish(const String& topic, const String& message, const bool& retain) {
     if (this->mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
         return;
 
-    this->mqttConnectionManager.publish(this->topicBase + ("/" + topic), message);
+    this->mqttConnectionManager.publish(this->topicBase + ("/" + topic),
+                                        message,
+                                        retain);
 }
 
 void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
