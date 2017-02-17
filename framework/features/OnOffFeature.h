@@ -41,7 +41,7 @@ protected:
     }
 
     virtual void publishCurrentState() {
-        this->publish("state", this->state ? ON : OFF);
+        this->publish("state", this->state ? ON : OFF, true);
     }
 
 private:

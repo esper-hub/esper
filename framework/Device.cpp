@@ -68,11 +68,13 @@ void Device::add(FeatureBase* feature) {
     }
 }
 
-void Device::publish(const String& topic, const String& message) {
+void Device::publish(const String& topic, const String& message, const bool& retain) {
     if (this->mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
         return;
 
-    this->mqttConnectionManager.publish(this->topicBase + ("/" + topic), message);
+    this->mqttConnectionManager.publish(this->topicBase + ("/" + topic),
+                                        message,
+                                        retain);
 }
 
 void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
@@ -108,7 +110,8 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
                                                 "BOOT=v" + String(system_get_boot_version()) + "\n" +
                                                 "CHIP=" + String(system_get_chip_id(), 16) + "\n" +
                                                 "FLASH=" + String(spi_flash_get_id(), 16) + "\n" +
-                                                "ROM=" + String(rboot_get_current_rom()) + "\n",
+                                                "ROM=" + String(rboot_get_current_rom()) + "\n" +
+                                                "TIME=" + String(RTC.getRtcSeconds()) + "\n",
                                                 true);
 
 #ifdef HEARTBEAT_TOPIC
@@ -201,7 +204,7 @@ void init() {
     Serial.printf("CPU Frequency: %d MHz\r\n", system_get_cpu_freq());
     Serial.printf("System Chip ID: %x\r\n", system_get_chip_id());
     Serial.printf("SPI Flash ID: %x\r\n", spi_flash_get_id());
-    Serial.printf("Selected ROM: %d\r\n", rbootconf.current_rom);
+    Serial.printf("ROM Selected: %d\r\n", rbootconf.current_rom);
     Serial.printf("ROM Slot 0: %08X\r\n", rbootconf.roms[0]);
     Serial.printf("ROM Slot 1: %08X\r\n", rbootconf.roms[1]);
     Serial.printf("Device: %x\r\n", DEVICE);

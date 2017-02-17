@@ -42,7 +42,7 @@ public:
 
     void add(FeatureBase* feature);
 
-    void publish(const String &topic, const String &message);
+    void publish(const String &topic, const String &message, const bool& retain = false);
 
 private:
     void onWifiStateChanged(const WifiConnectionManager::State& state);
