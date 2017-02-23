@@ -14,49 +14,51 @@ constexpr uint16_t hash(const char* const s) {
 /**
  * Implementation of the CRC-16-CCITT algorithm.
  */
-using checksum_t = uint16_t;
+class Checksum {
+public:
+    using value_t = uint16_t;
 
-template<class... Args>
-inline checksum_t checksum(const checksum_t& crc, const Args&... args);
+    Checksum(const value_t& value) :
+            value(value) {
+    }
 
-template<class Arg1, class Arg2, class... Args>
-inline checksum_t checksum(const checksum_t& crc, const Arg1& arg1, const Arg2& arg2, const Args&... args) {
-    return checksum(checksum(crc, arg1), arg2, args...);
+    Checksum(const Checksum& checksum) :
+            value(checksum.value) {
+    }
+
+    Checksum operator<<(const uint8_t val) {
+        uint8_t x = this->value >> 8;
+        x ^= val;
+        x ^= x >> 4;
+
+        value_t value = (this->value << 8);
+        value ^= (x << 12);
+        value ^= (x << 5);
+        value ^= (x << 0);
+
+        return Checksum(value);
+    }
+
+    operator const value_t&() const {
+        return this->value;
+    }
+
+private:
+    const value_t value;
+};
+
+Checksum operator<<(Checksum checksum, const uint16_t& val) {
+    return checksum
+           << (uint8_t)(val >> 8)
+           << (uint8_t)(val >> 0);
 }
 
-template<>
-inline checksum_t checksum<>(const checksum_t& crc) {
-    return crc;
-}
-
-template<>
-inline checksum_t checksum<>(const checksum_t& crc, const uint8_t& val) {
-    uint8_t x = crc >> 8;
-    x ^= val;
-    x ^= x >> 4;
-
-    checksum_t res = (crc << 8);
-    res ^= (x << 12);
-    res ^= (x << 5);
-    res ^= (x << 0);
-
-    return res;
-}
-
-template<>
-inline checksum_t checksum<>(const checksum_t& crc, const uint16_t& val) {
-    return checksum(crc,
-            (uint8_t) (val >> 8),
-            (uint8_t) (val >> 0));
-}
-
-template<>
-inline checksum_t checksum<>(const checksum_t& crc, const uint32_t& val) {
-    return checksum(crc,
-            (uint8_t) (val >> 24),
-            (uint8_t) (val >> 16),
-            (uint8_t) (val >> 8),
-            (uint8_t) (val >> 0));
+Checksum operator<<(Checksum checksum, const uint32_t& val) {
+    return checksum
+           << (uint8_t)(val >> 24)
+           << (uint8_t)(val >> 26)
+           << (uint8_t)(val >> 8)
+           << (uint8_t)(val >> 0);
 }
 
 #endif

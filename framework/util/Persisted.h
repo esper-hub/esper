@@ -2,7 +2,7 @@
 #define PERSISTED_H
 
 #include <SmingCore/SmingCore.h>
-#include "util/Checksum.h"
+#include "Checksum.h"
 
 
 template<typename value_t, uint32_t flash_addr = 0x80000, uint32_t flash_size = 0x2000>
@@ -21,7 +21,13 @@ class Persisted {
         sequence_t sequence;
         value_t value;
 
-        checksum_t checksum;
+        Checksum::value_t checksum;
+
+        friend Checksum operator<<(Checksum checksum, const record_t& record) {
+            return checksum
+                   << record.sequence
+                   << record.value;
+        }
     } __attribute__((aligned(INTERNAL_FLASH_WRITE_UNIT_SIZE)));
 
     struct address_t {
@@ -42,8 +48,6 @@ public:
                    record);
 
         // If first record is invalid, reinitialize the storage
-//        LOG.log("First record:", record.checksum, "=", checksum(record));
-
         if (record.checksum != checksum(record)) {
             LOG.log("Invalid first record - Formatting");
 
@@ -106,6 +110,10 @@ public:
         return this->value;
     }
 
+    const value_t* operator->() const {
+        return &this->value;
+    }
+
     void write(const value_t& value) {
         address_t address = next(this->address);
         sequence_t sequence = next(this->sequence);
@@ -131,8 +139,6 @@ public:
 
 private:
     inline static void flash_erase_sector(const uint16_t& sect) {
-//        LOG.log("Flash: Erase:", flash_addr / SPI_FLASH_SEC_SIZE + sect, "@", flash_addr + SPI_FLASH_SEC_SIZE * sect);
-
         const auto& ret = spi_flash_erase_sector(flash_addr / SPI_FLASH_SEC_SIZE + sect);
         if (ret != SPI_FLASH_RESULT_OK) {
             LOG.log("Flash: Erase failed:", sect);
@@ -141,8 +147,6 @@ private:
 
     inline static void flash_write(const address_t& addr,
                                    const record_t& record) {
-//        LOG.log("Flash: Write: addr", flash_addr + addr.sector * SPI_FLASH_SEC_SIZE + addr.offset, "size", sizeof(record_t), "seq", record.sequence, "csum", record.checksum, "xsum", checksum(record));
-
         const auto& ret = spi_flash_write(flash_addr + addr.sector * SPI_FLASH_SEC_SIZE + addr.offset,
                                           (uint32_t*) &record,
                                           sizeof(record_t));
@@ -153,22 +157,18 @@ private:
 
     inline static void flash_read(const address_t& addr,
                                   record_t& record) {
-//        LOG.log("Flash: Read: addr", flash_addr + addr.sector * SPI_FLASH_SEC_SIZE + addr.offset, "size", sizeof(record_t));
-
         const auto& ret = spi_flash_read(flash_addr + addr.sector * SPI_FLASH_SEC_SIZE + addr.offset,
                                          (uint32_t*) &record,
                                          sizeof(record_t));
         if (ret != SPI_FLASH_RESULT_OK) {
             LOG.log("Flash: Read failed:", addr.sector, "@", addr.offset);
         }
-
-//        LOG.log("Flash: Read: addr", flash_addr + addr.sector * SPI_FLASH_SEC_SIZE + addr.offset, "size", sizeof(record_t), "seq", record.sequence, "csum", record.checksum, "xsum", checksum(record));
     }
 
     /**
      * Finds the next address after the given one.
      */
-    inline address_t next(const address_t& address) const {
+    inline static address_t next(const address_t& address) {
         address_t result;
         result.sector = address.sector;
         result.offset = address.offset + sizeof(record_t);
@@ -185,12 +185,15 @@ private:
     /**
      * Finds the next sequence after the given one.
      */
-    inline sequence_t next(const sequence_t& sequence) const {
+    inline static sequence_t next(const sequence_t& sequence) {
         return (sequence + 1) % (sequence_t) - 2;
     }
 
-    inline static checksum_t checksum(const record_t& record) {
-        return ::checksum(hash(DEVICE), record.sequence, record.value);
+    /**
+     * Calculate a device specific checksum for a record.
+     */
+    inline static Checksum::value_t checksum(const record_t& record) {
+        return Checksum(hash(DEVICE)) << record;
     }
 
     // The sequence of the last record
