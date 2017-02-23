@@ -9,11 +9,21 @@ template<const char* const name, uint16_t gpio, uint16_t damper = 0>
 class PulseFeature : public Feature<name> {
     using Feature<name>::LOG;
 
+    struct record_t {
+        uint32_t time;
+        uint32_t count;
+
+        friend Checksum operator<<(Checksum checksum, const record_t& val) {
+            return checksum
+                   << val.time
+                   << val.count;
+        }
+    };
+
 public:
     PulseFeature(Device* const device) :
             Feature<name>(device),
-            counter(0),
-            lastChange(RTC.getRtcSeconds()) {
+            persisted({RTC.getRtcSeconds(), 0}) {
         pinMode(gpio, INPUT);
         pullup(gpio);
         attachInterrupt(gpio,
@@ -28,7 +38,7 @@ public:
 
 protected:
     virtual void publishCurrentState() {
-        this->publish("count", String(*this->counter));
+        this->publish("count", String(this->persisted->count));
     }
 
     virtual void registerSubscriptions() {
@@ -36,30 +46,36 @@ protected:
     }
 
     void onMessageReceived(const String& topic, const String& message) {
-        this->counter.write(message.toInt());
-        LOG.log("Changed counter:", *this->counter);
+        this->persisted.write({RTC.getRtcSeconds(),
+                               (uint32_t) message.toInt()});
+        LOG.log("Changed counter:", this->persisted->count);
     }
 
     void onInterrupt() {
         const uint32_t now = RTC.getRtcSeconds();
 
-        if (damper > 0) {
-            if (this->lastChange + damper > now)
-                return;
+        const uint32_t dur = now - this->persisted->time;
+
+        // Skip interrupt if in damping interval
+        if (dur < damper) {
+            return;
         }
 
-        this->counter.write(*this->counter + 1);
-        this->publishCurrentState();
+        // Calculate updated counter and gauge
+        const uint32_t count = this->persisted->count + 1;
+        const float gauge = 1.0 / (float) dur;
 
-        LOG.log("Counter:", *this->counter);
+        this->publish("count", String(count));
+        this->publish("gauge", String(gauge));
 
-        this->lastChange = now;
+        LOG.log("Count:", count);
+        LOG.log("Gauge:", gauge);
+
+        this->persisted.write({now, count});
     }
 
 private:
-    Persisted<uint32_t> counter;
-
-    uint32_t lastChange;
+    Persisted <record_t> persisted;
 };
 
 
