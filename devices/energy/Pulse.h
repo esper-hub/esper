@@ -5,12 +5,12 @@
 #include "util/Persisted.h"
 
 
-template<const char* const name, uint16_t gpio, uint16_t damper = 0>
+template<const char* const name, uint16_t gpio, uint64_t damper = 0>
 class PulseFeature : public Feature<name> {
     using Feature<name>::LOG;
 
     struct record_t {
-        uint32_t time;
+        uint64_t time;
         uint32_t count;
 
         friend Checksum operator<<(Checksum checksum, const record_t& val) {
@@ -52,21 +52,21 @@ protected:
     }
 
     void onInterrupt() {
-        const uint32_t now = RTC.getRtcSeconds();
+        const uint64_t now = RTC.getRtcNanoseconds();
 
-        const uint32_t dur = now - this->persisted->time;
+        const uint64_t duration = now - this->persisted->time;
 
         // Skip interrupt if in damping interval
-        if (dur < damper) {
+        if (duration < damper * NS_PER_SECOND) {
             return;
         }
 
         // Calculate updated counter and gauge
         const uint32_t count = this->persisted->count + 1;
-        const float gauge = 1.0 / (float) dur;
+        const float gauge = (float) NS_PER_SECOND / (float) duration;
 
         this->publish("count", String(count));
-        this->publish("gauge", String(gauge));
+        this->publish("gauge", String(gauge, 8));
 
         LOG.log("Count:", count);
         LOG.log("Gauge:", gauge);

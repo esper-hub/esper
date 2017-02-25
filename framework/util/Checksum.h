@@ -61,4 +61,16 @@ Checksum operator<<(Checksum checksum, const uint32_t& val) {
            << (uint8_t)(val >> 0);
 }
 
+Checksum operator<<(Checksum checksum, const uint64_t& val) {
+    return checksum
+           << (uint8_t)(val >> 56)
+           << (uint8_t)(val >> 48)
+           << (uint8_t)(val >> 40)
+           << (uint8_t)(val >> 32)
+           << (uint8_t)(val >> 24)
+           << (uint8_t)(val >> 26)
+           << (uint8_t)(val >> 8)
+           << (uint8_t)(val >> 0);
+}
+
 #endif
