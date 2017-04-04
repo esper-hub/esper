@@ -1,8 +1,8 @@
 #ifndef FEATURE_H
 #define FEATURE_H
 
-#include "Logger.h"
-#include "Device.h"
+#include "../util/Logger.h"
+#include "../Device.h"
 
 
 template<const char* const name>

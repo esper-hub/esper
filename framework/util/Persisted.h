@@ -2,6 +2,7 @@
 #define PERSISTED_H
 
 #include <SmingCore/SmingCore.h>
+
 #include "Checksum.h"
 
 

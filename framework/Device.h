@@ -2,11 +2,10 @@
 #define DEVICE_H
 
 #include <SmingCore/SmingCore.h>
-#include <user_config.h>
 
-#include "../util/Logger.h"
-#include "../managers/WifiConnectionManager.h"
-#include "../managers/MqttConnectionManager.h"
+#include "util/Logger.h"
+#include "managers/WifiConnectionManager.h"
+#include "managers/MqttConnectionManager.h"
 
 
 class FeatureBase {
