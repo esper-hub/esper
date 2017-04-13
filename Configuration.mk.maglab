@@ -1,5 +1,5 @@
 ## WiFi configuration to use
-WIFI_SSID = maglab
+WIFI_SSID = maglab-iot
 
 ## MQTT Server to use
 MQTT_HOST = mqtt
