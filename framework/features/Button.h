@@ -16,7 +16,7 @@ protected:
 public:
     using Callback = Observed<bool>::Callback;
 
-    Button(Device* device,
+    Button(Device* const device,
            const Callback& callback) :
             Feature<name>(device),
             state(false, callback) {
@@ -28,9 +28,6 @@ protected:
         LOG.log("Current state:", this->state);
 
         this->publish("state", this->state ? ON : OFF, true);
-    }
-
-    virtual void registerSubscriptions() {
     }
 
     virtual bool onEdge(const bool& edge) = 0;

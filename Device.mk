@@ -22,6 +22,7 @@ endif
 MODULES += $(BASEDIR)/framework/devices
 MODULES += $(BASEDIR)/framework/features
 MODULES += $(BASEDIR)/framework/managers
+MODULES += $(BASEDIR)/framework/services
 MODULES += $(BASEDIR)/framework/util
 MODULES += $(BASEDIR)/framework
 
@@ -64,7 +65,7 @@ USER_CFLAGS += -DVERSION=\"$(VERSION)\"
 
 
 # Use Release
-SMING_RELEASE = 1
+#SMING_RELEASE = 1
 
 
 # Disable SPIFFS

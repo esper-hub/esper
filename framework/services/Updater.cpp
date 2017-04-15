@@ -59,3 +59,23 @@ void update() {
     LOG.log("Downloading version file");
     http.downloadString(UPDATER_URL_VERSION, onVersion);
 }
+
+
+const char UPDATER_NAME[] = "updater";
+
+Updater::Updater(Device* const device)
+        : Service(device) {
+    // Trigger update attempt on interval
+    this->timer.initializeMs(UPDATER_INTERVAL, TimerDelegate(&update));
+
+    // Receive update trigger messages
+    this->device->registerSubscription(UPDATER_TOPIC, Device::MessageCallback(&Updater::onMessageReceived, this));
+}
+
+Updater::~Updater() {
+}
+
+void Updater::onMessageReceived(const String& topic, const String& message) {
+    LOG.log("Updating...");
+    update();
+}

@@ -8,16 +8,21 @@
 #include "managers/MqttConnectionManager.h"
 
 
-class FeatureBase {
+class ServiceBase {
+public:
+    enum class State {
+        CONNECTED,
+        DISCONNECTED
+    };
+
 protected:
-    explicit FeatureBase();
-    virtual ~FeatureBase();
+    explicit ServiceBase();
+    virtual ~ServiceBase();
 
 public:
     virtual const char* getName() const = 0;
 
-    virtual void registerSubscriptions() = 0;
-    virtual void publishCurrentState() = 0;
+    virtual void onStateChanged(const State& state) = 0;
 };
 
 
@@ -39,7 +44,7 @@ public:
 
     void registerSubscription(const String& topic, const MessageCallback& callback);
 
-    void add(FeatureBase* feature);
+    void add(ServiceBase* const service);
 
     void publish(const String &topic, const String &message, const bool& retain = false);
 
@@ -55,17 +60,9 @@ private:
 
     const String topicBase;
 
-    Vector<FeatureBase*> features;
+    Vector<ServiceBase*> services;
 
     HashMap<String, MessageCallback> messageCallbacks;
-
-#ifdef HEARTBEAT_TOPIC
-    Timer heartbeatTimer;
-#endif
-
-#ifdef UPDATER_INTERVAL
-    Timer updaterTimer;
-#endif
 };
 
 

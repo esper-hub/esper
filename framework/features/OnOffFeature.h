@@ -13,12 +13,14 @@ protected:
     using Feature<name>::LOG;
 
 public:
-    OnOffFeature(Device* device, bool initial_state = false) :
+    OnOffFeature(Device* const device, bool initial_state = false) :
             Feature<name>(device),
             state(initial_state),
             lastChange(RTC.getRtcSeconds()) {
         pinMode(gpio, OUTPUT);
         digitalWrite(gpio, this->state == !invert);
+
+        this->registerSubscription("set", Device::MessageCallback(&OnOffFeature::onMessageReceived, this));
 
         LOG.log("Initialized");
     }
@@ -36,10 +38,6 @@ public:
     }
 
 protected:
-    virtual void registerSubscriptions() {
-        this->registerSubscription("set", Device::MessageCallback(&OnOffFeature::onMessageReceived, this));
-    }
-
     virtual void publishCurrentState() {
         this->publish("state", this->state ? ON : OFF, true);
     }

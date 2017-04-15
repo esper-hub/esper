@@ -10,7 +10,7 @@ class TriggerButton : public Button<name, gpio, inverted> {
 public:
     using Callback = typename Button<name, gpio, inverted>::Callback;
 
-    TriggerButton(Device* device,
+    TriggerButton(Device* const device,
                   const Callback& callback) :
             Button<name, gpio, inverted>(device, callback) {
     }

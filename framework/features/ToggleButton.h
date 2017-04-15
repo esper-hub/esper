@@ -12,7 +12,7 @@ protected:
 public:
     using Callback = typename Button<name, gpio, inverted>::Callback;
 
-    ToggleButton(Device* device,
+    ToggleButton(Device* const device,
                  const Callback& callback) :
             Button<name, gpio, inverted>(device, callback),
             state(false) {

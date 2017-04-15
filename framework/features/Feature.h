@@ -6,11 +6,11 @@
 
 
 template<const char* const name>
-class Feature : public FeatureBase {
+class Feature : public ServiceBase {
 protected:
     static const Logger LOG;
 
-    Feature(Device* device) :
+    Feature(Device* const device) :
             device(device) {
     }
 
@@ -22,14 +22,25 @@ public:
         return name;
     }
 
+    virtual void onStateChanged(const State& state) {
+        if (state == State::CONNECTED) {
+            this->publishCurrentState();
+        }
+    }
+
 protected:
-    void publish(const String &topic, const String &message, const bool& retain = false) const {
+    void publish(const String &topic,
+                 const String &message,
+                 const bool& retain = false) const {
         this->device->publish(name + ("/" + topic), message, retain);
     }
 
-    void registerSubscription(const String& topic, const Device::MessageCallback& callback) {
+    void registerSubscription(const String& topic,
+                              const Device::MessageCallback& callback) {
         this->device->registerSubscription(name + ("/" + topic), callback);
     }
+
+    virtual void publishCurrentState() = 0;
 
 private:
     Device* const device;
