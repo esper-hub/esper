@@ -1,12 +1,19 @@
 export BASEDIR := $(CURDIR)
 
 
-BUILDDIR = $(BASEDIR)/build
-DISTDIR = $(BASEDIR)/dist
+ifndef SITE
+$(error SITE is not set. Please Specify a site directory.)
+else
+export SITEDIR := $(abspath $(SITE))
+endif
+
+
+export BUILDDIR = $(BASEDIR)/build
+export DISTDIR = $(BASEDIR)/dist
 
 
 # Find devices
-DEVICES := $(sort $(notdir $(wildcard $(CURDIR)/devices/*)))
+DEVICES := $(sort $(notdir $(wildcard $(SITEDIR)/devices/*)))
 
 
 .PHONY: all

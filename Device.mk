@@ -1,8 +1,11 @@
-# Use load configuration
+# Load configuration
+
+$(warning $(SITEDIR))
+
 ifndef CONFIG
-include $(BASEDIR)/Configuration.mk
+include $(SITEDIR)/Configuration.mk
 else
-include $(BASEDIR)/Configuration.mk.$(CONFIG)
+include $(SITEDIR)/Configuration.mk.$(CONFIG)
 endif
 
 
@@ -26,7 +29,7 @@ ifdef UPDATER_URL
 MODULES += $(BASEDIR)/framework/updater
 endif
 
-MODULES += $(BASEDIR)/devices/$(DEVICE)
+MODULES += $(SITEDIR)/devices/$(DEVICE)
 
 
 # Ensure we have a version string
