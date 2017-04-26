@@ -35,6 +35,8 @@ class Device {
 public:
     using MessageCallback = MqttConnectionManager::MessageCallback;
 
+    static const String TOPIC_BASE;
+
     Device();
     virtual ~Device();
 
@@ -57,8 +59,6 @@ private:
 
     WifiConnectionManager wifiConnectionManager;
     MqttConnectionManager mqttConnectionManager;
-
-    const String topicBase;
 
     Vector<ServiceBase*> services;
 

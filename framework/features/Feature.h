@@ -32,12 +32,12 @@ protected:
     void publish(const String &topic,
                  const String &message,
                  const bool& retain = false) const {
-        this->device->publish(name + ("/" + topic), message, retain);
+        this->device->publish(Device::TOPIC_BASE + name + ("/" + topic), message, retain);
     }
 
     void registerSubscription(const String& topic,
                               const Device::MessageCallback& callback) {
-        this->device->registerSubscription(name + ("/" + topic), callback);
+        this->device->registerSubscription(Device::TOPIC_BASE + name + ("/" + topic), callback);
     }
 
     virtual void publishCurrentState() = 0;

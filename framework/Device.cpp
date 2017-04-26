@@ -1,7 +1,7 @@
 #include "Device.h"
 #include "services/Info.h"
 #include "services/Heartbeat.h"
-#include "services/Updater.h"
+#include "services/Update.h"
 
 ServiceBase::ServiceBase() {
 }
@@ -19,13 +19,14 @@ String calculateTopicBase() {
 
 const Logger Device::LOG = Logger("device");
 
+const String Device::TOPIC_BASE = calculateTopicBase();
+
 Device::Device() :
         wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&Device::onWifiStateChanged, this)),
         mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
-                              MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)),
-        topicBase(calculateTopicBase()) {
+                              MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)) {
     LOG.log("Initialized");
-    LOG.log("Base Path:", this->topicBase);
+    LOG.log("Base Path:", Device::TOPIC_BASE);
 }
 
 Device::~Device() {
@@ -45,7 +46,7 @@ void Device::reboot() {
 }
 
 void Device::registerSubscription(const String& topic, const MessageCallback& callback) {
-    this->messageCallbacks[this->topicBase + ("/" + topic)] = callback;
+    this->messageCallbacks[topic] = callback;
 }
 
 void Device::add(ServiceBase* const service) {
@@ -59,7 +60,7 @@ void Device::publish(const String& topic, const String& message, const bool& ret
     if (this->mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
         return;
 
-    this->mqttConnectionManager.publish(this->topicBase + ("/" + topic),
+    this->mqttConnectionManager.publish(topic,
                                         message,
                                         retain);
 }
@@ -139,14 +140,14 @@ void init() {
 
     Device* const device = createDevice();
 
-    Info info(device);
-    device->add(&info);
+    Info* info = new Info(device);
+    device->add(info);
 
-    Heartbeat heartbeat(device);
-    device->add(&heartbeat);
+    Heartbeat* heartbeat = new Heartbeat(device);
+    device->add(heartbeat);
 
-    Updater updater(device);
-    device->add(&updater);
+    Update* update = new Update(device);
+    device->add(update);
 
     device->start();
 }

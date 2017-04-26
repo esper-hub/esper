@@ -53,17 +53,16 @@ void Info::onStateChanged(const State& state) {
 void Info::publish() {
     LOG.log("Publishing device info");
 
-    this->device->publish("/info",
-            StringSumHelper("") +
-            "DEVICE=" + DEVICE + "\n" +
-            "ESPER=" + VERSION + "\n" +
-            "SDK=" + system_get_sdk_version() + "\n" +
-            "BOOT=v" + String(system_get_boot_version()) + "\n" +
-            "CHIP=" + String(system_get_chip_id(), 16) + "\n" +
-            "FLASH=" + String(spi_flash_get_id(), 16) + "\n" +
-            "ROM=" + String(rboot_get_current_rom()) + "\n" +
-            "TIME_STARTUP=" + String(this->startupTime) + "\n" +
-            "TIME_CONNECT=" + String(this->connectTime) + "\n" +
-            "TIME_CURRENT=" + String(RTC.getRtcSeconds()) + "\n",
-            true);
+    this->device->publish(Device::TOPIC_BASE + "/info", StringSumHelper("") +
+                                                        "DEVICE=" + DEVICE + "\n" +
+                                                        "ESPER=" + VERSION + "\n" +
+                                                        "SDK=" + system_get_sdk_version() + "\n" +
+                                                        "BOOT=v" + String(system_get_boot_version()) + "\n" +
+                                                        "CHIP=" + String(system_get_chip_id(), 16) + "\n" +
+                                                        "FLASH=" + String(spi_flash_get_id(), 16) + "\n" +
+                                                        "ROM=" + String(rboot_get_current_rom()) + "\n" +
+                                                        "TIME_STARTUP=" + String(this->startupTime) + "\n" +
+                                                        "TIME_CONNECT=" + String(this->connectTime) + "\n" +
+                                                        "TIME_CURRENT=" + String(RTC.getRtcSeconds()) + "\n",
+                          true);
 }

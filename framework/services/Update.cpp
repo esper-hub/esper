@@ -1,5 +1,6 @@
 #include "Update.h"
 
+const char UPDATE_NAME[] = "update";
 
 #define UPDATER_URL_ROM(slot) (( UPDATER_URL "/" DEVICE ".rom" slot ))
 #define UPDATER_URL_VERSION (( UPDATER_URL "/" DEVICE ".version" ))
@@ -7,17 +8,14 @@
 
 Update::Update(Device* device) :
         Service(device) {
-    this->timer.initializeMs(UPDATER_INTERVAL, TimerDelegate(&update));
+    // REceive update messages
+    this->device->registerSubscription(UPDATER_TOPIC, Device::MessageCallback(&Update::onUpdateRequestReceived, this));
+
+    // Check for updates regularly
+    this->timer.initializeMs(UPDATER_INTERVAL, TimerDelegate(&Update::checkUpdate, this));
 }
 
-virtual Update::~Update() {
-}
-
-void Update::onConnected() {
-    this->subscribe(UPDATER_TOPIC, Device::MessageCallback(&Update::onUpdateRequestReceived, this));
-}
-
-void Update::onDisconnected() {
+Update::~Update() {
 }
 
 void Update::checkUpdate() {

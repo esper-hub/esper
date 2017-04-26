@@ -7,7 +7,7 @@
 #include "Service.h"
 
 
-constexpr const char UPDATE_NAME[] = "update";
+extern const char UPDATE_NAME[];
 
 
 class Update : public Service<UPDATE_NAME> {
@@ -16,10 +16,6 @@ public:
     virtual ~Update();
 
     void checkUpdate();
-
-protected:
-    virtual void onConnected();
-    virtual void onDisconnected();
 
 private:
     void onUpdateRequestReceived(const String& topic, const String& message);

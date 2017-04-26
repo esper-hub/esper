@@ -1,6 +1,6 @@
 #include "Heartbeat.h"
 
-const char HEARTBEAT_NAME[] = "updater";
+const char HEARTBEAT_NAME[] = "heartbeat";
 
 Heartbeat::Heartbeat(Device* const device)
         : Service(device) {
