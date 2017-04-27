@@ -16,13 +16,13 @@ MQTT_REALM = my/realm
 # HEARTBEAT_TOPIC = $(MQTT_REALM)/heartbeat
 
 ## The URL prefix to fetch updates from
-UPDATER_URL = http://$(MQTT_HOST):80/firmware/
+UPDATE_URL = http://$(MQTT_HOST):80/firmware/
 
 ## If set, a message on this topic will trigger a update request
-UPDATER_TOPIC = $(MQTT_REALM)/update
+UPDATE_TOPIC = $(MQTT_REALM)/update
 
 ## If set, an update request is triggered at the given interval (in seconds)
-UPDATER_INTERVAL = 86400
+UPDATE_INTERVAL = 3600
 
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 # ESP_HOME = /opt/esp-open-sdk

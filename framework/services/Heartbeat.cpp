@@ -5,7 +5,7 @@ const char HEARTBEAT_NAME[] = "heartbeat";
 Heartbeat::Heartbeat(Device* const device)
         : Service(device) {
     // Receive heartbeat messages
-    this->device->registerSubscription(MQTT_REALM "/heartbeat", Device::MessageCallback(&Heartbeat::onMessageReceived, this));
+    this->device->registerSubscription(HEARTBEAT_TOPIC, Device::MessageCallback(&Heartbeat::onMessageReceived, this));
 
     // Reboot the system if heartbeat was missing
     this->timer.initializeMs(120000, TimerDelegate(&Device::reboot, device));

@@ -2,17 +2,19 @@
 
 const char UPDATE_NAME[] = "update";
 
-#define UPDATER_URL_ROM(slot) (( UPDATER_URL "/" DEVICE ".rom" slot ))
-#define UPDATER_URL_VERSION (( UPDATER_URL "/" DEVICE ".version" ))
+#define UPDATE_URL_VERSION (( UPDATE_URL "/" DEVICE ".version" ))
+#define UPDATE_URL_ROM_0 (( UPDATE_URL "/" DEVICE ".rom0" ))
+#define UPDATE_URL_ROM_1 (( UPDATE_URL "/" DEVICE ".rom1" ))
 
 
 Update::Update(Device* device) :
-        Service(device) {
+        Service(device),
+        updater(nullptr) {
     // REceive update messages
-    this->device->registerSubscription(UPDATER_TOPIC, Device::MessageCallback(&Update::onUpdateRequestReceived, this));
+    this->device->registerSubscription(UPDATE_TOPIC, Device::MessageCallback(&Update::onUpdateRequestReceived, this));
 
     // Check for updates regularly
-    this->timer.initializeMs(UPDATER_INTERVAL, TimerDelegate(&Update::checkUpdate, this));
+    this->timer.initializeMs(UPDATE_INTERVAL, TimerDelegate(&Update::checkUpdate, this));
 }
 
 Update::~Update() {
@@ -20,7 +22,7 @@ Update::~Update() {
 
 void Update::checkUpdate() {
     LOG.log("Downloading version file");
-    this->http.downloadString(UPDATER_URL_VERSION, HttpClientCompletedDelegate(&Update::onVersionReceived, this));
+    this->http.downloadString(UPDATE_URL_VERSION, HttpClientCompletedDelegate(&Update::onVersionReceived, this));
 }
 
 void Update::onUpdateRequestReceived(const String& topic, const String& message) {
@@ -57,12 +59,12 @@ void Update::onVersionReceived(HttpClient& client, bool successful) {
 
     // Configure updater with items to flash
     if (bootconf.current_rom == 0) {
-        LOG.log("Flashing", UPDATER_URL_ROM("1"), "to", String(bootconf.roms[1], 16));
-        this->updater->addItem(bootconf.roms[1], UPDATER_URL_ROM("1"));
+        LOG.log("Flashing", UPDATE_URL_ROM_1, "to", String(bootconf.roms[1], 16));
+        this->updater->addItem(bootconf.roms[1], UPDATE_URL_ROM_1);
         this->updater->switchToRom(1);
     } else {
-        LOG.log("Flashing", UPDATER_URL_ROM("0"), "to", String(bootconf.roms[0], 16));
-        this->updater->addItem(bootconf.roms[0], UPDATER_URL_ROM("0"));
+        LOG.log("Flashing", UPDATE_URL_ROM_0, "to", String(bootconf.roms[0], 16));
+        this->updater->addItem(bootconf.roms[0], UPDATE_URL_ROM_0);
         this->updater->switchToRom(0);
     }
 

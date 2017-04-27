@@ -1,8 +1,12 @@
 #ifndef UPDATER_H
 #define UPDATER_H
 
-#include <SmingCore/SmingCore.h>
-#include <user_config.h>
+#ifndef UPDATE_TOPIC
+#error "UPDATE_TOPIC not defined"
+#endif
+#ifndef UPDATE_INTERVAL
+#define UPDATE_INTERVAL 3600
+#endif
 
 #include "Service.h"
 

@@ -6,6 +6,9 @@
 /.drone.sec.yml
 
 /.idea
+/esper.cbp
+
 /CMakeLists.txt
 /CMakeCache.txt
 
+/cmake-build-*
