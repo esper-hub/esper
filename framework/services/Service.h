@@ -2,7 +2,28 @@
 #define SERVICE_H
 
 #include "../util/Logger.h"
-#include "../Device.h"
+
+
+class Device;
+
+
+class ServiceBase {
+public:
+    enum class State {
+        CONNECTED,
+        DISCONNECTED
+    };
+
+protected:
+    explicit ServiceBase();
+    virtual ~ServiceBase();
+
+public:
+    virtual const char* getName() const = 0;
+
+    virtual void onStateChanged(const State& state) = 0;
+};
+
 
 template<const char* const name>
 class Service : public ServiceBase {

@@ -1,7 +1,4 @@
 #include "Device.h"
-#include "services/Info.h"
-#include "services/Heartbeat.h"
-#include "services/Update.h"
 
 
 ServiceBase::ServiceBase() {
@@ -25,17 +22,22 @@ const String Device::TOPIC_BASE = calculateTopicBase();
 Device::Device() :
         wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&Device::onWifiStateChanged, this)),
         mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
-                              MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)) {
-
-    this->add(new Info(this));
+                              MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)),
+#if HEARTBEAT_ENABLED
+        heartbeat(this),
+#endif
+#if UPDATE_ENABLED
+        update(this),
+#endif
+        info(this) {
 
 #if HEARTBEAT_ENABLED
-    this->add(new Heartbeat(this));
+    this->add(&heartbeat);
 #endif
-
 #if UPDATE_ENABLED
-    this->add(new Update(this));
+    this->add(&update);
 #endif
+    this->add(&info);
 
     LOG.log("Initialized");
     LOG.log("Base Path:", Device::TOPIC_BASE);

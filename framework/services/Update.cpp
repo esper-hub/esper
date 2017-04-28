@@ -1,4 +1,6 @@
 #include "Update.h"
+#include "../Device.h"
+
 
 const char UPDATE_NAME[] = "update";
 

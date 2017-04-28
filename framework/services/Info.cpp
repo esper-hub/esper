@@ -1,4 +1,6 @@
 #include "Info.h"
+#include "../Device.h"
+
 
 const char INFO_NAME[] = "info";
 

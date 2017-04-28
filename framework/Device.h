@@ -7,23 +7,9 @@
 #include "managers/WifiConnectionManager.h"
 #include "managers/MqttConnectionManager.h"
 
-
-class ServiceBase {
-public:
-    enum class State {
-        CONNECTED,
-        DISCONNECTED
-    };
-
-protected:
-    explicit ServiceBase();
-    virtual ~ServiceBase();
-
-public:
-    virtual const char* getName() const = 0;
-
-    virtual void onStateChanged(const State& state) = 0;
-};
+#include "services/Info.h"
+#include "services/Heartbeat.h"
+#include "services/Update.h"
 
 
 class Device {
@@ -64,6 +50,16 @@ private:
     Vector<ServiceBase*> services;
 
     HashMap<String, MessageCallback> messageCallbacks;
+
+#if HEARTBEAT_ENABLED
+    Heartbeat heartbeat;
+#endif
+
+#if UPDATE_ENABLED
+    Update update;
+#endif
+
+    Info info;
 };
 
 

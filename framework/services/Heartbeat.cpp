@@ -1,4 +1,6 @@
 #include "Heartbeat.h"
+#include "../Device.h"
+
 
 const char HEARTBEAT_NAME[] = "heartbeat";
 

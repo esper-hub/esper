@@ -64,7 +64,7 @@ USER_CFLAGS += -DUPDATE_TOPIC=\"$(UPDATE_TOPIC)\"
 
 
 # Use Release
-#SMING_RELEASE = 1
+SMING_RELEASE = 1
 
 
 # Disable SPIFFS
