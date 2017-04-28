@@ -3,6 +3,7 @@
 #include "services/Heartbeat.h"
 #include "services/Update.h"
 
+
 ServiceBase::ServiceBase() {
 }
 
@@ -25,6 +26,17 @@ Device::Device() :
         wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&Device::onWifiStateChanged, this)),
         mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
                               MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)) {
+
+    this->add(new Info(this));
+
+#if HEARTBEAT_ENABLED
+    this->add(new Heartbeat(this));
+#endif
+
+#if UPDATE_ENABLED
+    this->add(new Update(this));
+#endif
+
     LOG.log("Initialized");
     LOG.log("Base Path:", Device::TOPIC_BASE);
 }
@@ -135,19 +147,9 @@ void Device::onMqttMessageReceived(const String& topic, const String& message) {
 void init() {
     System.setCpuFrequency(eCF_160MHz);
 
-    Serial.begin(SERIAL_BAUD_RATE); // 115200 by default
+    Serial.begin(115200); // Start serial
     Serial.systemDebugOutput(true); // Debug output to serial
 
-    Device* const device = createDevice();
-
-    Info* info = new Info(device);
-    device->add(info);
-
-    Heartbeat* heartbeat = new Heartbeat(device);
-    device->add(heartbeat);
-
-    Update* update = new Update(device);
-    device->add(update);
-
-    device->start();
+    // Create the device and start it
+    createDevice()->start();
 }

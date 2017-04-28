@@ -46,9 +46,10 @@ public:
 
     void registerSubscription(const String& topic, const MessageCallback& callback);
 
-    void add(ServiceBase* const service);
-
     void publish(const String &topic, const String &message, const bool& retain = false);
+
+protected:
+    void add(ServiceBase* const service);
 
 private:
     void onWifiStateChanged(const WifiConnectionManager::State& state);

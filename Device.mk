@@ -1,7 +1,5 @@
 # Load configuration
 
-$(warning $(SITEDIR))
-
 ifndef CONFIG
 include $(SITEDIR)/Configuration.mk
 else
@@ -19,6 +17,7 @@ $(error ESP_HOME is not set. Please configure it in Configuration.mk or set in e
 endif
 
 
+# Add required modules
 MODULES += $(BASEDIR)/framework/devices
 MODULES += $(BASEDIR)/framework/features
 MODULES += $(BASEDIR)/framework/managers
@@ -30,34 +29,38 @@ MODULES += $(SITEDIR)/devices/$(DEVICE)
 
 
 # Ensure we have a version string
-ifndef VERSION
+VERSION ?= ""
+ifeq (VERSION, "")
 $(warning VERSION is not set. Please ensure to set a version for productive builds.)
 VERSION = SNAPSHOT
 endif
 
 
+# Define config defaults
+HEARTBEAT_ENABLED ?= false
+HEARTBEAT_TOPIC ?= $(MQTT_REALM)/heartbeat
+
+UPDATE_ENABLED ?= false
+UPDATE_URL ?= $(MQTT_HOST):80/firmware
+UPDATE_INTERVAL ?= 3600
+UPDATE_TOPIC ?= $(MQTT_REALM)/update
+
+
 # Pass options to source code
 USER_CFLAGS += -DDEVICE=\"$(DEVICE)\"
+USER_CFLAGS += -DVERSION=\"$(VERSION)\"
 
 USER_CFLAGS += -DMQTT_HOST=\"$(MQTT_HOST)\"
 USER_CFLAGS += -DMQTT_PORT=$(MQTT_PORT)
 USER_CFLAGS += -DMQTT_REALM=\"$(MQTT_REALM)\"
 
-ifdef HEARTBEAT_TOPIC
+USER_CFLAGS += -DHEARTBEAT_ENABLED=$(HEARTBEAT_ENABLED)
 USER_CFLAGS += -DHEARTBEAT_TOPIC=\"$(HEARTBEAT_TOPIC)\"
-endif
 
-ifdef UPDATE_URL
+USER_CFLAGS += -DUPDATE_ENABLED=$(UPDATE_ENABLED)
 USER_CFLAGS += -DUPDATE_URL=\"$(UPDATE_URL)\"
-ifdef UPDATE_INTERVAL
 USER_CFLAGS += -DUPDATE_INTERVAL=$(UPDATE_INTERVAL)
-endif
-ifdef UPDATE_TOPIC
 USER_CFLAGS += -DUPDATE_TOPIC=\"$(UPDATE_TOPIC)\"
-endif
-endif
-
-USER_CFLAGS += -DVERSION=\"$(VERSION)\"
 
 
 # Use Release

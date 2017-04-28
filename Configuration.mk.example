@@ -1,19 +1,25 @@
-## Sming configuration
-ESP_HOME = /opt/esp-open-sdk
-SMING_HOME = /opt/Sming/Sming
-
 ## WiFi configuration to use
 WIFI_SSID =
 WIFI_PWD =
+
 
 ## MQTT Server to use
 MQTT_HOST = mqtt
 MQTT_PORT = 1883
 
+## The base of all device topics. Each devices uses ${MQTT_REALM}/${DEVICE_ID} as its base topic
 MQTT_REALM = my/realm
 
-## If set, a message each 60 seconds is expected or a reboot is triggered
-# HEARTBEAT_TOPIC = $(MQTT_REALM)/heartbeat
+
+## If set to true, a message each 60 seconds is expected or a reboot is triggered
+HEARTBEAT_ENABLED = true
+
+## The topic to expect the heartbeat on, defaults to $(MQTT_REALM)/heartbeat
+HEARTBEAT_TOPIC = $(MQTT_REALM)/heartbeat
+
+
+## If set to true, the OTA functionality is enabled
+UPDATE_ENABLED = true
 
 ## The URL prefix to fetch updates from
 UPDATE_URL = http://$(MQTT_HOST):80/firmware/
@@ -24,11 +30,13 @@ UPDATE_TOPIC = $(MQTT_REALM)/update
 ## If set, an update request is triggered at the given interval (in seconds)
 UPDATE_INTERVAL = 3600
 
+
 ## ESP_HOME sets the path where ESP tools and SDK are located.
 # ESP_HOME = /opt/esp-open-sdk
 
 ## SMING_HOME sets the path where Sming framework is located.
 # SMING_HOME = /opt/sming/Sming
+
 
 ## COM port parameter is reqruied to flash firmware correctly.
 # COM_PORT = /dev/tty.usbserial
