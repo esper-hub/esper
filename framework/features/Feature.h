@@ -32,18 +32,33 @@ protected:
     void publish(const String &topic,
                  const String &message,
                  const bool& retain = false) const {
-        this->device->publish(Device::TOPIC_BASE + name + ("/" + topic), message, retain);
+        this->device->publish(buildTopic(topic),
+                              message,
+                              retain);
     }
 
     void registerSubscription(const String& topic,
                               const Device::MessageCallback& callback) {
-        this->device->registerSubscription(Device::TOPIC_BASE + name + ("/" + topic), callback);
+        this->device->registerSubscription(buildTopic(topic),
+                                           callback);
     }
 
     virtual void publishCurrentState() = 0;
 
 private:
     Device* const device;
+
+    static String buildTopic(const String& suffix) {
+        StringSumHelper s = Device::TOPIC_BASE;
+        s += "/";
+        s += name;
+        if (suffix.length() != 0) {
+            s += "/";
+            s += suffix;
+        }
+
+        return s;
+    }
 };
 
 

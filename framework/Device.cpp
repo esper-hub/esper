@@ -104,15 +104,15 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
         case MqttConnectionManager::State::CONNECTED: {
             LOG.log("MQTT state changed: Connected \\o/");
 
-            // Inform all services about new state
-            for (int i = 0; i < this->services.count(); i++) {
-                this->services[i]->onStateChanged(ServiceBase::State::CONNECTED);
-            }
-
             // Subscribe for all known registered callbacks
             for (unsigned int i = 0; i < this->messageCallbacks.count(); i++) {
                 const auto topic = this->messageCallbacks.keyAt(i);
                 this->mqttConnectionManager.subscribe(topic);
+            }
+
+            // Inform all services about new state
+            for (int i = 0; i < this->services.count(); i++) {
+                this->services[i]->onStateChanged(ServiceBase::State::CONNECTED);
             }
 
             break;

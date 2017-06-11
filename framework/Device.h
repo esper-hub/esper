@@ -8,8 +8,14 @@
 #include "managers/MqttConnectionManager.h"
 
 #include "services/Info.h"
+
+#if HEARTBEAT_ENABLED
 #include "services/Heartbeat.h"
+#endif
+
+#if UPDATE_ENABLED
 #include "services/Update.h"
+#endif
 
 
 class Device {
@@ -34,7 +40,6 @@ public:
 
     void publish(const String &topic, const String &message, const bool& retain = false);
 
-protected:
     void add(ServiceBase* const service);
 
 private:
