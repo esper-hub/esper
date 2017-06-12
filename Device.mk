@@ -36,7 +36,14 @@ VERSION = SNAPSHOT
 endif
 
 
+# Load the device overrides
+-include $(SITEDIR)/devices/$(DEVICE)/Device.mk
+
+
 # Define config defaults
+LOGGING ?= true
+LOGGING_DEBUG ?= false
+
 HEARTBEAT_ENABLED ?= false
 HEARTBEAT_TOPIC ?= $(MQTT_REALM)/heartbeat
 
@@ -49,6 +56,9 @@ UPDATE_TOPIC ?= $(MQTT_REALM)/update
 # Pass options to source code
 USER_CFLAGS += -DDEVICE=\"$(DEVICE)\"
 USER_CFLAGS += -DVERSION=\"$(VERSION)\"
+
+USER_CFLAGS += -DLOGGING=$(LOGGING)
+USER_CFLAGS += -DLOGGING_DEBUG=$(LOGGING_DEBUG)
 
 USER_CFLAGS += -DMQTT_HOST=\"$(MQTT_HOST)\"
 USER_CFLAGS += -DMQTT_PORT=$(MQTT_PORT)

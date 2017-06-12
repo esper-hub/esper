@@ -147,10 +147,12 @@ void Device::onMqttMessageReceived(const String& topic, const String& message) {
 
 
 void init() {
-    System.setCpuFrequency(eCF_160MHz);
+    Serial.end();
+    // Initialize logging
+    Logger::init();
 
-    Serial.begin(115200); // Start serial
-    Serial.systemDebugOutput(true); // Debug output to serial
+    // Configure system
+    System.setCpuFrequency(eCF_160MHz);
 
     // Create the device and start it
     createDevice()->start();
