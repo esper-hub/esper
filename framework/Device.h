@@ -49,8 +49,12 @@ private:
 
     void onMqttMessageReceived(const String& topic, const String& message);
 
+    void onTimeUpdated(NtpClient& client, time_t time);
+
     WifiConnectionManager wifiConnectionManager;
     MqttConnectionManager mqttConnectionManager;
+
+    NtpClient ntpClient;
 
     Vector<ServiceBase*> services;
 

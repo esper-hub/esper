@@ -23,6 +23,8 @@ Device::Device() :
         wifiConnectionManager(WifiConnectionManager::StateChangedCallback(&Device::onWifiStateChanged, this)),
         mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
                               MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)),
+        ntpClient(NtpTimeResultDelegate(&Device::onTimeUpdated, this)),
+
 #if HEARTBEAT_ENABLED
         heartbeat(this),
 #endif
@@ -83,6 +85,7 @@ void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
     switch (state) {
         case WifiConnectionManager::State::CONNECTED: {
             LOG.log("WiFi state changed: Connected");
+            this->ntpClient.requestTime();
             this->mqttConnectionManager.connect();
             break;
         }
@@ -145,14 +148,26 @@ void Device::onMqttMessageReceived(const String& topic, const String& message) {
     }
 }
 
+void Device::onTimeUpdated(NtpClient& client, time_t time) {
+    auto now = SystemClock.now(eTZ_UTC);
+
+    SystemClock.setTime(time, eTZ_UTC);
+    LOG.log("Time updated:", time);
+
+    if (abs(time - now.toUnixTime()) > 60 * 60) {
+        LOG.log("Clock differs to much - rebooting");
+        this->reboot();
+    }
+}
+
 
 void init() {
+    // Configure system
+    System.setCpuFrequency(eCF_160MHz);
+
     Serial.end();
     // Initialize logging
     Logger::init();
-
-    // Configure system
-    System.setCpuFrequency(eCF_160MHz);
 
     // Create the device and start it
     createDevice()->start();
