@@ -65,6 +65,6 @@ void Info::publish() {
                                                         "ROM=" + String(rboot_get_current_rom()) + "\n" +
                                                         "TIME_STARTUP=" + String(this->startupTime) + "\n" +
                                                         "TIME_CONNECT=" + String(this->connectTime) + "\n" +
-                                                        "TIME_CURRENT=" + String(RTC.getRtcSeconds()) + "\n",
+                                                        "TIME_UPDATED=" + String(RTC.getRtcSeconds()) + "\n",
                           true);
 }
