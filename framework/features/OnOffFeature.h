@@ -16,7 +16,7 @@ public:
     OnOffFeature(Device* const device, bool initial_state = false) :
             Feature<name>(device),
             state(initial_state),
-            lastChange(RTC.getRtcSeconds()) {
+            lastChange(RTC.getRtcNanoseconds()) {
         pinMode(gpio, OUTPUT);
         digitalWrite(gpio, this->state == !invert);
 
@@ -44,10 +44,10 @@ protected:
 
 private:
     void onMessageReceived(const String& topic, const String& message) {
-        const uint32_t now = RTC.getRtcSeconds();
+        const uint64_t now = RTC.getRtcNanoseconds();
 
         if (damper > 0) {
-            if (this->lastChange + damper > now)
+            if (this->lastChange + (damper * NS_PER_SECOND) > now)
                 return;
         }
 
@@ -66,7 +66,7 @@ private:
 
     bool state;
 
-    uint32_t lastChange;
+    uint64_t lastChange;
 };
 
 #endif
