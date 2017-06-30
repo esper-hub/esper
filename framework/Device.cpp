@@ -148,13 +148,13 @@ void Device::onMqttMessageReceived(const String& topic, const String& message) {
     }
 }
 
-void Device::onTimeUpdated(NtpClient& client, time_t time) {
-    auto now = SystemClock.now(eTZ_UTC);
+void Device::onTimeUpdated(NtpClient& client, time_t curr) {
+    auto prev = RTC.getRtcSeconds();
+    RTC.setRtcSeconds(curr);
 
-    SystemClock.setTime(time, eTZ_UTC);
-    LOG.log("Time updated:", time);
+    LOG.log("Time updated:", DateTime(curr).toISO8601());
 
-    if (abs(time - now.toUnixTime()) > 60 * 60) {
+    if (abs(curr - prev) > 60 * 60) {
         LOG.log("Clock differs to much - rebooting");
         this->reboot();
     }
