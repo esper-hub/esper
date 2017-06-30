@@ -27,6 +27,11 @@ $(addsuffix /build,$(DEVICES)): %/build:
 
 
 .PHONY: $(addsuffix /flash,$(DEVICES))
+$(addsuffix /flash,$(DEVICES)): %/erase: %/build
+	$(MAKE) -C $(BUILDDIR)/$* -f $(BASEDIR)/Device.mk DEVICE=$* flashinit
+
+
+.PHONY: $(addsuffix /flash,$(DEVICES))
 $(addsuffix /flash,$(DEVICES)): %/flash: %/build
 	$(MAKE) -C $(BUILDDIR)/$* -f $(BASEDIR)/Device.mk DEVICE=$* flash
 
