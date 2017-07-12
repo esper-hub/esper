@@ -152,7 +152,7 @@ void Device::onMqttMessageReceived(const String& topic, const String& message) {
     auto i = this->messageCallbacks.indexOf(topic);
     if (i != -1) {
         const auto& callback = this->messageCallbacks.valueAt(i);
-        callback(topic, message);
+        callback(topic.substring(Device::TOPIC_BASE.length()+1), message);
     }
 }
 
