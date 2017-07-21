@@ -20,6 +20,12 @@ DEVICES := $(sort $(notdir $(wildcard $(SITEDIR)/devices/*) $(wildcard $(BASEDIR
 all: $(DEVICES)
 
 
+.PHONY: $(addsuffix /clean,$(DEVICES))
+$(addsuffix /clean,$(DEVICES)): %/clean:
+	mkdir -p $(BUILDDIR)/$*
+	$(MAKE) -C $(BUILDDIR)/$* -f $(BASEDIR)/Device.mk DEVICE=$* clean
+
+
 .PHONY: $(addsuffix /build,$(DEVICES))
 $(addsuffix /build,$(DEVICES)): %/build:
 	mkdir -p $(BUILDDIR)/$*
