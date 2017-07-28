@@ -72,6 +72,14 @@ void Device::add(ServiceBase* const service) {
     }
 }
 
+const WifiConnectionManager& Device::getWifi() const {
+    return this->wifiConnectionManager;
+}
+
+const MqttConnectionManager& Device::getMqtt() const {
+    return this->mqttConnectionManager;
+}
+
 void Device::publish(const String& topic, const String& message, const bool& retain) {
     if (this->mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
         return;

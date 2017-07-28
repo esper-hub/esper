@@ -32,7 +32,7 @@ public:
     Device();
     virtual ~Device();
 
-    void start();
+    virtual void start();
 
     void reboot();
 
@@ -41,6 +41,9 @@ public:
     void publish(const String &topic, const String &message, const bool& retain = false);
 
     void add(ServiceBase* const service);
+
+    const WifiConnectionManager& getWifi() const;
+    const MqttConnectionManager& getMqtt() const;
 
 private:
     void onWifiStateChanged(const WifiConnectionManager::State& state);
