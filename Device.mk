@@ -25,7 +25,12 @@ MODULES += $(BASEDIR)/framework/services
 MODULES += $(BASEDIR)/framework/util
 MODULES += $(BASEDIR)/framework
 
+# Add device module either from site or from esper
+ifneq ($(wildcard $(SITEDIR)/devices/$(DEVICE)), )
 MODULES += $(SITEDIR)/devices/$(DEVICE)
+else
+MODULES += $(BASEDIR)/devices/$(DEVICE)
+endif
 
 
 # Ensure we have a version string

@@ -13,7 +13,7 @@ export DISTDIR = $(BASEDIR)/dist
 
 
 # Find devices
-DEVICES := $(sort $(notdir $(wildcard $(SITEDIR)/devices/*)))
+DEVICES := $(sort $(notdir $(wildcard $(SITEDIR)/devices/*) $(wildcard $(BASEDIR)/devices/*)))
 
 
 .PHONY: all
