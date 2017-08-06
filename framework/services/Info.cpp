@@ -55,16 +55,39 @@ void Info::onStateChanged(const State& state) {
 void Info::publish() {
     LOG.log("Publishing device info");
 
-    this->device->publish(Device::TOPIC_BASE + "/info", StringSumHelper("") +
-                                                        "DEVICE=" + DEVICE + "\n" +
-                                                        "ESPER=" + VERSION + "\n" +
-                                                        "SDK=" + system_get_sdk_version() + "\n" +
-                                                        "BOOT=v" + String(system_get_boot_version()) + "\n" +
-                                                        "CHIP=" + String(system_get_chip_id(), 16) + "\n" +
-                                                        "FLASH=" + String(spi_flash_get_id(), 16) + "\n" +
-                                                        "ROM=" + String(rboot_get_current_rom()) + "\n" +
-                                                        "TIME_STARTUP=" + String(this->startupTime) + "\n" +
-                                                        "TIME_CONNECT=" + String(this->connectTime) + "\n" +
-                                                        "TIME_UPDATED=" + String(RTC.getRtcSeconds()) + "\n",
-                          true);
+    StaticJsonBuffer<1024> json;
+
+    auto& info = json.createObject();
+    info.set("device", DEVICE);
+    info.set("chip_id", String(system_get_chip_id(), 16));
+    info.set("flash_id", String(spi_flash_get_id(), 16));
+
+    auto& version = info.createNestedObject("version");
+    version.set("esper", VERSION);
+    version.set("sdk", system_get_sdk_version());
+    version.set("boot", system_get_boot_version());
+
+    auto& boot = info.createNestedObject("boot");
+    boot.set("rom", rboot_get_current_rom());
+
+    auto& time = info.createNestedObject("time");
+    time.set("startup", this->startupTime);
+    time.set("connect", this->connectTime);
+    time.set("updated", RTC.getRtcSeconds());
+
+    auto& network = info.createNestedObject("network");
+    network.set("ip", WifiStation.getIP().toString());
+    network.set("mask", WifiStation.getNetworkMask().toString());
+    network.set("gateway", WifiStation.getNetworkGateway().toString());
+
+    auto& wifi = info.createNestedObject("wifi");
+    wifi.set("ssid", WifiStation.getSSID());
+    wifi.set("bssid", WifiStation.getMAC());
+    wifi.set("rssi", WifiStation.getRssi());
+    wifi.set("channel", WifiStation.getChannel());
+
+    String payload;
+    info.prettyPrintTo(payload);
+
+    this->device->publish(Device::TOPIC_BASE + "/info", payload, true);
 }
