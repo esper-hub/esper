@@ -29,11 +29,11 @@ void WifiConnectionManager::connect() {
     WifiStation.enable(true);
     LOG.log("Wifi Station enabled");
 
-    LOG.log("Waiting for connection");
-    WifiStation.waitConnection(ConnectionDelegate(&WifiConnectionManager::onConnectOk, this), 10,
-                               ConnectionDelegate(&WifiConnectionManager::onConnectFail, this));
-
     this->state.set(State::CONNECTING);
+
+    LOG.log("Waiting for connection");
+    WifiEvents.onStationGotIP(StationGotIPDelegate(&WifiConnectionManager::onStationConfigured, this));
+    WifiEvents.onStationDisconnect(StationDisconnectDelegate(&WifiConnectionManager::onStationDisconnected, this));
 }
 
 WifiConnectionManager::State WifiConnectionManager::getState() const {
@@ -41,15 +41,15 @@ WifiConnectionManager::State WifiConnectionManager::getState() const {
 }
 
 
-void WifiConnectionManager::onConnectOk() {
-    LOG.log("Connected");
+void WifiConnectionManager::onStationConfigured(IPAddress ip, IPAddress mask, IPAddress gateway) {
+    LOG.log("Configured:", ip, mask, gateway);
 
     if (this->state.set(State::CONNECTED)) {
         this->reconnectTimer.stop();
     }
 }
 
-void WifiConnectionManager::onConnectFail() {
+void WifiConnectionManager::onStationDisconnected(String ssid, uint8_t ssidLength, uint8_t bssid[6], uint8_t reason) {
     LOG.log("Disconnected");
 
     if (this->state.set(State::DISCONNECTED)) {

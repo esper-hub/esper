@@ -31,8 +31,8 @@ public:
     State getState() const;
 
 private:
-    void onConnectOk();
-    void onConnectFail();
+    void onStationConfigured(IPAddress ip, IPAddress mask, IPAddress gateway);
+    void onStationDisconnected(String ssid, uint8_t ssidLength, uint8_t bssid[6], uint8_t reason);
 
     Observed<State> state;
     Timer reconnectTimer;

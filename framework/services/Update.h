@@ -23,7 +23,7 @@ public:
 
 private:
     void onUpdateRequestReceived(const String& topic, const String& message);
-    void onVersionReceived(HttpClient& client, bool successful);
+    int onVersionReceived(HttpConnection& client, bool successful);
 
     Timer timer;
 

@@ -24,7 +24,7 @@ Update::~Update() {
 
 void Update::checkUpdate() {
     LOG.log("Downloading version file");
-    this->http.downloadString(UPDATE_URL_VERSION, HttpClientCompletedDelegate(&Update::onVersionReceived, this));
+    this->http.downloadString(UPDATE_URL_VERSION, RequestCompletedDelegate(&Update::onVersionReceived, this));
 }
 
 void Update::onUpdateRequestReceived(const String& topic, const String& message) {
@@ -32,10 +32,10 @@ void Update::onUpdateRequestReceived(const String& topic, const String& message)
     this->checkUpdate();
 }
 
-void Update::onVersionReceived(HttpClient& client, bool successful) {
+int Update::onVersionReceived(HttpConnection& client, bool successful) {
     if (!successful) {
         LOG.log("Version download failed");
-        return;
+        return -1;
     }
 
     LOG.log("Got version file");
@@ -47,7 +47,7 @@ void Update::onVersionReceived(HttpClient& client, bool successful) {
     // Compare latest version with current one
     if (version == VERSION) {
         LOG.log("Already up to date");
-        return;
+        return -1;
     }
 
     LOG.log("Remote version differs - updating...");
@@ -73,4 +73,6 @@ void Update::onVersionReceived(HttpClient& client, bool successful) {
     // Start update
     LOG.log("Downloading update");
     this->updater->start();
+
+    return 0;
 }
