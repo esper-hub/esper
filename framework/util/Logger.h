@@ -18,7 +18,7 @@ public:
     }
 
     static void init() {
-        serial->begin(115200); // Start serial
+        serial->begin(SERIAL_BAUD_RATE); // Start serial
         serial->systemDebugOutput(LOGGING_DEBUG); // Debug output to serial
         serial->commandProcessing(false);
     }

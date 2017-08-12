@@ -165,8 +165,8 @@ void init() {
     // Configure system
     System.setCpuFrequency(eCF_160MHz);
 
-    Serial.end();
     // Initialize logging
+    Serial.end();
     Logger::init();
 
     // Create the device and start it
