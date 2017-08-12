@@ -24,7 +24,7 @@ void MqttConnectionManager::connect() {
     this->state.set(State::CONNECTING);
 
     this->client.setCompleteDelegate(TcpClientCompleteDelegate(&MqttConnectionManager::onDisconnected, this));
-    if (this->client.connect(WifiStation.getMAC())) {
+    if (this->client.connect(WifiStation.getMAC(), MQTT_USERNAME, MQTT_PASSWORD)) {
         this->state.set(State::CONNECTED);
 
     } else {

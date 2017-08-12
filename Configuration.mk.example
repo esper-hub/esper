@@ -7,6 +7,10 @@ WIFI_PWD =
 MQTT_HOST = mqtt
 MQTT_PORT = 1883
 
+## MQTT Credentials (optional)
+# MQTT_USERNAME =
+# MQTT_PASSWORD =
+
 ## The base of all device topics. Each devices uses ${MQTT_REALM}/${DEVICE_ID} as its base topic
 MQTT_REALM = my/realm
 
