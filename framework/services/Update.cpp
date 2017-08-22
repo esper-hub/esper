@@ -12,8 +12,9 @@ const char UPDATE_NAME[] = "update";
 Update::Update(Device* device) :
         Service(device),
         updater(nullptr) {
-    // REceive update messages
-    this->device->registerSubscription(UPDATE_TOPIC, Device::MessageCallback(&Update::onUpdateRequestReceived, this));
+    // Receive update messages
+    this->device->registerSubscription(MQTT_REALM + String("/update"), Device::MessageCallback(&Update::onUpdateRequestReceived, this));
+    this->device->registerSubscription(Device::TOPIC_BASE + String("/update"), Device::MessageCallback(&Update::onUpdateRequestReceived, this));
 
     // Check for updates regularly
     this->timer.initializeMs(UPDATE_INTERVAL, TimerDelegate(&Update::checkUpdate, this));

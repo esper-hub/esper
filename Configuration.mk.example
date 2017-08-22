@@ -28,9 +28,6 @@ UPDATE_ENABLED = true
 ## The URL prefix to fetch updates from
 UPDATE_URL = http://$(MQTT_HOST):80/firmware/
 
-## If set, a message on this topic will trigger a update request
-UPDATE_TOPIC = $(MQTT_REALM)/update
-
 ## If set, an update request is triggered at the given interval (in seconds)
 UPDATE_INTERVAL = 3600
 
