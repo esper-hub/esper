@@ -15,6 +15,13 @@ MQTT_PORT = 1883
 MQTT_REALM = my/realm
 
 
+## If set to true, a HTTP is used to export the device info
+INFO_HTTP_ENABLED = true
+
+## The HTTP server port
+INFO_HTTP_PORT = 80
+
+
 ## If set to true, a message each 60 seconds is expected or a reboot is triggered
 HEARTBEAT_ENABLED = true
 

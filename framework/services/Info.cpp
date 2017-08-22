@@ -27,6 +27,11 @@ Info::Info(Device* const device)
     LOG.log("ROM Selected:", rbootconf.current_rom);
     LOG.log("ROM Slot 0:", rbootconf.roms[0]);
     LOG.log("ROM Slot 1:", rbootconf.roms[1]);
+
+#ifdef INFO_HTTP_ENABLED
+    http.listen(INFO_HTTP_PORT);
+	http.addPath("/", HttpPathDelegate(&Info::onHttpIndex, this));
+#endif
 }
 
 Info::~Info() {
@@ -38,8 +43,8 @@ void Info::onStateChanged(const State& state) {
             // Record time when going online
             this->connectTime = RTC.getRtcSeconds();
 
-            this->timer.start();
             this->publish();
+            this->timer.start();
 
             break;
         }
@@ -52,7 +57,7 @@ void Info::onStateChanged(const State& state) {
     }
 }
 
-void Info::publish() {
+String Info::dump() const {
     LOG.log("Publishing device info");
 
     StaticJsonBuffer<1024> json;
@@ -87,8 +92,29 @@ void Info::publish() {
     wifi.set("rssi", WifiStation.getRssi());
     wifi.set("channel", WifiStation.getChannel());
 
+    auto& services = info.createNestedArray("services");
+    for (int i = 0; i < this->device->getServices().count(); i++) {
+        services.add(this->device->getServices().at(i)->getName());
+    }
+
+    auto& endpoints = info.createNestedArray("endpoints");
+    for (unsigned int i = 0; i < this->device->getSubscriptions().count(); i++) {
+        endpoints.add(this->device->getSubscriptions().keyAt(i));
+    }
+
     String payload;
     info.prettyPrintTo(payload);
 
-    this->device->publish(Device::TOPIC_BASE + "/info", payload, true);
+    return payload;
 }
+
+void Info::publish() {
+    this->device->publish(Device::TOPIC_BASE + "/info", this->dump(), true);
+}
+
+#ifdef INFO_HTTP_ENABLED
+void Info::onHttpIndex(HttpRequest &request, HttpResponse &response) {
+    response.setContentType("application/json");
+    response.sendString(this->dump());
+}
+#endif

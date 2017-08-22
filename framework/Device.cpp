@@ -80,6 +80,14 @@ const MqttConnectionManager& Device::getMqtt() const {
     return this->mqttConnectionManager;
 }
 
+const Vector<ServiceBase*>& Device::getServices() const {
+    return this->services;
+}
+
+const HashMap<String, Device::MessageCallback>& Device::getSubscriptions() const {
+    return this->messageCallbacks;
+}
+
 void Device::publish(const String& topic, const String& message, const bool& retain) {
     if (this->mqttConnectionManager.getState() != MqttConnectionManager::State::CONNECTED)
         return;
@@ -167,7 +175,6 @@ void Device::onTimeUpdated(NtpClient& client, time_t curr) {
         this->reboot();
     }
 }
-
 
 void init() {
     // Configure system

@@ -45,6 +45,9 @@ public:
     const WifiConnectionManager& getWifi() const;
     const MqttConnectionManager& getMqtt() const;
 
+    const Vector<ServiceBase*>& getServices() const;
+    const HashMap<String, MessageCallback>& getSubscriptions() const;
+
 private:
     void onWifiStateChanged(const WifiConnectionManager::State& state);
 
