@@ -27,6 +27,8 @@ public:
                           const MessageCallback& messageCallback);
     ~MqttConnectionManager();
 
+    void setWill(const String& topic, const String& message, const bool& retained = false);
+
     void connect();
 
     void subscribe(const String &topic);

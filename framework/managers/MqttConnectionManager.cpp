@@ -45,6 +45,11 @@ void MqttConnectionManager::publish(const String &topic, const String &message, 
     this->client.publish(topic, message, retain);
 }
 
+void MqttConnectionManager::setWill(const String& topic, const String& message, const bool& retained) {
+    LOG.log("Setlast will to ", topic, ":", message);
+	this->client.setWill(topic, message, 0, retained);
+}
+
 MqttConnectionManager::State MqttConnectionManager::getState() const {
     return this->state;
 }

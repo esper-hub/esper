@@ -1,4 +1,5 @@
 #include "Device.h"
+#include <stdio.h>
 
 
 ServiceBase::ServiceBase() {
@@ -51,6 +52,10 @@ Device::~Device() {
 void Device::start() {
     LOG.log("Starting");
 
+    // Set last will to publish status as offline
+    this->mqttConnectionManager.setWill(Device::TOPIC_BASE + "/status", "OFFLINE", true);
+
+    // Start connecting to the network
     this->wifiConnectionManager.connect();
 
     LOG.log("Started");
@@ -122,6 +127,9 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
     switch (state) {
         case MqttConnectionManager::State::CONNECTED: {
             LOG.log("MQTT state changed: Connected \\o/");
+
+            // Publish status as online
+            this->mqttConnectionManager.publish(Device::TOPIC_BASE + "/status", "ONLINE", true);
 
             // Subscribe for all known registered callbacks
             for (unsigned int i = 0; i < this->messageCallbacks.count(); i++) {
