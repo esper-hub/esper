@@ -1,4 +1,5 @@
 #include "WifiConnectionManager.h"
+#include "util/Strings.h"
 
 
 const Logger WifiConnectionManager::LOG = Logger("wifi");
@@ -33,6 +34,7 @@ void WifiConnectionManager::connect() {
 
     LOG.log("Waiting for connection");
     WifiEvents.onStationGotIP(StationGotIPDelegate(&WifiConnectionManager::onStationConfigured, this));
+    WifiEvents.onStationConnect(StationConnectDelegate(&WifiConnectionManager::onStationConnected, this));
     WifiEvents.onStationDisconnect(StationDisconnectDelegate(&WifiConnectionManager::onStationDisconnected, this));
 }
 
@@ -40,6 +42,13 @@ WifiConnectionManager::State WifiConnectionManager::getState() const {
     return this->state;
 }
 
+const String& WifiConnectionManager::getCurrentSSID() const {
+    return this->ssid;
+}
+
+const String& WifiConnectionManager::getCurrentBSSID() const {
+    return this->bssid;
+}
 
 void WifiConnectionManager::onStationConfigured(IPAddress ip, IPAddress mask, IPAddress gateway) {
     LOG.log("Configured:", ip, mask, gateway);
@@ -49,8 +58,18 @@ void WifiConnectionManager::onStationConfigured(IPAddress ip, IPAddress mask, IP
     }
 }
 
-void WifiConnectionManager::onStationDisconnected(String ssid, uint8_t ssidLength, uint8_t bssid[6], uint8_t reason) {
+void WifiConnectionManager::onStationConnected(String ssid, uint8_t, uint8_t bssid[6], uint8_t reason) {
+    LOG.log("Connected");
+
+    this->ssid = ssid;
+    this->bssid = Strings::formatMAC(bssid);
+}
+
+void WifiConnectionManager::onStationDisconnected(String, uint8_t, uint8_t[6], uint8_t reason) {
     LOG.log("Disconnected");
+
+    this->ssid = String();
+    this->bssid = String();
 
     if (this->state.set(State::DISCONNECTED)) {
         this->reconnectTimer.start();

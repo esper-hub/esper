@@ -76,13 +76,14 @@ void Info::publish() {
     time.set("updated", RTC.getRtcSeconds());
 
     auto& network = info.createNestedObject("network");
+    network.set("mac", WifiStation.getMAC());
     network.set("ip", WifiStation.getIP().toString());
     network.set("mask", WifiStation.getNetworkMask().toString());
     network.set("gateway", WifiStation.getNetworkGateway().toString());
 
     auto& wifi = info.createNestedObject("wifi");
-    wifi.set("ssid", WifiStation.getSSID());
-    wifi.set("bssid", WifiStation.getMAC());
+    wifi.set("ssid", this->device->getWifi().getCurrentSSID());
+    wifi.set("bssid", this->device->getWifi().getCurrentBSSID());
     wifi.set("rssi", WifiStation.getRssi());
     wifi.set("channel", WifiStation.getChannel());
 

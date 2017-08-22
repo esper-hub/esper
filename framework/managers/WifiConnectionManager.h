@@ -20,6 +20,14 @@ public:
         DISCONNECTED
     };
 
+    struct Info {
+        String mac;
+
+        String ip;
+        String mask;
+        String gateway;
+    };
+
     using StateChangedCallback = Observed<State>::Callback;
 
 public:
@@ -30,12 +38,19 @@ public:
 
     State getState() const;
 
+    const String& getCurrentSSID() const;
+    const String& getCurrentBSSID() const;
+
 private:
     void onStationConfigured(IPAddress ip, IPAddress mask, IPAddress gateway);
+    void onStationConnected(String ssid, uint8_t ssidLength, uint8_t bssid[6], uint8_t reason);
     void onStationDisconnected(String ssid, uint8_t ssidLength, uint8_t bssid[6], uint8_t reason);
 
     Observed<State> state;
     Timer reconnectTimer;
+
+    String ssid;
+    String bssid;
 };
 
 #endif
