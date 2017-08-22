@@ -10,7 +10,7 @@ For easy management, devices publish current status information and can be updat
 
 ## Requirements
 
-For build, ESPer requires [Sming](https://github.com/SmingHub/Sming) to be installed.
+For build, ESPer requires [Sming](https://github.com/SmingHub/Sming) (at least v3.2.0) to be installed.
 
 During runtime, a 2.4GHz WiFi Network with WPA or WPA2 encryption is required.
 It is highly recommended to use a separated network for ESPer based devices to limit the broadcast and multicast traffic.
