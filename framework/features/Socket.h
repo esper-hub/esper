@@ -4,9 +4,9 @@
 #include "OnOffFeature.h"
 
 
-template <const char* const name, uint16_t gpio>
-class Socket : public OnOffFeature<name, gpio, false, 1> {
-    using OnOffFeature<name, gpio, false, 1>::OnOffFeature;
+template <const char* const name, uint16_t gpio, bool invert=false>
+class Socket : public OnOffFeature<name, gpio, invert, 1> {
+    using OnOffFeature<name, gpio, invert, 1>::OnOffFeature;
 };
 
 #endif
