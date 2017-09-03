@@ -108,6 +108,10 @@ RBOOT_LD_1 = $(BASEDIR)/rom1.ld
 SPI_SIZE = 1M
 
 
+# Work-around for encoding errors in terminal during ESP boot
+COM_OPTS += --raw
+
+
 # Include main makefile
 include $(SMING_HOME)/Makefile-rboot.mk
 
