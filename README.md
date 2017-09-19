@@ -26,27 +26,38 @@ Depending on the features used, some services must be provided in the environmen
 ### Install esp-open-sdk and Sming
 See [their README](https://github.com/SmingHub/Sming/blob/develop/Readme.md) for further details.
 
-### Clone the ESPer Repository
+### Create a site directory
+Create a project directory and initialize it as `git` repository:
 ~~~~
-git clone https://git.maglab.space/esper/esper.git
+mkdir my-site
+cd my-site
+git init
 ~~~~
 
-### Create a site directory
-Create a directory beside the ESPer repository.
-Then copy `Configuration.mx.example` to `Configuration.mk` and change according to the target environment.
+### Add ESPer Repository
+Add the ESPer framework repository as submodule:
+~~~~
+git submodule add https://github.com/esper-hub/esper.git
+~~~~
+
+### Create environment configuration
+Then copy `esper/Configuration.mx.example` to `./Configuration.mk` and change it according to the target environment.
+This config file contains your environment specific settings like WiFi credentials and Servers to use.
+Take some time to walk through the available options.
 
 ### Create a device implementation
-Inside the the site-directory create a subdirectory called `devices/mydev` and add your device specific code here.
+Inside the project-directory, create a subdirectory called `devices/mydev` and add your device specific code here.
 The code must implement a function `Device* createDevice()` which returns a device instance.
 
 ### Build the firmware
 Execute the makefile in the ESPer directory while specifying the site directory:
 ~~~~
-make SITE=path/to/site
+make -C esper SITE=$(pwd)
 ~~~~
 
 ### Flash the firmware
 Boot the ESP into the flash mode and execute the following command:
 ~~~~
-make SITE=path/to/site mydev/flash
+make -C esper SITE=$(pwd) mydev/flash
 ~~~~
+
