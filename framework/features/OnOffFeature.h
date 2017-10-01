@@ -2,9 +2,10 @@
 #define ONOFF_H
 
 #include "Feature.h"
+#include "../util/Damper.h"
 
 
-template<const char* const name, uint16_t gpio, bool invert = false, uint16_t damper = 0>
+template<const char* const name, uint16_t gpio, bool invert = false, uint16_t damper_time = 0>
 class OnOffFeature : public Feature<name> {
     constexpr static const char* const ON = "1";
     constexpr static const char* const OFF = "0";
@@ -16,7 +17,7 @@ public:
     OnOffFeature(Device* const device, bool initial_state = false) :
             Feature<name>(device),
             state(initial_state),
-            lastChange(RTC.getRtcNanoseconds()) {
+            damper() {
         pinMode(gpio, OUTPUT);
         digitalWrite(gpio, this->state == !invert);
 
@@ -44,11 +45,8 @@ protected:
 
 private:
     void onMessageReceived(const String& topic, const String& message) {
-        const uint64_t now = RTC.getRtcNanoseconds();
-
-        if (damper > 0) {
-            if (this->lastChange + (damper * NS_PER_SECOND) > now)
-                return;
+        if(damper.isDamped()) {
+            return;
         }
 
         if (message == ON) {
@@ -60,13 +58,10 @@ private:
         } else {
             LOG.log("Unknown message received:", message);
         }
-
-        this->lastChange = now;
     }
 
     bool state;
-
-    uint64_t lastChange;
+    Damper<damper_time> damper;
 };
 
 #endif
