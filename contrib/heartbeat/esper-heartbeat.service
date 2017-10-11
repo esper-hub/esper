@@ -1,0 +1,9 @@
+[Unit]
+Description=ESPer heartbeat
+Requires=mosquitto.service
+After=mosquitto.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/mosquitto_pub -h localhost -p 1883 -t esper/heartbeat -n
+
