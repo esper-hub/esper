@@ -6,7 +6,7 @@ Usage
 
 Build the docker container:
 ```shell
-docker build --tag esper-build
+docker build --tag esper-build .
 ```
 This must be done only once after updating the container.
 
