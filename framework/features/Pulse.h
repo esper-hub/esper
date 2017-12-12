@@ -16,14 +16,18 @@ public:
             damper() {
         pinMode(gpio, OUTPUT);
         digitalWrite(gpio, invert);
+
         this->timeoutTimer.initializeMs(100, TimerDelegate(&Pulse::onTimeout, this));
         this->registerSubscription("pulse", Device::MessageCallback(&Pulse::onMessageReceived, this));
     }
 
     void doPulse(const uint16_t& duration) {
         digitalWrite(gpio, !invert);
-        timeoutTimer.setIntervalMs(min(max_duration, duration));
-        timeoutTimer.start(false);
+
+        this->timeoutTimer.setIntervalMs(min(max_duration, duration));
+        this->timeoutTimer.start(false);
+
+        this->publish("triggered", String(duration), false);
     }
 
 protected:
@@ -31,19 +35,16 @@ protected:
 
 private:
     void onMessageReceived(const String& topic, const String& message) {
-        if(damper.isDamped()) {
+        if(this->damper.isDamped()) {
             return;
         }
 
-        const int value = message.toInt();
-        if (value <= 0) {
-            LOG.log("Message parsed as 0 :", message);
-        } else if (value > max_duration) {
-            LOG.log("Message > max duration :", message);
-        } else {
-            this->publish("triggered", String(value), false);
-            doPulse(value);
+        const int duration = message.toInt();
+        if (duration <= 0) {
+            return;
         }
+
+        doPulse(duration);
     }
 
     void onTimeout() {

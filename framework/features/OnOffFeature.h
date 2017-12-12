@@ -45,7 +45,7 @@ protected:
 
 private:
     void onMessageReceived(const String& topic, const String& message) {
-        if(damper.isDamped()) {
+        if(this->damper.isDamped()) {
             return;
         }
 
