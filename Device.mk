@@ -35,9 +35,12 @@ endif
 
 # Ensure we have a version string
 VERSION ?= ""
-ifeq (VERSION, "")
-$(warning VERSION is not set. Please ensure to set a version for productive builds.)
-VERSION = SNAPSHOT
+ifeq ($(VERSION), "")
+VERSION := $(shell date +%s)
+ifeq ($(shell git -C $(SITEDIR) rev-parse --is-inside-work-tree), true)
+VERSION := $(VERSION)-$(shell git -C $(SITEDIR) describe --always)
+endif
+$(warning VERSION is not set. Please ensure to set a version for productive builds. Using '$(VERSION)')
 endif
 
 
