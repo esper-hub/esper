@@ -24,9 +24,9 @@ USER builder
 # Install ESP8266 SDK
 RUN git clone --recursive https://github.com/pfalcon/esp-open-sdk.git /home/builder/esp-open-sdk \
     && cd /home/builder/esp-open-sdk \
-    && git reset --hard e8d757b1a70a5cf19df0afe23a769739c6cff343 \
-    && cd /home/builder/esp-open-sdk; make VENDOR_SDK=1.5.4 STANDALONE=y \
-	&& rm -rf /home/builder/esp-open-sdk/crosstool-NG/.build
+    && git reset --hard 4ea62358c98799c1d4d1e711e5cff08045fc4dec \
+    && cd /home/builder/esp-open-sdk; make VENDOR_SDK=2.1.0 STANDALONE=y \
+    && rm -rf /home/builder/esp-open-sdk/crosstool-NG/.build
 
 ENV PATH /home/builder/esp-open-sdk/xtensa-lx106-elf/bin:$PATH
 ENV XTENSA_TOOLS_ROOT /home/builder/esp-open-sdk/xtensa-lx106-elf/bin
@@ -34,18 +34,19 @@ ENV SDK_BASE /home/builder/esp-open-sdk/sdk
 ENV FW_TOOL /home/builder/esp-open-sdk/xtensa-lx106-elf/bin/esptool.py
 ENV ESP_HOME /home/builder/esp-open-sdk
 ENV SMING_HOME /home/builder/Sming/Sming
+ENV SDK_BASE $SMING_HOME/third-party/ESP8266_NONOS_SDK
 
 # Install esptool
 RUN git clone --recursive https://github.com/themadinventor/esptool.git /home/builder/esptool \
     && cd /home/builder/esptool \
-    && git reset --hard c1d00094d564451636b01308625119901e2257ac
+    && git reset --hard a532bc42573861779b39b989c333e1b5bcc723ed
 
 ENV PATH /home/builder/esptool:$PATH
 
 # Install esptool2
 RUN git clone --recursive https://github.com/raburton/esptool2 /home/builder/esptool2 \
     && cd /home/builder/esptool2 \
-    && git reset --hard ec0e2c72952f4fa8242eedd307c58a479d845abe \
+    && git reset --hard 3616335ab318cde9e25ba81dbd47097b09603161 \
     && cd /home/builder/esptool2; make
 
 ENV PATH /home/builder/esptool2:$PATH
@@ -53,7 +54,7 @@ ENV PATH /home/builder/esptool2:$PATH
 # Install sming
 RUN git clone https://github.com/SmingHub/Sming.git /home/builder/Sming \
     && cd /home/builder/Sming \
-    && git reset --hard 93340e19a1e1e68885a36976113bc400eb2be985 \
+    && git reset --hard 4a0fec18235521e4369d111f111c2624fbd3203b \
     && cd /home/builder/Sming/Sming; make clean; make
 
 ENV COM_PORT /dev/ttyESP
