@@ -8,6 +8,7 @@
 #include "managers/MqttConnectionManager.h"
 
 #include "services/Info.h"
+#include "services/Reboot.h"
 
 #if HEARTBEAT_ENABLED
 #include "services/Heartbeat.h"
@@ -34,7 +35,7 @@ public:
 
     virtual void start();
 
-    void reboot();
+    void triggerReboot();
 
     void registerSubscription(const String& topic, const MessageCallback& callback);
 
@@ -75,6 +76,7 @@ private:
 #endif
 
     Info info;
+    Reboot reboot;
 };
 
 

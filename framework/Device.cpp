@@ -32,15 +32,17 @@ Device::Device() :
 #if UPDATE_ENABLED
         update(this),
 #endif
-        info(this) {
+        info(this),
+        reboot(this) {
 
 #if HEARTBEAT_ENABLED
-    this->add(&heartbeat);
+    this->add(&this->heartbeat);
 #endif
 #if UPDATE_ENABLED
-    this->add(&update);
+    this->add(&this->update);
 #endif
-    this->add(&info);
+    this->add(&this->info);
+    this->add(&this->reboot);
 
     LOG.log("Initialized");
     LOG.log("Base Path:", Device::TOPIC_BASE);
@@ -61,9 +63,8 @@ void Device::start() {
     LOG.log("Started");
 }
 
-void Device::reboot() {
-    LOG.log("Restarting System");
-    System.restart();
+void Device::triggerReboot() {
+    this->reboot.trigger();
 }
 
 void Device::registerSubscription(const String& topic, const MessageCallback& callback) {
@@ -180,7 +181,7 @@ void Device::onTimeUpdated(NtpClient& client, time_t curr) {
 
     if (abs(curr - prev) > 60 * 60) {
         LOG.log("Clock differs to much - rebooting");
-        this->reboot();
+        this->triggerReboot();
     }
 }
 
