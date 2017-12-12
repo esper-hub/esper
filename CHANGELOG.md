@@ -2,6 +2,7 @@
 
 ## Unreleased
 ### Breaking changes
+- `PulseFeature` has ben renamed to `Pulse`
 - `UPDATE_TOPIC` is now hardcoded to `${MQTT_REALM}/update`. 
 
 ### Features

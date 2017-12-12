@@ -1,23 +1,23 @@
-#ifndef PULSEFEATURE_H
-#define PULSEFEATURE_H
+#ifndef PULSE_H
+#define PULSE_H
 
 #include "Feature.h"
 #include "../util/Damper.h"
 
 template<const char* const name, uint16_t gpio, bool invert = false, uint16_t damper_time = 0, uint16_t max_duration = 0>
-class PulseFeature : public Feature<name> {
+class Pulse : public Feature<name> {
 
 protected:
     using Feature<name>::LOG;
 
 public:
-    PulseFeature(Device* device) :
+    Pulse(Device* device) :
             Feature<name>(device),
             damper() {
         pinMode(gpio, OUTPUT);
         digitalWrite(gpio, invert);
-        this->timeoutTimer.initializeMs(100, TimerDelegate(&PulseFeature::onTimeout, this));
-        this->registerSubscription("pulse", Device::MessageCallback(&PulseFeature::onMessageReceived, this));
+        this->timeoutTimer.initializeMs(100, TimerDelegate(&Pulse::onTimeout, this));
+        this->registerSubscription("pulse", Device::MessageCallback(&Pulse::onMessageReceived, this));
     }
 
     void doPulse(const uint16_t& duration) {
