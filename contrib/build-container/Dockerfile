@@ -54,7 +54,7 @@ ENV PATH /home/builder/esptool2:$PATH
 # Install sming
 RUN git clone https://github.com/SmingHub/Sming.git /home/builder/Sming \
     && cd /home/builder/Sming \
-    && git reset --hard 4a0fec18235521e4369d111f111c2624fbd3203b \
+    && git reset --hard 31828f0d846b58f2e764c8985c085fc69cc1439f \
     && cd /home/builder/Sming/Sming; make clean; make
 
 ENV COM_PORT /dev/ttyESP
