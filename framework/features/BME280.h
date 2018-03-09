@@ -16,32 +16,30 @@ protected:
 public:
 
     BME280(Device* device) :
-            Feature<name>(device) {
+        Feature<name>(device) {
 
-            bool status;
-            status = bme280.begin(addr);
-            if (!status) {
-                Serial.println("Could not detect a BME280 sensor, check wiring!");
-                while (1);
-            }
-
-            delay(100); // wait for the sensor to boot up
-
-            this->updateTimer.initializeMs(15000, TimerDelegate(&BME280::publishCurrentState, this));
-            this->updateTimer.start(true);
+        if (!bme280.begin(addr)) {
+            Serial.println("Could not detect a BME280 sensor, check wiring!");
+            abort();
         }
+
+        delay(100); // Wait for the sensor to boot up
+
+        this->updateTimer.initializeMs(15000, TimerDelegate(&BME280::publishCurrentState, this));
+        this->updateTimer.start(true);
+    }
 
 protected:
     virtual void publishCurrentState() {
-        long pressure = bme280.readPressure();
+        const long pressure = bme280.readPressure();
         LOG.log("Pressure:", pressure);
         this->publish("pressure", String(pressure));
 
-        float temperature = bme280.readTemperature();
+        const float temperature = bme280.readTemperature();
         LOG.log("Temperature:", temperature);
         this->publish("temperature", String(temperature));
 
-        float humidity = bme280.readHumidity();
+        const float humidity = bme280.readHumidity();
         LOG.log("Humidity", humidity);
         this->publish("humidity", String(humidity));
     }
