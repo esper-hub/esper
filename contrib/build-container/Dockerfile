@@ -39,7 +39,7 @@ ENV SDK_BASE $SMING_HOME/third-party/ESP8266_NONOS_SDK
 # Install esptool
 RUN git clone --recursive https://github.com/themadinventor/esptool.git /home/builder/esptool \
     && cd /home/builder/esptool \
-    && git reset --hard a532bc42573861779b39b989c333e1b5bcc723ed
+    && git reset --hard ee00d8421353f43671e84c80cfbd465c33eee77d
 
 ENV PATH /home/builder/esptool:$PATH
 
