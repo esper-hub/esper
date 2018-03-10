@@ -10,7 +10,7 @@ For easy management, devices publish current status information and can be updat
 
 ## Requirements
 
-For build, ESPer requires [Sming](https://github.com/SmingHub/Sming) (at least v3.2.0) to be installed.
+For build, ESPer requires [Sming](https://github.com/SmingHub/Sming) to be installed. We recommend using our Docker Image (`esperhub/esper`), which already contains all required dependencies.
 
 During runtime, a 2.4GHz WiFi Network with WPA or WPA2 encryption is required.
 It is highly recommended to use a separated network for ESPer based devices to limit the broadcast and multicast traffic.
@@ -22,9 +22,6 @@ Depending on the features used, some services must be provided in the environmen
 
 
 ## Getting Started
-
-### Install esp-open-sdk and Sming
-See [their README](https://github.com/SmingHub/Sming/blob/develop/Readme.md) for further details.
 
 ### Create a site directory
 Create a project directory and initialize it as `git` repository:
@@ -47,17 +44,20 @@ Take some time to walk through the available options.
 
 ### Create a device implementation
 Inside the project-directory, create a subdirectory called `devices/mydev` and add your device specific code here.
-The code must implement a function `Device* createDevice()` which returns a device instance.
+The code must implement a function `Device* createDevice()` which returns a device instance. The esper repository
+has several examples you can draw inspiration from.
 
 ### Build the firmware
-Execute the makefile in the ESPer directory while specifying the site directory:
+Execute the makefile in the ESPer directory while specifying esper and site directory:
 ~~~~
-make -C esper SITE=$(pwd)
+docker run -it --rm --volume /home/user/esper-site:/home/builder/site --volume /home/user/esper-site/esper:/home/builder/esper esperhub/esper:latest
 ~~~~
+The resulting images will be in `/home/user/esper-site/esper/dist`.
 
 ### Flash the firmware
-Boot the ESP into the flash mode and execute the following command:
+Connect the ESP to your computer and boot it into the flash mode. Then execute the following command:
 ~~~~
-make -C esper SITE=$(pwd) mydev/flash
+docker run -it --rm --volume /home/user/esper-site:/home/builder/site --volume /home/user/esper-site/esper:/home/builder/esper esperhub/esper:latest make mydev/flash
 ~~~~
+Once flashed the container will attach to the ESPs terminal.
 
