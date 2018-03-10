@@ -1,16 +1,18 @@
 The build-container allows to build sming in a defined environment.
 
-Usage
-=====
+It is available at `esperhub/esper` with tags `latest` (master branch) and `develop`.
+
+# Usage
 *All commands must be executed from this directory*
 
-Build the docker container:
+## Build the docker container (optional):
 ```shell
 docker build --tag esper-build .
 ```
 This must be done only once after updating the container.
 
-Run the container manually:
+## Run the docker container
+
 ```shell
 docker run \
     --tty \
@@ -18,8 +20,7 @@ docker run \
     --device ${DEVICE}:/dev/ttyESP
     --volume ${ESPER}:/home/builder/esper
     --volume ${SITE}:/home/builder/site
-    esper-build \
-    make
+    esperhub:esper
 ```
 Replace `${DEVICE}`, `${ESPER}` and `${SITE}` with the correct paths.
 
