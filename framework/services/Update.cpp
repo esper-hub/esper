@@ -13,14 +13,38 @@ Update::Update(Device* device) :
         Service(device),
         updater(nullptr) {
     // Receive update messages
-    this->device->registerSubscription(MQTT_REALM + String("/update"), Device::MessageCallback(&Update::onUpdateRequestReceived, this));
-    this->device->registerSubscription(Device::TOPIC_BASE + String("/update"), Device::MessageCallback(&Update::onUpdateRequestReceived, this));
+    this->device->registerSubscription(MQTT_REALM + String("/update"), Device::MessageCallback(&Update::onGlobalUpdateRequestReceived, this));
+    this->device->registerSubscription(Device::TOPIC_BASE + String("/update"), Device::MessageCallback(&Update::onDeviceUpdateRequestReceived, this));
 
     // Check for updates regularly
-    this->timer.initializeMs(UPDATE_INTERVAL, TimerDelegate(&Update::checkUpdate, this));
+    this->checkTimer.initializeMs(UPDATE_INTERVAL * 1000, TimerDelegate(&Update::checkUpdate, this));
+
+#if UPDATE_DELAY != 0
+    this->delayTimer.initializeMs(random(UPDATE_DELAY * 1000), TimerDelegate(&Update::checkUpdate, this));
+#endif
 }
 
 Update::~Update() {
+}
+
+void Update::onStateChanged(const State& state) {
+    switch (state) {
+        case State::CONNECTED: {
+            this->checkTimer.start();
+
+            break;
+        }
+
+        case State::DISCONNECTED: {
+            this->checkTimer.stop();
+
+#if UPDATE_DELAY != 0
+            this->delayTimer.stop();
+#endif
+
+            break;
+        }
+    }
 }
 
 void Update::checkUpdate() {
@@ -28,8 +52,18 @@ void Update::checkUpdate() {
     this->http.downloadString(UPDATE_URL_VERSION, RequestCompletedDelegate(&Update::onVersionReceived, this));
 }
 
-void Update::onUpdateRequestReceived(const String& topic, const String& message) {
-    LOG.log("Request for update received");
+void Update::onGlobalUpdateRequestReceived(const String& topic, const String& message) {
+    LOG.log("Request for global update received");
+
+#if UPDATE_DELAY != 0
+    this->delayTimer.start(false);
+#else
+    this->checkUpdate();
+#endif
+}
+
+void Update::onDeviceUpdateRequestReceived(const String& topic, const String& message) {
+    LOG.log("Request for device specific update received");
     this->checkUpdate();
 }
 
