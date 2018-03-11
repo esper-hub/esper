@@ -19,13 +19,21 @@ public:
     Update(Device* device);
     virtual ~Update();
 
+    virtual void onStateChanged(const State& state);
+
     void checkUpdate();
 
 private:
-    void onUpdateRequestReceived(const String& topic, const String& message);
+    void onGlobalUpdateRequestReceived(const String& topic, const String& message);
+    void onDeviceUpdateRequestReceived(const String& topic, const String& message);
+
     int onVersionReceived(HttpConnection& client, bool successful);
 
-    Timer timer;
+    Timer checkTimer;
+
+#if UPDATE_DELAY != 0
+    Timer delayTimer;
+#endif
 
     HttpClient http;
 
