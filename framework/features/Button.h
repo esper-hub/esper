@@ -5,7 +5,7 @@
 #include "../util/Observed.h"
 
 
-template<const char* const name, uint16_t gpio, bool inverted>
+template<const char* const name, uint16_t gpio, bool inverted, uint16_t damper_time = 0>
 class Button : public Feature<name> {
     constexpr static const char* const ON = "1";
     constexpr static const char* const OFF = "0";
@@ -19,7 +19,8 @@ public:
     Button(Device* const device,
            const Callback& callback) :
             Feature<name>(device),
-            state(false, callback) {
+            state(false, callback),
+            damper()  {
         attachInterrupt(gpio, Delegate<void()>(&Button::onInterrupt, this), CHANGE);
     }
 
@@ -34,6 +35,10 @@ protected:
 
 private:
     virtual void onInterrupt()  {
+        if(this->damper.isDamped()) {
+            return;
+        }
+
         const bool state = this->onEdge(digitalRead(gpio) == !inverted);
 
         LOG.log("Old state:", this->state);
@@ -46,6 +51,7 @@ private:
     }
 
     Observed<bool> state;
+    Damper<damper_time> damper;
 };
 
 
