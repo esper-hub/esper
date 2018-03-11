@@ -24,10 +24,14 @@ public:
 private:
     void onUpdateRequestReceived(const String& topic, const String& message);
     int onVersionReceived(HttpConnection& client, bool successful);
+    void checkImageHeader();
+    int onImageHeaderReceived(HttpConnection& client, bool successful);
+    void beginUpdate();
 
     Timer timer;
 
-    HttpClient http;
+    HttpClient http_version;
+    HttpClient http_image_check;
 
     rBootHttpUpdate* updater;
 };

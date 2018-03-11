@@ -25,7 +25,7 @@ Update::~Update() {
 
 void Update::checkUpdate() {
     LOG.log("Downloading version file");
-    this->http.downloadString(UPDATE_URL_VERSION, RequestCompletedDelegate(&Update::onVersionReceived, this));
+    this->http_version.downloadString(UPDATE_URL_VERSION, RequestCompletedDelegate(&Update::onVersionReceived, this));
 }
 
 void Update::onUpdateRequestReceived(const String& topic, const String& message) {
@@ -35,7 +35,11 @@ void Update::onUpdateRequestReceived(const String& topic, const String& message)
 
 int Update::onVersionReceived(HttpConnection& client, bool successful) {
     if (!successful) {
-        LOG.log("Version download failed");
+        LOG.log("Version download failed, aborting.");
+        return -1;
+    }
+    if (client.getResponse()->code != 200) {
+        LOG.log("Version download failed with HTTP response code", client.getResponse()->code, "!= 200, aborting.");
         return -1;
     }
 
@@ -45,14 +49,57 @@ int Update::onVersionReceived(HttpConnection& client, bool successful) {
     String version = client.getResponseString();
     version = version.substring(0, version.indexOf('\n') - 1);
 
-    // Compare latest version with current one
-    if (version == VERSION) {
-        LOG.log("Already up to date");
+    if (version == "") {
+        LOG.log("Got empty version string, aborting.");
         return -1;
     }
 
-    LOG.log("Remote version differs - updating...");
+    // Compare latest version with current one
+    if (version == VERSION) {
+        LOG.log("Already up to date!");
+        return -1;
+    }
 
+    LOG.log("Remote version is different!");
+    this->checkImageHeader();
+}
+
+void Update::checkImageHeader() {
+    const rboot_config bootconf = rboot_get_config();
+
+    HttpRequest* request;
+    if (bootconf.current_rom == 0) {
+        request = this->http_image_check.request(UPDATE_URL_ROM_1);
+    } else {
+        request = this->http_image_check.request(UPDATE_URL_ROM_0);
+    }
+    request->setMethod(HTTP_HEAD);
+    request->onRequestComplete(RequestCompletedDelegate(&Update::onImageHeaderReceived, this));
+    if (this->http_image_check.send(request)) {
+       LOG.log("head request queued");
+    } else {
+       LOG.log("head request errored");
+    }
+    LOG.log("Requesting image with HTTP HEAD request");
+}
+
+int Update::onImageHeaderReceived(HttpConnection& client, bool successful) {
+    if (!successful) {
+        LOG.log("HEAD request for firmware image failed, aborting.");
+        return -1;
+    }
+    if (client.getResponse()->code != 200) {
+        LOG.log("HEAD request for firmware image failed with HTTP response code", client.getResponse()->code, "!= 200, aborting.");
+        return -1;
+    }
+
+    LOG.log("Firmware image HEAD requests looks good, continuing.");
+    this->beginUpdate();
+
+    return 0;
+}
+
+void Update::beginUpdate() {
     // Select rom slot to flash
     const rboot_config bootconf = rboot_get_config();
 
@@ -72,8 +119,6 @@ int Update::onVersionReceived(HttpConnection& client, bool successful) {
     }
 
     // Start update
-    LOG.log("Downloading update");
+    LOG.log("Beginning update...");
     this->updater->start();
-
-    return 0;
 }
