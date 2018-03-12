@@ -5,8 +5,8 @@
 
 
 template <const char* const name, uint16_t gpio, bool invert=false>
-class Socket : public OnOffFeature<name, gpio, invert, 1> {
-    using OnOffFeature<name, gpio, invert, 1>::OnOffFeature;
+class Socket : public OnOffFeature<name, gpio, invert, 1000> {
+    using OnOffFeature<name, gpio, invert, 1000>::OnOffFeature;
 };
 
 #endif

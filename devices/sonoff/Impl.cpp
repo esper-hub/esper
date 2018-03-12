@@ -33,7 +33,7 @@ private:
 
     Socket<SOCKET_NAME, SOCKET_GPIO> socket;
     Light<LIGHT_NAME, LIGHT_GPIO> light;
-    ToggleButton<BUTTON_NAME, BUTTON_GPIO, true, 1> button;
+    ToggleButton<BUTTON_NAME, BUTTON_GPIO, true> button;
 };
 
 

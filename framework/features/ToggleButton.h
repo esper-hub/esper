@@ -4,8 +4,8 @@
 #include "Button.h"
 
 
-template<const char* const name, uint16_t gpio, bool inverted = true, bool activeEdge = true>
-class ToggleButton : public Button<name, gpio, inverted> {
+template<const char* const name, uint16_t gpio, bool inverted = true, bool activeEdge = true, uint16_t damper_time = 100>
+class ToggleButton : public Button<name, gpio, inverted, damper_time> {
 protected:
     using Button<name, gpio, inverted>::LOG;
 
