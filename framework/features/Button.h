@@ -3,9 +3,10 @@
 
 #include "Feature.h"
 #include "../util/Observed.h"
+#include "../util/Damper.h"
 
 
-template<const char* const name, uint16_t gpio, bool inverted, uint16_t damper_time = 0>
+template<const char* const name, uint16_t gpio, bool inverted, uint16_t damper_time = 100>
 class Button : public Feature<name> {
     constexpr static const char* const ON = "1";
     constexpr static const char* const OFF = "0";
