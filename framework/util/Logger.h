@@ -25,6 +25,8 @@ public:
 
 private:
     inline void printPrefix() const {
+        serial->print(SystemClock.getSystemTimeString());
+        serial->print(' ');
         serial->print('[');
         serial->print(prefix);
         serial->print(']');
