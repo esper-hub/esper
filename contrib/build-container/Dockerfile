@@ -24,7 +24,7 @@ USER builder
 # Install ESP8266 SDK
 RUN git clone --recursive https://github.com/pfalcon/esp-open-sdk.git /home/builder/esp-open-sdk \
     && cd /home/builder/esp-open-sdk \
-    && git reset --hard 4ea62358c98799c1d4d1e711e5cff08045fc4dec \
+    && git reset --hard 5518fb6116c35a02ccb9a87260bb194a57cb429e \
     && cd /home/builder/esp-open-sdk; make VENDOR_SDK=2.1.0 STANDALONE=y \
     && rm -rf /home/builder/esp-open-sdk/crosstool-NG/.build
 
@@ -54,7 +54,7 @@ ENV PATH /home/builder/esptool2:$PATH
 # Install sming
 RUN git clone https://github.com/SmingHub/Sming.git /home/builder/Sming \
     && cd /home/builder/Sming \
-    && git reset --hard 31828f0d846b58f2e764c8985c085fc69cc1439f \
+    && git reset --hard 9c7cac2d260798e19e833bbaabf9f30b659425a8 \
     && cd /home/builder/Sming/Sming; make clean; make
 
 ENV COM_PORT /dev/ttyESP
