@@ -14,9 +14,9 @@ public:
             return false;
         }
 
-        const uint32_t now = RTC.getRtcNanoseconds() / 1000000;
+        const uint64_t now = RTC.getRtcNanoseconds() / 1000000;
 
-        if (this->lastChange + ((uint32_t) damper_time) > now) {
+        if (this->lastChange + ((uint64_t) damper_time) > now) {
             return true;
         }
 
@@ -26,7 +26,7 @@ public:
     }
 
 private:
-    uint32_t lastChange;
+    uint64_t lastChange;
 };
 
 #endif

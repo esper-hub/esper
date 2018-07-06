@@ -21,7 +21,9 @@ public:
 
 private:
     void onStateChanged(const bool& state) {
-        this->socket.toggle();
+        if (state) {
+            this->socket.toggle();
+        }
     }
 
     Socket<SOCKET_NAME, SOCKET_GPIO> socket;
