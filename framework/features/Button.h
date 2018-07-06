@@ -42,9 +42,6 @@ private:
 
         const bool state = this->onEdge(digitalRead(gpio) == !inverted);
 
-        LOG.log("Old state:", this->state);
-        LOG.log("New state:", state);
-
         if (state != this->state) {
             this->state.set(state);
             this->publishCurrentState();

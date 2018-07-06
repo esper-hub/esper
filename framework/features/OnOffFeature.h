@@ -26,6 +26,10 @@ public:
         LOG.log("Initialized");
     }
 
+    void toggle() {
+        this->set(!this->state);
+    }
+
     void set(bool state) {
         if (this->state = state) {
             LOG.log("Turning on");

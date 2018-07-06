@@ -1,6 +1,5 @@
 #include "../features/Socket.h"
-#include "../features/ToggleButton.h"
-#include "../features/Light.h"
+#include "../features/TriggerButton.h"
 #include "Device.h"
 
 
@@ -21,11 +20,13 @@ public:
 
 private:
     void onStateChanged(const bool& state) {
-        this->socket.set(state);
+        if (state) {
+            this->socket.toggle();
+        }
     }
 
     Socket<SOCKET_NAME, SOCKET_GPIO> socket;
-    ToggleButton<BUTTON_NAME, BUTTON_GPIO, true> button;
+    TriggerButton<BUTTON_NAME, BUTTON_GPIO, true> button;
 };
 
 
