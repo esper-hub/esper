@@ -18,7 +18,7 @@ public:
     }
 
     static void init() {
-        serial->begin(SERIAL_BAUD_RATE); // Start serial
+        serial->begin(SERIAL_BAUD_RATE, SERIAL_8N1, SERIAL_TX_ONLY); // Start serial
         serial->systemDebugOutput(LOGGING_DEBUG); // Debug output to serial
         serial->commandProcessing(false);
     }
