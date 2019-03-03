@@ -3,7 +3,9 @@
 ## Unreleased
 ### Breaking changes
 - `PulseFeature` has ben renamed to `Pulse`
-- `UPDATE_TOPIC` is now hardcoded to `${MQTT_REALM}/update`. 
+- `UPDATE_TOPIC` is now hardcoded to `${MQTT_REALM}/update`.
+- Docker file moved to project root.
+- Build output moved from esper directory to site directory.
 
 ### Features
 - Added `${MQTT_REALM}/${DEVICE_ID}/status` containing `ONLINE` or `OFFLINE`

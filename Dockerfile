@@ -60,11 +60,16 @@ RUN git clone https://github.com/SmingHub/Sming.git /home/builder/Sming \
 ENV COM_PORT /dev/ttyESP
 ENV COM_SPEED 115200
 
-ENV ESPER /home/builder/esper
-ENV SITE /home/builder/site
+# Copy local esper
+COPY . /home/builder/esper/
 
+# Switch back user and set workdir for building
 USER root
 WORKDIR /home/builder/esper
+
+# Set variables for build
+ENV ESPER /home/builder/esper
+ENV SITE /home/builder/site
 
 CMD make
 

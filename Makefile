@@ -9,7 +9,7 @@ endif
 
 
 export BUILDDIR = $(BASEDIR)/build
-export DISTDIR = $(BASEDIR)/dist
+export DISTDIR = $(SITEDIR)/dist
 
 
 # Find devices

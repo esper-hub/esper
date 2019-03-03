@@ -5,7 +5,7 @@ services:
 
 before_script:
   - cp Configuration.mk.example Configuration.mk
-  - docker build --tag esper-build ./contrib/build-container
+  - docker build --tag esper-build .
 
 script:
   - docker run -it --rm --volume $(pwd):/home/builder/site --volume $(pwd):/home/builder/esper esper-build
