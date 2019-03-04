@@ -70,7 +70,7 @@ It is available at `esperhub/esper` with tags `latest` (master branch) and `deve
 
 ### Build the docker container (optional):
 ```shell
-docker build --tag esperhub/builder:local .
+docker build --tag esperhub/esper:local .
 ```
 This must be done only once after updating the container.
 
