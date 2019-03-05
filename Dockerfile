@@ -47,15 +47,18 @@ ENV PATH /home/builder/esptool:$PATH
 RUN git clone --recursive https://github.com/raburton/esptool2 /home/builder/esptool2 \
     && cd /home/builder/esptool2 \
     && git reset --hard 3616335ab318cde9e25ba81dbd47097b09603161 \
-    && cd /home/builder/esptool2; make
+    && cd /home/builder/esptool2 \
+    && make
 
 ENV PATH /home/builder/esptool2:$PATH
 
 # Install sming
-RUN git clone https://github.com/SmingHub/Sming.git /home/builder/Sming \
+RUN git clone https://github.com/esper-hub/Sming.git /home/builder/Sming \
     && cd /home/builder/Sming \
     && git reset --hard 9c7cac2d260798e19e833bbaabf9f30b659425a8 \
-    && cd /home/builder/Sming/Sming; make clean; make
+    && cd /home/builder/Sming/Sming \
+    && make clean \
+    && make
 
 ENV COM_PORT /dev/ttyESP
 ENV COM_SPEED 115200
