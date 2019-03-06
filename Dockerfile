@@ -22,15 +22,15 @@ RUN useradd -m builder
 USER builder
 
 # Install ESP8266 SDK
-RUN git clone --recursive https://github.com/pfalcon/esp-open-sdk.git /home/builder/esp-open-sdk \
+RUN git clone https://github.com/pfalcon/esp-open-sdk.git /home/builder/esp-open-sdk \
     && cd /home/builder/esp-open-sdk \
-    && git reset --hard 5518fb6116c35a02ccb9a87260bb194a57cb429e \
+    && git reset --hard c70543e57fb18e5be0315aa217bca27d0e26d23d \
+    && git submodule update --init --recursive \
     && cd /home/builder/esp-open-sdk; make VENDOR_SDK=2.1.0 STANDALONE=y \
     && rm -rf /home/builder/esp-open-sdk/crosstool-NG/.build
 
 ENV PATH /home/builder/esp-open-sdk/xtensa-lx106-elf/bin:$PATH
 ENV XTENSA_TOOLS_ROOT /home/builder/esp-open-sdk/xtensa-lx106-elf/bin
-ENV SDK_BASE /home/builder/esp-open-sdk/sdk
 ENV FW_TOOL /home/builder/esp-open-sdk/xtensa-lx106-elf/bin/esptool.py
 ENV ESP_HOME /home/builder/esp-open-sdk
 ENV SMING_HOME /home/builder/Sming/Sming
@@ -56,6 +56,7 @@ ENV PATH /home/builder/esptool2:$PATH
 RUN git clone https://github.com/esper-hub/Sming.git /home/builder/Sming \
     && cd /home/builder/Sming \
     && git reset --hard 9c7cac2d260798e19e833bbaabf9f30b659425a8 \
+    && git submodule update --init --recursive \
     && cd /home/builder/Sming/Sming \
     && make clean \
     && make
