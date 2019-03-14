@@ -50,7 +50,7 @@ docker run \
     --interactive \
     --device ${DEVICE}:/dev/ttyESP \
     --volume ${SITE}:/home/builder/site \
-    esperhub:esper
+    esperhub/esper:latest
 ```
 Replace `${DEVICE}` and `${SITE}` with the correct paths.
 
@@ -81,7 +81,7 @@ docker run \
     --interactive \
     --device ${DEVICE}:/dev/ttyESP \
     --volume ${SITE}:/home/builder/site \
-    esperhub:esper
+    esperhub/esper
 ```
 Replace `${DEVICE}` and `${SITE}` with the correct paths.
 
