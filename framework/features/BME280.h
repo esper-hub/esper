@@ -6,20 +6,19 @@
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-template<const char* const name, uint8_t addr>
+template<const char* const name, uint8_t addr, uint8_t sda_pin, uint8_t scl_pin>
 class BME280 : public Feature<name> {
 
 protected:
     using Feature<name>::LOG;
-    Adafruit_BME280 bme280;
 
 public:
-
     BME280(Device* device) :
         Feature<name>(device) {
 
-        if (!bme280.begin(addr)) {
-            Serial.println("Could not detect a BME280 sensor, check wiring!");
+        this->wire.begin(sda_pin, scl_pin);
+        if (!this->bme280.begin(addr, &this->wire)) {
+            LOG.log("Could not detect a BME280 sensor, check wiring:", addr);
             abort();
         }
 
@@ -45,8 +44,10 @@ protected:
     }
 
 private:
-    Timer updateTimer;
+    TwoWire wire;
+    Adafruit_BME280 bme280;
 
+    Timer updateTimer;
 };
 
 
