@@ -8,6 +8,7 @@ Reboot::Reboot(Device* const device)
         : Service(device) {
     // Receive messages
     this->device->registerSubscription(MQTT_REALM + String("/reboot"), Device::MessageCallback(&Reboot::onRebootRequestReceived, this));
+    this->device->registerSubscription(Device::TOPIC_BASE + String("/reboot"), Device::MessageCallback(&Reboot::onRebootRequestReceived, this));
 }
 
 Reboot::~Reboot() {
