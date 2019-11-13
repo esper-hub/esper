@@ -1,7 +1,7 @@
 #ifndef OBSERVED_H
 #define OBSERVED_H
 
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 
 template<typename T>

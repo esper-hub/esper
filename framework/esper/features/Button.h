@@ -43,8 +43,10 @@ private:
         const bool state = this->onEdge(digitalRead(gpio) == !inverted);
 
         if (state != this->state) {
-            this->state.set(state);
-            this->publishCurrentState();
+            //System::queueCallback([this]() => {
+                this->state.set(state);
+                this->publishCurrentState();
+            //});
         }
     }
 

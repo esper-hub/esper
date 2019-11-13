@@ -37,7 +37,7 @@ private:
 
     HttpClient http;
 
-    rBootHttpUpdate* updater;
+    RbootHttpUpdater* updater;
 };
 
 #endif

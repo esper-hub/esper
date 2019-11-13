@@ -139,7 +139,7 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
             }
 
             // Inform all services about new state
-            for (int i = 0; i < this->services.count(); i++) {
+            for (unsigned int i = 0; i < this->services.count(); i++) {
                 this->services[i]->onStateChanged(ServiceBase::State::CONNECTED);
             }
 
@@ -150,7 +150,7 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
             LOG.log("MQTT state changed: Disconnected");
 
             // Inform all services about new state
-            for (int i = 0; i < this->services.count(); i++) {
+            for (unsigned int i = 0; i < this->services.count(); i++) {
                 this->services[i]->onStateChanged(ServiceBase::State::DISCONNECTED);
             }
 

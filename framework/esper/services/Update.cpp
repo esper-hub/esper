@@ -17,10 +17,10 @@ Update::Update(Device* device) :
     this->device->registerSubscription(Device::TOPIC_BASE + String("/update"), Device::MessageCallback(&Update::onDeviceUpdateRequestReceived, this));
 
     // Check for updates regularly
-    this->checkTimer.initializeMs(UPDATE_INTERVAL * 1000, TimerDelegate(&Update::checkUpdate, this));
+    this->checkTimer.initializeMs(UPDATE_INTERVAL * 1000, std::bind(&Update::checkUpdate, this));
 
 #if UPDATE_DELAY != 0
-    this->delayTimer.initializeMs(random(UPDATE_DELAY * 1000), TimerDelegate(&Update::checkUpdate, this));
+    this->delayTimer.initializeMs(random(UPDATE_DELAY * 1000), std::bind(&Update::checkUpdate, this));
 #endif
 }
 
@@ -76,7 +76,7 @@ int Update::onVersionReceived(HttpConnection& client, bool successful) {
     LOG.log("Got version file");
 
     // Get the first line received
-    String version = client.getResponseString();
+    String version = client.getResponse()->getBody();
     version = version.substring(0, version.indexOf('\n') - 1);
 
     // Compare latest version with current one
@@ -92,7 +92,7 @@ int Update::onVersionReceived(HttpConnection& client, bool successful) {
 
     // Ensure we have a clean updater
     if (this->updater) delete this->updater;
-    this->updater = new rBootHttpUpdate();
+    this->updater = new RbootHttpUpdater();
 
     // Configure updater with items to flash
     if (bootconf.current_rom == 0) {

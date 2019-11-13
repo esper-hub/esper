@@ -1,7 +1,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 
 template<class type, uint8_t size>

@@ -1,7 +1,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 
 template<HardwareSerial* const serial>

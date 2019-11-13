@@ -24,7 +24,7 @@ public:
 
         delay(100); // Wait for the sensor to boot up
 
-        this->updateTimer.initializeMs(15000, TimerDelegate(&BME280::publishCurrentState, this));
+        this->updateTimer.initializeMs(15000, std::bind(&BME280::publishCurrentState, this));
         this->updateTimer.start(true);
     }
 

@@ -1,12 +1,12 @@
 #include "WifiConnectionManager.h"
-#include "util/Strings.h"
+#include "../util/Strings.h"
 
 
 const Logger WifiConnectionManager::LOG = Logger("wifi");
 
 WifiConnectionManager::WifiConnectionManager(const StateChangedCallback& callback) :
         state(State::DISCONNECTED, callback) {
-    this->reconnectTimer.initializeMs(2000, TimerDelegate(&WifiConnectionManager::connect, this));
+    this->reconnectTimer.initializeMs(2000, std::bind(&WifiConnectionManager::connect, this));
 
     LOG.log("Initalized");
 }
@@ -46,11 +46,11 @@ const String& WifiConnectionManager::getCurrentSSID() const {
     return this->ssid;
 }
 
-const String& WifiConnectionManager::getCurrentBSSID() const {
+const MacAddress& WifiConnectionManager::getCurrentBSSID() const {
     return this->bssid;
 }
 
-void WifiConnectionManager::onStationConfigured(IPAddress ip, IPAddress mask, IPAddress gateway) {
+void WifiConnectionManager::onStationConfigured(IpAddress ip, IpAddress mask, IpAddress gateway) {
     LOG.log("Configured:", ip, mask, gateway);
 
     if (this->state.set(State::CONNECTED)) {
@@ -58,18 +58,18 @@ void WifiConnectionManager::onStationConfigured(IPAddress ip, IPAddress mask, IP
     }
 }
 
-void WifiConnectionManager::onStationConnected(String ssid, uint8_t, uint8_t bssid[6], uint8_t reason) {
+void WifiConnectionManager::onStationConnected(const String& ssid, MacAddress bssid, uint8_t channel) {
     LOG.log("Connected");
 
     this->ssid = ssid;
-    this->bssid = Strings::formatMAC(bssid);
+    this->bssid = bssid;
 }
 
-void WifiConnectionManager::onStationDisconnected(String, uint8_t, uint8_t[6], uint8_t reason) {
+void WifiConnectionManager::onStationDisconnected(const String& ssid, MacAddress bssid, WifiDisconnectReason reason) {
     LOG.log("Disconnected");
 
     this->ssid = String();
-    this->bssid = String();
+    this->bssid = MacAddress();
 
     if (this->state.set(State::DISCONNECTED)) {
         this->reconnectTimer.start();

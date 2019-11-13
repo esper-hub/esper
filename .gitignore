@@ -1,5 +1,5 @@
-/build
-/dist
+/framework/out
+/devices/*/out
 
 /Configuration.mk
 
@@ -7,6 +7,7 @@
 
 /.idea
 /esper.cbp
+/.vscode
 
 /CMakeLists.txt
 /CMakeCache.txt

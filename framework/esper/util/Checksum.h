@@ -1,7 +1,7 @@
 #ifndef CHECKSUM_H
 #define CHECKSUM_H
 
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 
 /**

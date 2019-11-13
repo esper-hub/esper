@@ -1,5 +1,6 @@
-#include "../features/Socket.h"
-#include "../features/TriggerButton.h"
+#include <features/Socket.h>
+#include <features/TriggerButton.h>
+
 #include "Device.h"
 
 

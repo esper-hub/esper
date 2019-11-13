@@ -1,4 +1,5 @@
-#include "../features/BME280.h"
+#include <features/BME280.h>
+
 #include "Device.h"
 
 

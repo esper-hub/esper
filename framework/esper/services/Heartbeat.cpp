@@ -10,7 +10,7 @@ Heartbeat::Heartbeat(Device* const device)
     this->device->registerSubscription(HEARTBEAT_TOPIC, Device::MessageCallback(&Heartbeat::onMessageReceived, this));
 
     // Reboot the system if heartbeat was missing
-    this->timer.initializeMs(120000, TimerDelegate(&Device::triggerReboot, device));
+    this->timer.initializeMs(120000, std::bind(&Device::triggerReboot, device));
 }
 
 Heartbeat::~Heartbeat() {

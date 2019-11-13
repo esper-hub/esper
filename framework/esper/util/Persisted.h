@@ -1,7 +1,7 @@
 #ifndef PERSISTED_H
 #define PERSISTED_H
 
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 #include "Checksum.h"
 
@@ -29,7 +29,7 @@ class Persisted {
                    << record.sequence
                    << record.value;
         }
-    } __attribute__((aligned(INTERNAL_FLASH_WRITE_UNIT_SIZE)));
+    } __attribute__((aligned(4)));
 
     struct address_t {
         uint16_t sector;
@@ -140,6 +140,8 @@ public:
 
 private:
     inline static void flash_erase_sector(const uint16_t& sect) {
+        WDT_FEED();
+
         const auto& ret = spi_flash_erase_sector(flash_addr / SPI_FLASH_SEC_SIZE + sect);
         if (ret != SPI_FLASH_RESULT_OK) {
             LOG.log("Flash: Erase failed:", sect);
@@ -148,6 +150,8 @@ private:
 
     inline static void flash_write(const address_t& addr,
                                    const record_t& record) {
+        WDT_FEED();
+
         const auto& ret = spi_flash_write(flash_addr + addr.sector * SPI_FLASH_SEC_SIZE + addr.offset,
                                           (uint32_t*) &record,
                                           sizeof(record_t));
@@ -158,6 +162,8 @@ private:
 
     inline static void flash_read(const address_t& addr,
                                   record_t& record) {
+        WDT_FEED();
+
         const auto& ret = spi_flash_read(flash_addr + addr.sector * SPI_FLASH_SEC_SIZE + addr.offset,
                                          (uint32_t*) &record,
                                          sizeof(record_t));

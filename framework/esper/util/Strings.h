@@ -1,7 +1,7 @@
 #ifndef STRINGS_H
 #define STRINGS_H
 
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 namespace Strings {
     inline String formatMAC(const uint8_t mac[6]) {

@@ -1,7 +1,7 @@
 #ifndef DEVICE_H
 #define DEVICE_H
 
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 #include "util/Logger.h"
 #include "managers/WifiConnectionManager.h"
@@ -69,10 +69,14 @@ private:
 
 #if HEARTBEAT_ENABLED
     Heartbeat heartbeat;
+#else
+    #warning "Heartbeat disabled" 
 #endif
 
 #if UPDATE_ENABLED
     Update update;
+#else
+    #warning "Update disabled" 
 #endif
 
     Info info;

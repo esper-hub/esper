@@ -6,10 +6,22 @@ const Logger MqttConnectionManager::LOG = Logger("mqtt");
 MqttConnectionManager::MqttConnectionManager(const StateChangedCallback& stateChangedCallback,
                                              const MessageCallback& messageCallback) :
         state(State::DISCONNECTED, stateChangedCallback),
-        client(MQTT_HOST, MQTT_PORT,
-               MqttStringSubscriptionCallback(&MqttConnectionManager::onMessageReceived, this)),
         messageCallback(messageCallback) {
-    this->reconnectTimer.initializeMs(2000, TimerDelegate(&MqttConnectionManager::connect, this));
+    this->client.setMessageHandler([messageCallback] (MqttClient& client, mqtt_message_t* message) {
+        if(message == nullptr) { return -1; }
+        if(message->common.length > MQTT_PAYLOAD_LENGTH) { return -2; }
+
+	const String topic = String((const char*) message->publish.topic_name.data, message->publish.topic_name.length);
+	const String content = String((const char*) message->publish.content.data, message->publish.content.length);
+
+        messageCallback(topic, content);
+
+	return 0;
+    });
+
+    this->client.setCompleteDelegate(TcpClientCompleteDelegate(&MqttConnectionManager::onDisconnected, this));
+
+    this->reconnectTimer.initializeMs(2000, std::bind(&MqttConnectionManager::connect, this));
 
     LOG.log("Initialized");
 }
@@ -18,13 +30,12 @@ MqttConnectionManager::~MqttConnectionManager() {
 }
 
 void MqttConnectionManager::connect() {
-    LOG.log("Connecting");
+    LOG.log("Connecting:", MQTT_URL);
 
     this->reconnectTimer.stop();
     this->state.set(State::CONNECTING);
 
-    this->client.setCompleteDelegate(TcpClientCompleteDelegate(&MqttConnectionManager::onDisconnected, this));
-    if (this->client.connect(WifiStation.getMAC(), MQTT_USERNAME, MQTT_PASSWORD)) {
+    if (this->client.connect(MQTT_URL, WifiStation.getMAC())) {
         this->state.set(State::CONNECTED);
 
     } else {
@@ -46,7 +57,7 @@ void MqttConnectionManager::publish(const String &topic, const String &message, 
 }
 
 void MqttConnectionManager::setWill(const String& topic, const String& message, const bool& retained) {
-    LOG.log("Setlast will to ", topic, ":", message);
+    LOG.log("Set last will to", topic, ":", message);
 	this->client.setWill(topic, message, 0, retained);
 }
 

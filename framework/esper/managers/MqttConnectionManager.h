@@ -1,7 +1,7 @@
 #ifndef MQTT_CONNECTION_MANAGER_H
 #define MQTT_CONNECTION_MANAGER_H
 
-#include <SmingCore/SmingCore.h>
+#include <SmingCore.h>
 
 #include "../util/Logger.h"
 #include "../util/Observed.h"

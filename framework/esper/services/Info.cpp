@@ -1,13 +1,15 @@
 #include "Info.h"
 #include "../Device.h"
 
+#include <ArduinoJson.h>
+
 
 const char INFO_NAME[] = "info";
 
 Info::Info(Device* const device)
         : Service(device) {
     // Publish status regularly
-    this->timer.initializeMs(60000, TimerDelegate(&Info::publish, this));
+    this->timer.initializeMs(60000, std::bind(&Info::publish, this));
 
     // Record time then starting up
     this->startupTime = RTC.getRtcSeconds();
@@ -30,7 +32,7 @@ Info::Info(Device* const device)
 
 #ifdef INFO_HTTP_ENABLED
     http.listen(INFO_HTTP_PORT);
-	http.addPath("/", HttpPathDelegate(&Info::onHttpIndex, this));
+    http.paths.set("/", HttpPathDelegate(&Info::onHttpIndex, this));
 #endif
 }
 
@@ -60,50 +62,43 @@ void Info::onStateChanged(const State& state) {
 String Info::dump() const {
     LOG.log("Publishing device info");
 
-    StaticJsonBuffer<1024> json;
+    StaticJsonDocument<1024> doc;
 
-    auto& info = json.createObject();
-    info.set("device", DEVICE);
-    info.set("chip_id", String(system_get_chip_id(), 16));
-    info.set("flash_id", String(spi_flash_get_id(), 16));
 
-    auto& version = info.createNestedObject("version");
-    version.set("esper", VERSION);
-    version.set("sdk", system_get_sdk_version());
-    version.set("boot", system_get_boot_version());
+    doc["device"] = DEVICE;
+    doc["chip_id"] = String(system_get_chip_id(), 16);
+    doc["flash_id"] = String(spi_flash_get_id(), 16);
 
-    auto& boot = info.createNestedObject("boot");
-    boot.set("rom", rboot_get_current_rom());
+    doc["version"]["esper"] = VERSION;
+    doc["version"]["sdk"] = system_get_sdk_version();
+    doc["version"]["boot"] = system_get_boot_version();
 
-    auto& time = info.createNestedObject("time");
-    time.set("startup", this->startupTime);
-    time.set("connect", this->connectTime);
-    time.set("updated", RTC.getRtcSeconds());
+    doc["boot"]["rom"] = rboot_get_current_rom();
 
-    auto& network = info.createNestedObject("network");
-    network.set("mac", WifiStation.getMAC());
-    network.set("ip", WifiStation.getIP().toString());
-    network.set("mask", WifiStation.getNetworkMask().toString());
-    network.set("gateway", WifiStation.getNetworkGateway().toString());
+    doc["time"]["startup"] = this->startupTime;
+    doc["time"]["connect"] = this->connectTime;
+    doc["time"]["updated"] = RTC.getRtcSeconds();
 
-    auto& wifi = info.createNestedObject("wifi");
-    wifi.set("ssid", this->device->getWifi().getCurrentSSID());
-    wifi.set("bssid", this->device->getWifi().getCurrentBSSID());
-    wifi.set("rssi", WifiStation.getRssi());
-    wifi.set("channel", WifiStation.getChannel());
+    doc["network"]["mac"] = WifiStation.getMAC();
+    doc["network"]["ip"] = WifiStation.getIP().toString();
+    doc["network"]["mask"] = WifiStation.getNetworkMask().toString();
+    doc["network"]["gateway"] = WifiStation.getNetworkGateway().toString();
 
-    auto& services = info.createNestedArray("services");
-    for (int i = 0; i < this->device->getServices().count(); i++) {
-        services.add(this->device->getServices().at(i)->getName());
+    doc["wifi"]["ssid"] = this->device->getWifi().getCurrentSSID();
+    doc["wifi"]["bssid"] = this->device->getWifi().getCurrentBSSID();
+    doc["wifi"]["rssi"] = WifiStation.getRssi();
+    doc["wifi"]["channel"] = WifiStation.getChannel();
+
+    for (unsigned int i = 0; i < this->device->getServices().count(); i++) {
+        doc["services"].add(this->device->getServices().at(i)->getName());
     }
 
-    auto& endpoints = info.createNestedArray("endpoints");
     for (unsigned int i = 0; i < this->device->getSubscriptions().count(); i++) {
-        endpoints.add(this->device->getSubscriptions().keyAt(i));
+        doc["endpoints"].add(this->device->getSubscriptions().keyAt(i));
     }
 
     String payload;
-    info.prettyPrintTo(payload);
+    serializeJson(doc, payload);
 
     return payload;
 }
