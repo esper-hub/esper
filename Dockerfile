@@ -53,9 +53,9 @@ ENV SMING_HOME /home/builder/Sming/Sming
 #ENV PATH /home/builder/esptool2:$PATH
 
 # Install sming
-RUN git clone https://github.com/SmingHub/Sming.git /home/builder/Sming \
+RUN git clone https://github.com/esper-hub/Sming.git /home/builder/Sming \
     && cd /home/builder/Sming \
-    && git reset --hard 8883768125ec3c7a754339230805068d4254bc08 \
+    && git reset --hard ace2f60273f840882332caced54e95710680af0d \
     && git submodule update --init --recursive \
     && cd /home/builder/Sming/Sming \
     && make clean \

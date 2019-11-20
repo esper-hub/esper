@@ -79,7 +79,7 @@ COM_OPTS += --raw
 
 
 # Add the framework to the search path
-export COMPONENT_SEARCH_DIRS += $(BASEDIR)/framework
+COMPONENT_SEARCH_DIRS += $(BASEDIR)/framework
 
 
 # Add esper as a dependent component for all devices
@@ -87,7 +87,7 @@ export COMPONENT_SEARCH_DIRS += $(BASEDIR)/framework
 # component and COMPONENTS is hardly initialized in project.mk
 ARDUINO_LIBRARIES := esper
 
-APPCODE := $(DEVICEDIR)
+# APPCODE := $(DEVICEDIR)
 
 
 # Include main makefile

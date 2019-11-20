@@ -21,9 +21,9 @@ public:
         pinMode(gpio, OUTPUT);
         digitalWrite(gpio, this->state == !invert);
 
-        this->registerSubscription("set", Device::MessageCallback(&OnOffFeature::onMessageReceived, this));
+        this->registerSubscription(F("set"), Device::MessageCallback(&OnOffFeature::onMessageReceived, this));
 
-        LOG.log("Initialized");
+        LOG.log(F("Initialized"));
     }
 
     void toggle() {
@@ -32,9 +32,9 @@ public:
 
     void set(bool state) {
         if (this->state = state) {
-            LOG.log("Turning on");
+            LOG.log(F("Turning on"));
         } else {
-            LOG.log("Turning off");
+            LOG.log(F("Turning off"));
         }
 
         digitalWrite(gpio, state == !invert);
@@ -44,7 +44,7 @@ public:
 
 protected:
     virtual void publishCurrentState() {
-        this->publish("", this->state ? ON : OFF, true);
+        this->publish(F(""), this->state ? ON : OFF, true);
     }
 
 private:
@@ -60,7 +60,7 @@ private:
             this->set(false);
 
         } else {
-            LOG.log("Unknown message received:", message);
+            LOG.log(F("Unknown message received:"), message);
         }
     }
 

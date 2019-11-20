@@ -1,7 +1,6 @@
-#include <features/Socket.h>
-#include <features/TriggerButton.h>
-
-#include "Device.h"
+#include <esper/features/Socket.h>
+#include <esper/features/TriggerButton.h>
+#include <esper/Device.h>
 
 
 constexpr const char SOCKET_NAME[] = "socket";

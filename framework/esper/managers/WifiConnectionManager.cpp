@@ -8,34 +8,36 @@ WifiConnectionManager::WifiConnectionManager(const StateChangedCallback& callbac
         state(State::DISCONNECTED, callback) {
     this->reconnectTimer.initializeMs(2000, std::bind(&WifiConnectionManager::connect, this));
 
-    LOG.log("Initalized");
+    WifiEvents.onStationGotIP(StationGotIPDelegate(&WifiConnectionManager::onStationConfigured, this));
+    WifiEvents.onStationConnect(StationConnectDelegate(&WifiConnectionManager::onStationConnected, this));
+    WifiEvents.onStationDisconnect(StationDisconnectDelegate(&WifiConnectionManager::onStationDisconnected, this));
+
+    LOG.log(F("Initalized"));
 }
 
 WifiConnectionManager::~WifiConnectionManager() {
 }
 
 void WifiConnectionManager::connect() {
-    LOG.log("Connecting");
+    LOG.log(F("Connecting"));
 
     this->reconnectTimer.stop();
 
-    LOG.log("SSID:", WIFI_SSID);
-    LOG.log("PW:", WIFI_PWD);
+    LOG.log(F("SSID:"), WIFI_SSID);
+    LOG.log(F("PW:"), WIFI_PWD);
     WifiStation.config(WIFI_SSID, WIFI_PWD);
-    LOG.log("Configured");
+    LOG.log(F("Configured"));
 
     WifiAccessPoint.enable(false);
-    LOG.log("Wifi Access Point disabled");
+    LOG.log(F("Wifi Access Point disabled"));
 
     WifiStation.enable(true);
-    LOG.log("Wifi Station enabled");
+    LOG.log(F("Wifi Station enabled"));
 
     this->state.set(State::CONNECTING);
+    WifiStation.connect();
 
-    LOG.log("Waiting for connection");
-    WifiEvents.onStationGotIP(StationGotIPDelegate(&WifiConnectionManager::onStationConfigured, this));
-    WifiEvents.onStationConnect(StationConnectDelegate(&WifiConnectionManager::onStationConnected, this));
-    WifiEvents.onStationDisconnect(StationDisconnectDelegate(&WifiConnectionManager::onStationDisconnected, this));
+    LOG.log(F("Waiting for connection"));
 }
 
 WifiConnectionManager::State WifiConnectionManager::getState() const {
@@ -51,7 +53,7 @@ const MacAddress& WifiConnectionManager::getCurrentBSSID() const {
 }
 
 void WifiConnectionManager::onStationConfigured(IpAddress ip, IpAddress mask, IpAddress gateway) {
-    LOG.log("Configured:", ip, mask, gateway);
+    LOG.log(F("Configured:"), ip, mask, gateway);
 
     if (this->state.set(State::CONNECTED)) {
         this->reconnectTimer.stop();
@@ -59,14 +61,14 @@ void WifiConnectionManager::onStationConfigured(IpAddress ip, IpAddress mask, Ip
 }
 
 void WifiConnectionManager::onStationConnected(const String& ssid, MacAddress bssid, uint8_t channel) {
-    LOG.log("Connected");
+    LOG.log(F("Connected"));
 
     this->ssid = ssid;
     this->bssid = bssid;
 }
 
 void WifiConnectionManager::onStationDisconnected(const String& ssid, MacAddress bssid, WifiDisconnectReason reason) {
-    LOG.log("Disconnected");
+    LOG.log(F("Disconnected"));
 
     this->ssid = String();
     this->bssid = MacAddress();

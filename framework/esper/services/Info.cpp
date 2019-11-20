@@ -17,22 +17,22 @@ Info::Info(Device* const device)
     // Read bootloader config
     const rboot_config rbootconf = rboot_get_config();
 
-    LOG.log("Device:", DEVICE);
-    LOG.log("SDK Version:", system_get_sdk_version());
-    LOG.log("Boot Version:", system_get_boot_version());
-    LOG.log("Boot Mode:", system_get_boot_mode());
-    LOG.log("ESPer Version:", VERSION);
-    LOG.log("Free Heap:", system_get_free_heap_size());
-    LOG.log("CPU Frequency (MHz):", system_get_cpu_freq());
-    LOG.log("System Chip ID:", String(system_get_chip_id(), 16));
-    LOG.log("SPI Flash ID:", String(spi_flash_get_id(), 16));
-    LOG.log("ROM Selected:", rbootconf.current_rom);
-    LOG.log("ROM Slot 0:", rbootconf.roms[0]);
-    LOG.log("ROM Slot 1:", rbootconf.roms[1]);
+    LOG.log(F("Device:"), DEVICE);
+    LOG.log(F("SDK Version:"), system_get_sdk_version());
+    LOG.log(F("Boot Version:"), system_get_boot_version());
+    LOG.log(F("Boot Mode:"), system_get_boot_mode());
+    LOG.log(F("ESPer Version:"), VERSION);
+    LOG.log(F("Free Heap:"), system_get_free_heap_size());
+    LOG.log(F("CPU Frequency (MHz):"), system_get_cpu_freq());
+    LOG.log(F("System Chip ID:"), String(system_get_chip_id(), 16));
+    LOG.log(F("SPI Flash ID:"), String(spi_flash_get_id(), 16));
+    LOG.log(F("ROM Selected:"), rbootconf.current_rom);
+    LOG.log(F("ROM Slot 0:"), rbootconf.roms[0]);
+    LOG.log(F("ROM Slot 1:"), rbootconf.roms[1]);
 
 #ifdef INFO_HTTP_ENABLED
     http.listen(INFO_HTTP_PORT);
-    http.paths.set("/", HttpPathDelegate(&Info::onHttpIndex, this));
+    http.paths.set(F("/"), HttpPathDelegate(&Info::onHttpIndex, this));
 #endif
 }
 
@@ -60,41 +60,41 @@ void Info::onStateChanged(const State& state) {
 }
 
 String Info::dump() const {
-    LOG.log("Publishing device info");
+    LOG.log(F("Publishing device info"));
 
     StaticJsonDocument<1024> doc;
 
 
-    doc["device"] = DEVICE;
-    doc["chip_id"] = String(system_get_chip_id(), 16);
-    doc["flash_id"] = String(spi_flash_get_id(), 16);
+    doc[F("device")] = DEVICE;
+    doc[F("chip_id")] = String(system_get_chip_id(), 16);
+    doc[F("flash_id")] = String(spi_flash_get_id(), 16);
 
-    doc["version"]["esper"] = VERSION;
-    doc["version"]["sdk"] = system_get_sdk_version();
-    doc["version"]["boot"] = system_get_boot_version();
+    doc[F("version")][F("esper")] = VERSION;
+    doc[F("version")][F("sdk")] = system_get_sdk_version();
+    doc[F("version")][F("boot")] = system_get_boot_version();
 
-    doc["boot"]["rom"] = rboot_get_current_rom();
+    doc[F("boot")][F("rom")] = rboot_get_current_rom();
 
-    doc["time"]["startup"] = this->startupTime;
-    doc["time"]["connect"] = this->connectTime;
-    doc["time"]["updated"] = RTC.getRtcSeconds();
+    doc[F("time")][F("startup")] = this->startupTime;
+    doc[F("time")][F("connect")] = this->connectTime;
+    doc[F("time")][F("updated")] = RTC.getRtcSeconds();
 
-    doc["network"]["mac"] = WifiStation.getMAC();
-    doc["network"]["ip"] = WifiStation.getIP().toString();
-    doc["network"]["mask"] = WifiStation.getNetworkMask().toString();
-    doc["network"]["gateway"] = WifiStation.getNetworkGateway().toString();
+    doc[F("network")][F("mac")] = WifiStation.getMAC();
+    doc[F("network")][F("ip")] = WifiStation.getIP().toString();
+    doc[F("network")][F("mask")] = WifiStation.getNetworkMask().toString();
+    doc[F("network")][F("gateway")] = WifiStation.getNetworkGateway().toString();
 
-    doc["wifi"]["ssid"] = this->device->getWifi().getCurrentSSID();
-    doc["wifi"]["bssid"] = this->device->getWifi().getCurrentBSSID();
-    doc["wifi"]["rssi"] = WifiStation.getRssi();
-    doc["wifi"]["channel"] = WifiStation.getChannel();
+    doc[F("wifi")][F("ssid")] = this->device->getWifi().getCurrentSSID();
+    doc[F("wifi")][F("bssid")] = this->device->getWifi().getCurrentBSSID();
+    doc[F("wifi")][F("rssi")] = WifiStation.getRssi();
+    doc[F("wifi")][F("channel")] = WifiStation.getChannel();
 
     for (unsigned int i = 0; i < this->device->getServices().count(); i++) {
-        doc["services"].add(this->device->getServices().at(i)->getName());
+        doc[F("services")].add(this->device->getServices().at(i)->getName());
     }
 
     for (unsigned int i = 0; i < this->device->getSubscriptions().count(); i++) {
-        doc["endpoints"].add(this->device->getSubscriptions().keyAt(i));
+        doc[F("endpoints")].add(this->device->getSubscriptions().keyAt(i));
     }
 
     String payload;
@@ -104,12 +104,12 @@ String Info::dump() const {
 }
 
 void Info::publish() {
-    this->device->publish(Device::TOPIC_BASE + "/info", this->dump(), true);
+    this->device->publish(Device::TOPIC_BASE + F("/info"), this->dump(), true);
 }
 
 #ifdef INFO_HTTP_ENABLED
 void Info::onHttpIndex(HttpRequest &request, HttpResponse &response) {
-    response.setContentType("application/json");
+    response.setContentType(F("application/json"));
     response.sendString(this->dump());
 }
 #endif

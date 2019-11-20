@@ -38,9 +38,10 @@ public:
     State getState() const;
 
 private:
+    int onConnected(MqttClient& client, mqtt_message_t* message);
     void onDisconnected(TcpClient &client, bool flag);
 
-    void onMessageReceived(const String topic, const String message);
+    int onMessageReceived(MqttClient& client, mqtt_message_t* message);
 
     const String topicBase;
 

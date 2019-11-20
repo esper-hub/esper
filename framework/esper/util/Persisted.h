@@ -50,7 +50,7 @@ public:
 
         // If first record is invalid, reinitialize the storage
         if (record.checksum != checksum(record)) {
-            LOG.log("Invalid first record - Formatting");
+            LOG.log(F("Invalid first record - Formatting"));
 
             // Erase the first sector
             flash_erase_sector(address.sector);
@@ -64,7 +64,7 @@ public:
                         record);
 
         } else {
-            LOG.log("Valid first record - Searching last record");
+            LOG.log(F("Valid first record - Searching last record"));
 
             // Start scanning with the sequence from the first record
             sequence_t sequence = record.sequence;
@@ -94,7 +94,7 @@ public:
                 sequence = next(sequence);
             }
 
-            LOG.log("Last valid record found with sequence", this->sequence, "at", this->address.sector, "@", this->address.offset);
+            LOG.log(F("Last valid record found with sequence"), this->sequence, '=', this->address.sector, '@', this->address.offset);
         }
     }
 

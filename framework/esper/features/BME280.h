@@ -18,7 +18,7 @@ public:
 
         this->wire.begin(sda_pin, scl_pin);
         if (!this->bme280.begin(addr, &this->wire)) {
-            LOG.log("Could not detect a BME280 sensor, check wiring:", addr);
+            LOG.log(F("Could not detect a BME280 sensor, check wiring:"), addr);
             abort();
         }
 
@@ -31,16 +31,16 @@ public:
 protected:
     virtual void publishCurrentState() {
         const long pressure = bme280.readPressure();
-        LOG.log("Pressure:", pressure);
-        this->publish("pressure", String(pressure));
+        LOG.log(F("Pressure:"), pressure);
+        this->publish(F("pressure"), String(pressure));
 
         const float temperature = bme280.readTemperature();
-        LOG.log("Temperature:", temperature);
-        this->publish("temperature", String(temperature));
+        LOG.log(F("Temperature:"), temperature);
+        this->publish(F("temperature"), String(temperature));
 
         const float humidity = bme280.readHumidity();
-        LOG.log("Humidity", humidity);
-        this->publish("humidity", String(humidity));
+        LOG.log(F("Humidity"), humidity);
+        this->publish(F("humidity"), String(humidity));
     }
 
 private:

@@ -18,7 +18,7 @@ protected:
     }
 
 public:
-    virtual const char* getName() const {
+    const char* getName() const {
         return name;
     }
 
@@ -50,10 +50,10 @@ private:
 
     static String buildTopic(const String& suffix) {
         StringSumHelper s = Device::TOPIC_BASE;
-        s += "/";
+        s += F("/");
         s += name;
         if (suffix.length() != 0) {
-            s += "/";
+            s += F("/");
             s += suffix;
         }
 

@@ -10,7 +10,10 @@ Heartbeat::Heartbeat(Device* const device)
     this->device->registerSubscription(HEARTBEAT_TOPIC, Device::MessageCallback(&Heartbeat::onMessageReceived, this));
 
     // Reboot the system if heartbeat was missing
-    this->timer.initializeMs(120000, std::bind(&Device::triggerReboot, device));
+    this->timer.initializeMs(120000, [=]() {
+        LOG.log(F("My heart just skipped a beat! - Rebooting"));
+        device->triggerReboot();
+    });
 }
 
 Heartbeat::~Heartbeat() {
@@ -19,7 +22,7 @@ Heartbeat::~Heartbeat() {
 void Heartbeat::onStateChanged(const State& state) {
     switch (state) {
         case State::CONNECTED: {
-            LOG.log("Start awaiting heartbeats");
+            LOG.log(F("Start awaiting heartbeats"));
             this->timer.start();
 
             break;
@@ -27,7 +30,7 @@ void Heartbeat::onStateChanged(const State& state) {
 
         case State::DISCONNECTED: {
             // Heartbeats are likely to miss if disconnected
-            LOG.log("Stop awaiting heartbeats");
+            LOG.log(F("Stop awaiting heartbeats"));
             this->timer.stop();
 
             break;
@@ -37,6 +40,6 @@ void Heartbeat::onStateChanged(const State& state) {
 
 void Heartbeat::onMessageReceived(const String& topic, const String& message) {
     // Handle incoming heartbeat
-    LOG.log("Heartbeat");
+    LOG.log(F("Heartbeat 💓"));
     this->timer.restart();
 }

@@ -44,23 +44,24 @@ Device::Device() :
     this->add(&this->info);
     this->add(&this->reboot);
 
-    LOG.log("Initialized");
-    LOG.log("Base Path:", Device::TOPIC_BASE);
+    LOG.log(F("Initialized"));
+    LOG.log(F("Base Path:"), Device::TOPIC_BASE);
 }
 
 Device::~Device() {
+    LOG.log(F("Something's happening in here!"));
 }
 
 void Device::start() {
-    LOG.log("Starting");
+    LOG.log(F("Starting"));
 
     // Set last will to publish status as offline
-    this->mqttConnectionManager.setWill(Device::TOPIC_BASE + "/status", "OFFLINE", true);
+    this->mqttConnectionManager.setWill(Device::TOPIC_BASE + F("/status"), F("OFFLINE"), true);
 
     // Start connecting to the network
     this->wifiConnectionManager.connect();
 
-    LOG.log("Started");
+    LOG.log(F("Started"));
 }
 
 void Device::triggerReboot() {
@@ -68,13 +69,14 @@ void Device::triggerReboot() {
 }
 
 void Device::registerSubscription(const String& topic, const MessageCallback& callback) {
+    LOG.log(F("Registering subscription:"), topic);
     this->messageCallbacks[topic] = callback;
 }
 
 void Device::add(ServiceBase* const service) {
     if (!services.contains(service)) {
         services.addElement(service);
-        LOG.log("Added service:", service->getName());
+        LOG.log(F("Added service:"), service->getName());
     }
 }
 
@@ -106,19 +108,19 @@ void Device::publish(const String& topic, const String& message, const bool& ret
 void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
     switch (state) {
         case WifiConnectionManager::State::CONNECTED: {
-            LOG.log("WiFi state changed: Connected");
+            LOG.log(F("WiFi state changed: Connected"));
             this->ntpClient.requestTime();
             this->mqttConnectionManager.connect();
             break;
         }
 
         case WifiConnectionManager::State::DISCONNECTED: {
-            LOG.log("WiFi state changed: Disconnected");
+            LOG.log(F("WiFi state changed: Disconnected"));
             break;
         }
 
         case WifiConnectionManager::State::CONNECTING: {
-            LOG.log("WiFi state changed: Connecting");
+            LOG.log(F("WiFi state changed: Connecting"));
             break;
         }
     }
@@ -127,10 +129,10 @@ void Device::onWifiStateChanged(const WifiConnectionManager::State& state) {
 void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
     switch (state) {
         case MqttConnectionManager::State::CONNECTED: {
-            LOG.log("MQTT state changed: Connected \\o/");
+            LOG.log(F("MQTT state changed: Connected \\o/"));
 
             // Publish status as online
-            this->mqttConnectionManager.publish(Device::TOPIC_BASE + "/status", "ONLINE", true);
+            this->mqttConnectionManager.publish(Device::TOPIC_BASE + F("/status"), F("ONLINE"), true);
 
             // Subscribe for all known registered callbacks
             for (unsigned int i = 0; i < this->messageCallbacks.count(); i++) {
@@ -147,7 +149,7 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
         }
 
         case MqttConnectionManager::State::DISCONNECTED: {
-            LOG.log("MQTT state changed: Disconnected");
+            LOG.log(F("MQTT state changed: Disconnected"));
 
             // Inform all services about new state
             for (unsigned int i = 0; i < this->services.count(); i++) {
@@ -158,18 +160,23 @@ void Device::onMqttStateChanged(const MqttConnectionManager::State& state) {
         }
 
         case MqttConnectionManager::State::CONNECTING: {
-            LOG.log("MQTT state changed: Connecting");
+            LOG.log(F("MQTT state changed: Connecting"));
             break;
         }
     }
 }
 
 void Device::onMqttMessageReceived(const String& topic, const String& message) {
-    // Dispatch message to registered feature handler
+    LOG.log(F("MQTT message received:"), topic, F(":"), message);
+
+    // Dispatch message to registered handlers
     auto i = this->messageCallbacks.indexOf(topic);
     if (i != -1) {
         const auto& callback = this->messageCallbacks.valueAt(i);
-        callback(topic.substring(Device::TOPIC_BASE.length()+1), message);
+        const auto& subtopic = topic.substring(Device::TOPIC_BASE.length() + 1);
+        System.queueCallback([=]() {
+            callback(subtopic, message);
+        });
     }
 }
 
@@ -177,10 +184,10 @@ void Device::onTimeUpdated(NtpClient& client, time_t curr) {
     auto prev = RTC.getRtcSeconds();
     RTC.setRtcSeconds(curr);
 
-    LOG.log("Time updated:", DateTime(curr).toISO8601());
+    LOG.log(F("Time updated:"), DateTime(curr).toISO8601());
 
     if (abs(curr - prev) > 60 * 60) {
-        LOG.log("Clock differs to much - rebooting");
+        LOG.log(F("Clock differs to much - rebooting"));
         this->triggerReboot();
     }
 }

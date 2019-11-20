@@ -18,7 +18,7 @@ public:
         digitalWrite(gpio, invert);
 
         this->timeoutTimer.initializeMs(100, TimerDelegate(&Pulse::onTimeout, this));
-        this->registerSubscription("pulse", Device::MessageCallback(&Pulse::onMessageReceived, this));
+        this->registerSubscription(F("pulse"), Device::MessageCallback(&Pulse::onMessageReceived, this));
     }
 
     void doPulse(const uint16_t& duration) {
@@ -27,7 +27,7 @@ public:
         this->timeoutTimer.setIntervalMs(min(max_duration, duration));
         this->timeoutTimer.start(false);
 
-        this->publish("triggered", String(duration), false);
+        this->publish(F("triggered"), String(duration), false);
     }
 
 protected:

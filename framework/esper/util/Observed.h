@@ -24,7 +24,12 @@ public:
             return false;
         }
 
-        this->callback(this->value = value);
+        this->value = value;
+
+        System.queueCallback([=]() {
+            this->callback(this->value);
+        });
+
         return true;
     }
 
