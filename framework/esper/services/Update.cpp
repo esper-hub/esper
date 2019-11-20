@@ -52,7 +52,7 @@ void Update::checkUpdate() {
     this->http.downloadString(UPDATE_URL_VERSION, RequestCompletedDelegate(&Update::onVersionReceived, this));
 }
 
-void Update::onGlobalUpdateRequestReceived(const String& topic, const String& message) {
+void Update::onGlobalUpdateRequestReceived(const String& message) {
     LOG.log(F("Request for global update received"));
 
 #if UPDATE_DELAY != 0
@@ -62,7 +62,7 @@ void Update::onGlobalUpdateRequestReceived(const String& topic, const String& me
 #endif
 }
 
-void Update::onDeviceUpdateRequestReceived(const String& topic, const String& message) {
+void Update::onDeviceUpdateRequestReceived(const String& message) {
     LOG.log(F("Request for device specific update received"));
     this->checkUpdate();
 }

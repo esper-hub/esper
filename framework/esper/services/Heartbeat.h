@@ -18,7 +18,7 @@ public:
     virtual void onStateChanged(const State& state);
 
 private:
-    void onMessageReceived(const String& topic, const String& message);
+    void onMessageReceived(const String& message);
 
     Timer timer;
 };

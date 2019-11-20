@@ -19,7 +19,7 @@ void Reboot::trigger() {
     System.restart();
 }
 
-void Reboot::onRebootRequestReceived(const String& topic, const String& message) {
+void Reboot::onRebootRequestReceived(const String& message) {
     // Message must contain device ID to prevent accidental restarts
     if (message != String(system_get_chip_id(), 16)) {
         return;

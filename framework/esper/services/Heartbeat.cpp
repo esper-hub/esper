@@ -38,7 +38,7 @@ void Heartbeat::onStateChanged(const State& state) {
     }
 }
 
-void Heartbeat::onMessageReceived(const String& topic, const String& message) {
+void Heartbeat::onMessageReceived(const String& message) {
     // Handle incoming heartbeat
     LOG.log(F("Heartbeat 💓"));
     this->timer.restart();

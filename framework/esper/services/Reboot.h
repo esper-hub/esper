@@ -13,7 +13,7 @@ public:
     void trigger();
 
 private:
-    void onRebootRequestReceived(const String& topic, const String& message);
+    void onRebootRequestReceived(const String& message);
 };
 
 

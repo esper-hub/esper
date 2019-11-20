@@ -26,7 +26,7 @@ class Device {
     Device& operator=(Device const&) = delete;
 
 public:
-    using MessageCallback = MqttConnectionManager::MessageCallback;
+    using MessageCallback = Delegate<void(const String& message)> ;
 
     static const String TOPIC_BASE;
 

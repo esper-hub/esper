@@ -24,8 +24,8 @@ public:
     void checkUpdate();
 
 private:
-    void onGlobalUpdateRequestReceived(const String& topic, const String& message);
-    void onDeviceUpdateRequestReceived(const String& topic, const String& message);
+    void onGlobalUpdateRequestReceived(const String& message);
+    void onDeviceUpdateRequestReceived(const String& message);
 
     int onVersionReceived(HttpConnection& client, bool successful);
 
