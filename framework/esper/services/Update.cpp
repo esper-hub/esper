@@ -64,7 +64,7 @@ void Update::onGlobalUpdateRequestReceived(const String& message) {
 
 void Update::onDeviceUpdateRequestReceived(const String& message) {
     LOG.log(F("Request for device specific update received"));
-    this->checkUpdate();
+    this->update();
 }
 
 int Update::onVersionReceived(HttpConnection& client, bool successful) {
@@ -86,13 +86,18 @@ int Update::onVersionReceived(HttpConnection& client, bool successful) {
     }
 
     LOG.log(F("Remote version differs - updating..."));
+    System.queueCallback(TaskDelegate(&Update::update, this));
 
-    // Select rom slot to flash
-    const rboot_config bootconf = rboot_get_config();
+    return 0;
+}
 
+void Update::update() {
     // Ensure we have a clean updater
     if (this->updater) delete this->updater;
     this->updater = new RbootHttpUpdater();
+
+    // Select rom slot to flash
+    const rboot_config bootconf = rboot_get_config();
 
     // Configure updater with items to flash
     if (bootconf.current_rom == 0) {
@@ -108,6 +113,4 @@ int Update::onVersionReceived(HttpConnection& client, bool successful) {
     // Start update
     LOG.log(F("Downloading update"));
     this->updater->start();
-
-    return 0;
 }

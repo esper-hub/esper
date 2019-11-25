@@ -57,6 +57,8 @@ SMING_RELEASE = 1
 # Disable SPIFFS
 DISABLE_SPIFFS = 1
 
+ENABLE_CUSTOM_LWIP = 2
+
 
 # Configure bootloader for A/B partitioning
 RBOOT_ENABLED = 1

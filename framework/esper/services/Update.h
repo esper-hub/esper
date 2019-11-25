@@ -29,6 +29,8 @@ private:
 
     int onVersionReceived(HttpConnection& client, bool successful);
 
+    void update();
+
     Timer checkTimer;
 
 #if UPDATE_DELAY != 0
