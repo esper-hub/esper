@@ -15,11 +15,11 @@ MQTT_PORT = 1883
 MQTT_REALM = my/realm
 
 
-## If set to true, a HTTP is used to export the device info
-INFO_HTTP_ENABLED = true
+## If set to true, a HTTP is used to export the device info and other functions
+HTTP_ENABLED = true
 
 ## The HTTP server port
-INFO_HTTP_PORT = 80
+HTTP_PORT = 80
 
 
 ## If set to true, a message each 60 seconds is expected or a reboot is triggered
@@ -37,13 +37,6 @@ UPDATE_URL = http://$(MQTT_HOST):80/firmware/
 
 ## If set, an update request is triggered at the given interval (in seconds)
 UPDATE_INTERVAL = 3600
-
-
-## ESP_HOME sets the path where ESP tools and SDK are located.
-# ESP_HOME = /opt/esp-open-sdk
-
-## SMING_HOME sets the path where Sming framework is located.
-# SMING_HOME = /opt/sming/Sming
 
 
 ## COM port parameter is reqruied to flash firmware correctly.

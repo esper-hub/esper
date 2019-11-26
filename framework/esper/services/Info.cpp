@@ -30,9 +30,14 @@ Info::Info(Device* const device)
     LOG.log(F("ROM Slot 0:"), rbootconf.roms[0]);
     LOG.log(F("ROM Slot 1:"), rbootconf.roms[1]);
 
-#ifdef INFO_HTTP_ENABLED
-    http.listen(INFO_HTTP_PORT);
-    http.paths.set(F("/"), HttpPathDelegate(&Info::onHttpIndex, this));
+#if HTTP_ENABLED
+    auto resource = new HttpResource();
+    resource->onRequestComplete = [=](HttpServerConnection& connection, HttpRequest& request, HttpResponse& response) -> int {
+        response.setContentType(F("application/json"));
+        response.sendString(this->dumpJson());
+        return 0;
+    };
+    this->device->registerResource(F("/"), resource);
 #endif
 }
 
@@ -59,7 +64,7 @@ void Info::onStateChanged(const State& state) {
     }
 }
 
-String Info::dump() const {
+String Info::dumpJson() const {
     LOG.log(F("Publishing device info"));
 
     StaticJsonDocument<1024> doc;
@@ -104,12 +109,5 @@ String Info::dump() const {
 }
 
 void Info::publish() {
-    this->device->publish(Device::TOPIC_BASE + F("/info"), this->dump(), true);
+    this->device->publish(Device::TOPIC_BASE + F("/info"), this->dumpJson(), true);
 }
-
-#ifdef INFO_HTTP_ENABLED
-void Info::onHttpIndex(HttpRequest &request, HttpResponse &response) {
-    response.setContentType(F("application/json"));
-    response.sendString(this->dump());
-}
-#endif

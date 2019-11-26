@@ -16,20 +16,25 @@ extern const char UPDATE_NAME[];
 
 class Update : public Service<UPDATE_NAME> {
 public:
+    struct Target {
+        RbootOutputStream* stream;
+        uint8_t slot;
+    };
+
     Update(Device* device);
     virtual ~Update();
 
     virtual void onStateChanged(const State& state);
 
-    void checkUpdate();
-
 private:
+    void check();
+    void download();
+    void apply(uint8_t slot);
+
     void onGlobalUpdateRequestReceived(const String& message);
     void onDeviceUpdateRequestReceived(const String& message);
 
-    int onVersionReceived(HttpConnection& client, bool successful);
-
-    void update();
+    static Target target();
 
     Timer checkTimer;
 
@@ -37,9 +42,9 @@ private:
     Timer delayTimer;
 #endif
 
-    HttpClient http;
+    Device* device;
 
-    RbootHttpUpdater* updater;
+    HttpClient http;
 };
 
 #endif

@@ -10,7 +10,7 @@ public:
     Reboot(Device* const device);
     virtual ~Reboot();
 
-    void trigger();
+    void trigger(unsigned int deferMillis = 0);
 
 private:
     void onRebootRequestReceived(const String& message);

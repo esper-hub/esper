@@ -25,7 +25,6 @@ Device::Device() :
         mqttConnectionManager(MqttConnectionManager::StateChangedCallback(&Device::onMqttStateChanged, this),
                               MqttConnectionManager::MessageCallback(&Device::onMqttMessageReceived, this)),
         ntpClient(NtpTimeResultDelegate(&Device::onTimeUpdated, this)),
-
 #if HEARTBEAT_ENABLED
         heartbeat(this),
 #endif
@@ -61,16 +60,25 @@ void Device::start() {
     // Start connecting to the network
     this->wifiConnectionManager.connect();
 
+#if HTTP_ENABLED
+    this->http.listen(HTTP_PORT);
+#endif
+
     LOG.log(F("Started"));
 }
 
-void Device::triggerReboot() {
-    this->reboot.trigger();
+void Device::triggerReboot(unsigned int deferMillis) {
+    this->reboot.trigger(deferMillis);
 }
 
 void Device::registerSubscription(const String& topic, const MessageCallback& callback) {
     LOG.log(F("Registering subscription:"), topic);
     this->messageCallbacks[topic] = callback;
+}
+
+void Device::registerResource(const String& path, HttpResource* resource) {
+    LOG.log(F("Registering resource:"), path);
+    this->http.paths.set(path, resource);
 }
 
 void Device::add(ServiceBase* const service) {

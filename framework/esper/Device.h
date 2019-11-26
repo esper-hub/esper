@@ -35,9 +35,13 @@ public:
 
     virtual void start();
 
-    void triggerReboot();
+    void triggerReboot(unsigned int deferMillis = 0);
 
     void registerSubscription(const String& topic, const MessageCallback& callback);
+
+#if HTTP_ENABLED
+    void registerResource(const String& path, HttpResource* resource);
+#endif
 
     void publish(const String &topic, const String &message, const bool& retain = false);
 
@@ -66,6 +70,10 @@ private:
     Vector<ServiceBase*> services;
 
     HashMap<String, MessageCallback> messageCallbacks;
+
+#if HTTP_ENABLED
+    HttpServer http;
+#endif
 
 #if HEARTBEAT_ENABLED
     Heartbeat heartbeat;
