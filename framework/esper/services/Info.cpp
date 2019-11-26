@@ -84,13 +84,13 @@ String Info::dumpJson() const {
     doc[F("time")][F("connect")] = this->connectTime;
     doc[F("time")][F("updated")] = RTC.getRtcSeconds();
 
-    doc[F("network")][F("mac")] = WifiStation.getMAC();
+    doc[F("network")][F("mac")] = WifiStation.getMacAddress().toString();
     doc[F("network")][F("ip")] = WifiStation.getIP().toString();
     doc[F("network")][F("mask")] = WifiStation.getNetworkMask().toString();
     doc[F("network")][F("gateway")] = WifiStation.getNetworkGateway().toString();
 
     doc[F("wifi")][F("ssid")] = this->device->getWifi().getCurrentSSID();
-    doc[F("wifi")][F("bssid")] = this->device->getWifi().getCurrentBSSID();
+    doc[F("wifi")][F("bssid")] = this->device->getWifi().getCurrentBSSID().toString();
     doc[F("wifi")][F("rssi")] = WifiStation.getRssi();
     doc[F("wifi")][F("channel")] = WifiStation.getChannel();
 
