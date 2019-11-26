@@ -9,7 +9,9 @@
 
 ### Features
 - Added `${MQTT_REALM}/${DEVICE_ID}/status` containing `ONLINE` or `OFFLINE`
-- Serve device info via HTTP - use `INFO_HTTP_ENABLED = true` to enable
+- Serve device info via HTTP - use `HTTP_ENABLED = true` to enable
+  - Allow rebooting the device by posting to `/reboot`
+  - Upload firmware images to the standby ROM slot by posting to `/update`
 - Update individual devices using `${MQTT_REALM}/${DEVICE_ID}/update` 
 - Changelog added
 

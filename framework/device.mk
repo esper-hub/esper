@@ -57,7 +57,9 @@ SMING_RELEASE = 1
 # Disable SPIFFS
 DISABLE_SPIFFS = 1
 
-ENABLE_CUSTOM_LWIP = 2
+
+# Don't process commands
+ENABLE_CMD_EXECUTOR = 0
 
 
 # Configure bootloader for A/B partitioning
