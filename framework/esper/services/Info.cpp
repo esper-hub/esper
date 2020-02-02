@@ -68,8 +68,6 @@ String Info::dumpJson() const {
     LOG.log(F("Publishing device info"));
 
     StaticJsonDocument<1024> doc;
-
-
     doc[F("device")] = DEVICE;
     doc[F("chip_id")] = String(system_get_chip_id(), 16);
     doc[F("flash_id")] = String(spi_flash_get_id(), 16);
