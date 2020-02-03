@@ -35,7 +35,7 @@ ENV SMING_HOME /home/builder/Sming/Sming
 # Install sming
 RUN git clone https://github.com/esper-hub/Sming.git /home/builder/Sming \
     && cd /home/builder/Sming \
-    && git reset --hard 74711cad39ad2a511fa58fcbd36c9283931931bf \
+    && git reset --hard f808b88ee28092bcda2b4421aec7862b7aebb442 \
     && git submodule update --init --recursive \
     && cd /home/builder/Sming/Sming \
     && make clean \
