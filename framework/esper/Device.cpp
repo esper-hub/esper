@@ -76,10 +76,12 @@ void Device::registerSubscription(const String& topic, const MessageCallback& ca
     this->messageCallbacks[topic] = callback;
 }
 
+#if HTTP_ENABLED
 void Device::registerResource(const String& path, HttpResource* resource) {
     LOG.log(F("Registering resource:"), path);
     this->http.paths.set(path, resource);
 }
+#endif
 
 void Device::add(ServiceBase* const service) {
     if (!services.contains(service)) {
