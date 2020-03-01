@@ -66,7 +66,12 @@ public:
 
 
 #if LOGGING
+#if !LOGGING_ALT
 typedef LoggerImpl<&Serial> Logger;
+#else
+extern HardwareSerial Serial1;
+typedef LoggerImpl<&Serial1> Logger;
+#endif
 #else
 typedef LoggerImpl<nullptr> Logger;
 #endif

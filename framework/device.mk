@@ -29,6 +29,7 @@ endif
 
 # Define config defaults
 LOGGING ?= true
+LOGGING_ALT ?= false
 LOGGING_DEBUG ?= false
 
 WIFI_SSID ?= ""

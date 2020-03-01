@@ -212,3 +212,5 @@ void init() {
     // Create the device and start it
     createDevice()->start();
 }
+
+HardwareSerial Serial1(UART_ID_1);
