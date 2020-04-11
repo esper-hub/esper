@@ -69,7 +69,7 @@ void MqttConnectionManager::onDisconnected(TcpClient &client, bool flag) {
         LOG.log(F("Unreachable"));
     }
 
-    if (this->state == State::CONNECTED) {
+    if (this->state == State::CONNECTED || this->state == State::CONNECTING) {
         this->state.set(State::DISCONNECTED);
         this->reconnectTimer.start();
     } else {
